@@ -1,5 +1,9 @@
-"""Base exception type; specialized errors will be added with real invariants."""
+"""Domain errors; no provider SDK dependencies."""
 
 
 class PyLLMKitError(Exception):
-    """Base class for PyLLMKit domain errors."""
+    """Base class for PyLLMKit errors."""
+
+
+class DomainValidationError(PyLLMKitError, ValueError):
+    """A domain invariant was violated by input data."""
