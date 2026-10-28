@@ -9,13 +9,6 @@ from typing import cast
 
 from pyllmkit.domain.errors import DomainValidationError
 
-from .schema_l12 import (
-    capabilities_from_object,
-    capabilities_to_object,
-    modalities_from_object,
-    modalities_to_object,
-)
-
 from .artifact import ModelArtifact
 from .descriptors import (
     ModelArchitecture,
@@ -28,6 +21,13 @@ from .descriptors import (
 from .identifiers import ModelArtifactId, ModelId
 from .identity import ModelIdentity
 from .model import Model, ProviderModelRef
+from .schema_l12 import (
+    capabilities_from_object,
+    capabilities_to_object,
+    modalities_from_object,
+    modalities_to_object,
+)
+
 
 SCHEMA_VERSION = 1
 

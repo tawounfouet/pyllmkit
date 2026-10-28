@@ -5,7 +5,7 @@ deployment and endpoint is a later domain service, never inferred here.
 """
 
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 from math import isfinite
 
 from pyllmkit.domain.errors import DomainValidationError
@@ -34,7 +34,7 @@ class CapabilityId:
         return self.value
 
 
-class SupportLevel(str, Enum):
+class SupportLevel(StrEnum):
     """Declared support. Unknown is represented by None, not a fictional level."""
 
     UNSUPPORTED = "unsupported"

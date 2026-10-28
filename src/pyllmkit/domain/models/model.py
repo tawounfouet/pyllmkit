@@ -4,8 +4,8 @@ from dataclasses import dataclass, field, replace
 from typing import Self
 
 from pyllmkit.domain.capabilities import CapabilityId, CapabilitySet
-from pyllmkit.domain.modalities import ModalitySet
 from pyllmkit.domain.errors import DomainValidationError
+from pyllmkit.domain.modalities import ModalitySet
 
 from .descriptors import ModelArchitecture, ModelLimits
 from .identifiers import ModelId, require_nonblank

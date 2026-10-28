@@ -1,11 +1,19 @@
 """L1.2: pure description of a multimodal LLM, with no provider calls."""
 
 from pyllmkit.domain.capabilities import (
-    Capability, CapabilityId, CapabilitySet, CapabilitySupport, SupportLevel,
+    Capability,
+    CapabilityId,
+    CapabilitySet,
+    CapabilitySupport,
+    SupportLevel,
 )
 from pyllmkit.domain.modalities import Modality, ModalitySet
 from pyllmkit.domain.models import (
-    Model, ModelFamily, ModelId, ModelIdentity, model_to_dict,
+    Model,
+    ModelFamily,
+    ModelId,
+    ModelIdentity,
+    model_to_dict,
 )
 
 model = Model(
