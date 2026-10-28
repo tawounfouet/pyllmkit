@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pyllmkit"
 version = "0.1.0a1"
-description = "Provider-agnostic domain primitives for language models (bootstrap scaffold)"
+description = "Provider-agnostic domain primitives for language models (pre-release candidate)"
 readme = "README.md"
 requires-python = ">=3.11"
 authors = []
@@ -23,6 +23,7 @@ dependencies = []
 [project.optional-dependencies]
 dev = [
   "pytest>=8",
+  "pytest-cov>=5",
   "ruff>=0.8",
   "mypy>=1.12",
   "build>=1.2",
