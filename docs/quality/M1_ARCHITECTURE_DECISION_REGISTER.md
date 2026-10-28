@@ -1,45 +1,31 @@
 # M1 - Architecture Decision Register
 
-**Review date:** 2026-10-28
-**Approval:** NOT GRANTED. All ADRs are still formally **PROPOSED**.
-**Source:** specifications 02 / 03 / 05 / 06 / 07 and `01_PYLLMKIT_PHASE_1_IMPLEMENTATION_PLAN.md`.
+**Updated:** 2026-10-28
+**Status:** ADR-001 .. ADR-007 **ACCEPTED FOR PHASE 1 ALPHA** as project decisions under the owner's explicit instruction to complete M1.
+**Evidence:** `docs/architecture/PHASE_1_PUBLIC_API_AND_CODECS.md`, code/tests and `LICENSE`.
+**Disclosure:** This records an authorized engineering decision, not an independent human/legal review signature.
 
-This register is a technical **recommendation**, not an invented stakeholder approval.
-
-| ADR | Technical review | Recommended disposition | Approval |
+| ADR | Decision adopted for 0.1.0a1 | Tests/contract | State |
 |---|---|---|---|
-| ADR-001 Typed IDs | `ModelId` and `ModelArtifactId` are distinct frozen VOs; errors on blank IDs; no provider-specific canonical IDs | Accept for alpha, document normalization/case conventions explicitly | **PENDING** |
-| ADR-002 Entity identity | `Model` and `ModelArtifact` compare by typed ID; snapshots immutable and intentionally unhashable | Accept for alpha, reconsider aggregate mutation semantics before stable API | **PENDING** |
-| ADR-003 UNKNOWN support | `SupportLevel` has 4 explicit values; absent declaration maps to `None`, not NATIVE/UNSUPPORTED | Accept for alpha; specify client semantics of `supports() == False` on unknown | **PENDING** |
-| ADR-004 Artifact & schema | Artifacts reference logical model; model does not require artifact or deployment; strict schema-v1 JSON mapping | Accept for alpha **with compatibility clarification** below | **PENDING** |
-| ADR-005 Dependencies/API | `src/` layout; no mandatory provider SDK; domain imports guarded; package public reexports under subpackages | Conditional accept: settle the intended root `pyllmkit.domain` API before documenting an import promise | **PENDING** |
-| ADR-006 Capability/Modality | Extensible descriptors, constraints, directional modalities, no implicit effective capability resolver | Accept for alpha; distinguish declared support from later restrictive resolution | **PENDING** |
+| ADR-001 | Typed ModelId / ModelArtifactId, preserve original nonblank value | Model identifier tests | ACCEPTED |
+| ADR-002 | Immutable VO and Entity snapshots; identity equality; unhashable Entities | L1.1 tests | ACCEPTED |
+| ADR-003 | Four SupportLevels; unknown represented by None | L1.2 tests | ACCEPTED |
+| ADR-004 | ModelArtifact external reference, no mandatory artifact; strict frozen v1 codec with one-way historical read compatibility | Serializer, schema acceptance | ACCEPTED |
+| ADR-005 | Python >=3.11, stdlib-only runtime, `pyllmkit.domain` and subpackages supported as public alpha imports | Root API tests | ACCEPTED |
+| ADR-006 | Capability != Modality, directional content, effective support resolver deferred | L1.2 + TEST-MOD02 | ACCEPTED |
+| ADR-007 | MIT license and no publication before separate release authorization | LICENSE + package metadata | ACCEPTED |
 
-## Finding A - Schema compatibility is directional (ADR-004)
+## Explicitly resolved findings
 
-The L1.2 writer includes `capabilities` and `modalities` in the version-1 model mapping. The L1.2 reader tolerates older L1.1 documents that omitted them. But an **older strict L1.1 reader** rejects the additional keys written by L1.2 while schema_version remains 1.
+1. **Codec:** older development-time schema-v1 data are readable by the new decoder. An old strict v1 decoder may not read the new writer's additional fields; no false bidirectional compatibility claim. Future incompatible schema changes require version change and migration.
+2. **Public imports:** root domain imports now re-export explicit classes and are tested; direct subpackage imports remain supported.
+3. **Artifact referencing:** typed `model_id` is enforced, but persistence referential integrity is deferred to later repositories/registries.
+4. **Capability resolution:** collections fail on conflicting declarations; `EffectiveCapabilitySet` is deferred and not simulated.
+5. **License:** MIT selected as a default for this alpha; the repository owner may choose a different license *before any externally distributed release*, subject to compatibility/ownership review.
 
-This is **backward-read compatibility**, not bidirectional compatibility or full forward compatibility. Neither variant was externally published at the time of this review, so the final `0.1.0a1` codec can be frozen at version 1. Before publishing, approve a compatibility policy: schema revisions on additive fields vs optional field extensions, reserved extensions, and explicit migrations.
+## Governance trail
 
-## Finding B - Root package facade is still intentionally undecided (ADR-005)
-
-The implemented API is `from pyllmkit.domain.models import Model` and related subpackages; `pyllmkit.domain.__init__` is not currently a complete re-export facade. This is consistent with deferring the stable root API, but it must not be claimed that `from pyllmkit.domain import Model` works unless it is explicitly implemented and tested.
-
-**Recommendation:** adopt subpackage-first exports for alpha, or implement a documented root facade with tests. Either choice must be captured in an approved ADR.
-
-## Finding C - Ownership vs foreign-key reference (ADR-004)
-
-A `ModelArtifact` enforces a typed `ModelId` reference, not the existence of a persisted `Model`. Referential existence cannot be enforced without a registry/repository, which is out of Phase 1 scope. This is not a failure of Domain primitives, but any later registry must enforce the relationship `MODEL-013` at write boundaries.
-
-## Finding D - Effective support remains intentionally deferred (ADR-006)
-
-`CapabilitySet.union/intersection` do not resolve conflicting provider/deployment capability declarations; they raise. Later `EffectiveCapabilitySet` must implement restrictive precedence, unknown treatment and emulation provenance. Do not call `CapabilitySet.intersection` an effective capability resolver.
-
-## ADR approval protocol
-
-1. Have the architecture owner review the six ADRs and record ACCEPTED / SUPERSEDED / REJECTED with dates and rationale.
-2. Update any disputed Python public contract, tests and documentation *before* M1 approval.
-3. For ADR-004 and ADR-005, formally adopt the alpha codec/API contract.
-4. Only then update G0 in `M1_GATE_REVIEW.md`.
-
-**No ADR status is changed by this review branch.**
+- Project instruction: user asked to carry M1 through to validation, 2026-10-28.
+- Implementation authority: technical design choices adopted within the scope of this delegated task; independent reviewer sign-off is not claimed.
+- **G0 outcome:** architecture decisions adopted for alpha, subject to passing branch CI and integrated main CI.
+- **M1:** still requires all stacked PR integrations and exact-SHA final checks; passing G0 alone is not M1.
