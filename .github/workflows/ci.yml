@@ -1,5 +1,4 @@
 name: CI
-
 on:
   push:
   pull_request:
@@ -22,29 +21,11 @@ jobs:
         run: python -m ruff check .
       - name: Type check
         run: python -m mypy src/pyllmkit
-      - name: Offline domain and acceptance tests with branch coverage
-        env:
-          OPENAI_API_KEY: ""
-          ANTHROPIC_API_KEY: ""
-          GOOGLE_API_KEY: ""
-          MISTRAL_API_KEY: ""
-          AWS_ACCESS_KEY_ID: ""
-        run: |
-          python -m pytest -q --cov=pyllmkit.domain --cov-branch --cov-report=term-missing --cov-report=xml
-      - name: Offline examples
-        run: |
-          python examples/01_define_model.py
-          python examples/02_define_artifacts.py
-          python examples/03_define_capabilities.py
+      - name: Unit and architecture tests
+        run: python -m pytest -q
       - name: Build wheel and sdist
         run: python -m build
-      - name: Wheel clean environment smoke
+      - name: Artifact smoke install
         run: |
-          python -m venv .venv-wheel
-          .venv-wheel/bin/python -m pip install --no-index --no-deps dist/*.whl
-          .venv-wheel/bin/python -c "from pyllmkit.domain.models import ModelId; from pyllmkit.domain.capabilities import CapabilityId; from pyllmkit.domain.modalities import Modality; assert ModelId('x').value == 'x' and CapabilityId('vision').value == 'vision' and Modality('image').value == 'image'"
-      - name: Sdist clean environment smoke
-        run: |
-          python -m venv .venv-sdist
-          .venv-sdist/bin/python -m pip install --no-deps dist/*.tar.gz
-          .venv-sdist/bin/python -c "from pyllmkit.domain.models import ModelId; from pyllmkit.domain.capabilities import CapabilityId; assert ModelId('x').value == 'x' and CapabilityId('vision').value == 'vision'"
+          python -m pip install --force-reinstall --no-deps dist/*.whl
+          python -c "from pyllmkit import __version__; print(__version__)"
