@@ -28,7 +28,6 @@ from .schema_l12 import (
     modalities_to_object,
 )
 
-
 SCHEMA_VERSION = 1
 
 
