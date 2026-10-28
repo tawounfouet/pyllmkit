@@ -1,4 +1,4 @@
-"""Architecture boundary regression checks."""
+"""Architecture boundary regression checks for Domain Core."""
 
 from pathlib import Path
 
