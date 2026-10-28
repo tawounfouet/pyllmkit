@@ -22,7 +22,7 @@ class ModelArtifact:
     checksum: str | None = None
     revision: ModelRevision | None = None
 
-    __hash__ = None
+    __hash__ = None  # type: ignore[assignment]  # Entities are unhashable
 
     def __post_init__(self) -> None:
         if not isinstance(self.id, ModelArtifactId):
