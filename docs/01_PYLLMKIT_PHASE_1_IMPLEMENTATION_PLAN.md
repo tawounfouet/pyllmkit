@@ -1,5 +1,8 @@
 # PyLLMKit - Plan d'implémentation de la Phase 1
 
+> **Statut d'exécution au 28/10/2026 : M1 - GO**. Le plan et ses cases à cocher sont conservés comme baseline de conception. Le procès-verbal de clôture fait foi : `docs/quality/M1_GATE_REVIEW.md`, SHA `4aaf4c91e97ff7dfc3d0f2c6164c3cd88fe2923a`, CI #40638326259. Version alpha candidate non publiée.
+
+
 > **PHASE 1 - Fondations du framework**  
 > Lots : **L1.1 Model Domain**, **L1.2 Capabilities & Modalities**, **L1.3 Quality & Testing**  
 > Jalon de sortie : **M1 - Fondations qualifiées**  

@@ -1,6 +1,6 @@
 # PyLLMKit
 
-**Status:** Phase 1 Domain Core is technically qualified on feature branches; architectural G0 closure and integration are in progress. The metadata version `0.1.0a1` is an **unpublished alpha candidate**.
+**Status:** **M1 - Domain Foundations Qualified: GO (2026-10-28).** Phase 1 is integrated and CI-qualified on `main`. The metadata version `0.1.0a1` is an **unpublished alpha candidate**; there is no git tag/GitHub Release/PyPI publication.
 
 PyLLMKit models provider-agnostic LLM primitives as typed Python domain objects, separate from model-serving providers, deployments and inference APIs.
 
@@ -61,7 +61,7 @@ Applications -> Facade -> Application Services -> Ports/Protocols
 - Domain reference: `docs/api/domain.md`.
 - Test coverage and qualification: `docs/quality/P1_L13_QUALIFICATION.md`.
 - Acceptance mapping: `docs/quality/PHASE_1_TRACEABILITY.md`.
-- M1 decision: `docs/quality/M1_GATE_REVIEW.md`.
+- M1 decision: `docs/quality/M1_GATE_REVIEW.md` (GO, exact-SHA GitHub Actions evidence).
 - ADR: `docs/adr/` (accepted for the Phase 1 alpha under delegated milestone authorization; future revisions require a new decision).
 
 ## Explicitly not included
