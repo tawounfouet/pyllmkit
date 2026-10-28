@@ -52,7 +52,7 @@ def _from_module(path: Path, node: ast.ImportFrom) -> str:
     parts = path.parent.parts
     if "pyllmkit" not in parts:
         return node.module or ""
-    package = parts[parts.index("pyllmkit") :]
+    # Choose the innermost package, not the outer repository directory.\n    index = len(parts) - 1 - parts[::-1].index("pyllmkit")\n    package = parts[index:]
     if node.level > len(package):
         return node.module or ""
     root = package[: len(package) - (node.level - 1)]
