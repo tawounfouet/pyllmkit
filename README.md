@@ -1,47 +1,73 @@
-# PyLLMKit - P1-BOOT scaffold
+# PyLLMKit
 
-> Status: **P1-BOOT proposed**. The repository bootstrap is not the L1.1/L1.2 domain implementation, and v0.1.0a1 is not qualified or released.
+**Status:** Phase 1 - foundational domain implementation in stacked **draft PRs**. The metadata version `0.1.0a1` is a **candidate**, not a published release. Milestone M1 has **not** been approved.
 
-PyLLMKit is intended to model provider-agnostic LLM primitives before adding provider adapters or live inference.
+PyLLMKit models provider-agnostic LLM primitives as typed Python domain objects, separate from model-serving providers, deployments and inference APIs.
 
-## Local setup
+## What is implemented in Phase 1
+
+- **L1.1:** Model, ModelId, ModelIdentity, ModelFamily, ModelVersion, ModelVariant, ModelRevision, ModelArchitecture, ModelLimits, ModelArtifact, typed provider alias, JSON codec.
+- **L1.2:** Capability, CapabilitySupport, SupportLevel, CapabilityConstraint, CapabilitySet, Modality, ModalitySet; composed within Model.
+- **L1.3 (proposed):** offline tests and architecture fitness checks, reproducible examples, coverage reporting, typing, lint, isolated wheel and sdist installation, traceability and M1 review.
+
+## Quick start
 
 ```bash
 python3.11 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e '.[dev]'
-python -m pytest -q
 python -m ruff check .
 python -m mypy src/pyllmkit
+python -m pytest -q --cov=pyllmkit.domain --cov-branch --cov-report=term-missing
+python examples/01_define_model.py
+python examples/02_define_artifacts.py
+python examples/03_define_capabilities.py
 python -m build
 ```
 
-Python 3.11+ is supported by the proposed baseline. No provider SDK or cloud credentials should be required to use or test the domain core.
+The domain core has no mandatory provider SDK dependencies. The tests remove common LLM credential environment variables and reject socket connection/bind attempts; the test fixture is not a machine-wide network sandbox.
 
-## Architecture
+## Domain example
 
-```text
-Applications -> Facade -> Application Services -> Ports (contracts)
-                                   |                  ^
-                                   v                  |
-                              Domain Core <----- Provider Adapters
-                                                        |
-                                                   External APIs
+```python
+from pyllmkit.domain.models import Model, ModelFamily, ModelId, ModelIdentity
+from pyllmkit.domain.capabilities import Capability, CapabilityId, CapabilitySet, CapabilitySupport, SupportLevel
+from pyllmkit.domain.modalities import Modality, ModalitySet
+
+model = Model(
+    id=ModelId("example/vision"),
+    identity=ModelIdentity(ModelFamily("example")),
+    capabilities=CapabilitySet((
+        Capability(CapabilityId("vision"), CapabilitySupport(SupportLevel.NATIVE)),
+    )),
+    modalities=ModalitySet(
+        input_modalities=frozenset({Modality("text"), Modality("image")}),
+        output_modalities=frozenset({Modality("text")}),
+    ),
+)
+assert model.supports(CapabilityId("vision"))
+assert model.modalities.can_output(Modality("image")) is False
 ```
 
-Arrows above express conceptual calls/implementation roles, **not a definitive module import graph**. `domain` cannot import `providers`, `facade`, or infrastructure SDKs; adapters (future) will depend on domain types and ports.
+## Architecture & documentation
 
-See `docs/architecture/dependencies.md` for explicit allowed/forbidden code dependencies.
+```text
+Applications -> Facade -> Application Services -> Ports/Protocols
+                                 |                    ^
+                                 v                    |
+                             Domain Core <---------- Adapters
+```
 
-## In scope and not in scope
+**This is a conceptual invocation view**, not a Python import graph. The Domain Core does not depend on facade, adapters, SDKs, network or credentials. Capabilities and Modalities must not depend on the Model Entity. For source-code rules see `docs/architecture/dependencies.md`.
 
-- In scope now: source layout, packaging baseline, ADR proposals, empty domain packages, import smoke tests, architecture guards, CI skeleton.
-- Later in L1.1 and L1.2: `Model`, `ModelIdentity`, `ModelId`, `ModelArtifact`, `Capability`, `CapabilitySet`, `Modality`, `ModalitySet` and related domain tests.
-- Later releases: interaction, inference, streaming, tool calling, registries, provider adapters.
+- Domain reference: `docs/api/domain.md`.
+- Test coverage and qualification: `docs/quality/P1_L13_QUALIFICATION.md`.
+- Acceptance mapping: `docs/quality/PHASE_1_TRACEABILITY.md`.
+- M1 decision: `docs/quality/M1_GATE_REVIEW.md`.
+- ADR: `docs/adr/` (all proposals pending approval).
 
-## Caveats
+## Explicitly not included
 
-- Initial GitHub integration is proposed on a dedicated pull request; merge and CI qualification remain pending.
-- License is deliberately not chosen. Decide before public publication.
-- Package version `0.1.0a1` is a **target metadata placeholder**, not proof of a built or published release.
-- ADRs are **PROPOSED**, not approved.
+No provider invocation, serving Deployment/Endpoint, registry, streaming, RAG, agent orchestration or tool-execution engine in Phase 1. The Python package is not a released, stable LLM client.
+
+The license has not been selected. Before any publication, confirm licensing, architecture decisions, release notes and the M1 GO/NO-GO gate.
