@@ -1,5 +1,5 @@
-"""Domain error types."""
+"""Explicit domain error taxonomy."""
 
-from .base import PyLLMKitError
+from .base import DomainValidationError, PyLLMKitError
 
-__all__ = ["PyLLMKitError"]
+__all__ = ["DomainValidationError", "PyLLMKitError"]
