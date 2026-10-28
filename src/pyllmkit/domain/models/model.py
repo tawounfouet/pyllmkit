@@ -1,8 +1,10 @@
 """Logical Model Entity and provider alias Value Object."""
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from typing import Self
 
+from pyllmkit.domain.capabilities import CapabilityId, CapabilitySet
+from pyllmkit.domain.modalities import ModalitySet
 from pyllmkit.domain.errors import DomainValidationError
 
 from .descriptors import ModelArchitecture, ModelLimits
@@ -32,7 +34,7 @@ class ProviderModelRef:
 class Model:
     """Aggregate Root; equality follows ModelId, not metadata snapshots.
 
-    Capabilities and modalities are intentionally deferred to L1.2.
+    Intrinsic capabilities and modalities are composed in L1.2.
     ModelArtifact remains a distinct Entity referenced by ModelId.
     """
 
@@ -41,6 +43,8 @@ class Model:
     architecture: ModelArchitecture | None = None
     limits: ModelLimits | None = None
     provider_refs: tuple[ProviderModelRef, ...] = ()
+    capabilities: CapabilitySet = field(default_factory=CapabilitySet)
+    modalities: ModalitySet = field(default_factory=ModalitySet)
 
     __hash__ = None  # type: ignore[assignment]  # Entities are unhashable
 
@@ -55,6 +59,10 @@ class Model:
             raise DomainValidationError("architecture must be ModelArchitecture or None")
         if self.limits is not None and not isinstance(self.limits, ModelLimits):
             raise DomainValidationError("limits must be ModelLimits or None")
+        if not isinstance(self.capabilities, CapabilitySet):
+            raise DomainValidationError("capabilities must be CapabilitySet")
+        if not isinstance(self.modalities, ModalitySet):
+            raise DomainValidationError("modalities must be ModalitySet")
         if not isinstance(self.provider_refs, tuple):
             raise DomainValidationError("provider_refs must be immutable tuple")
         for alias in self.provider_refs:
@@ -67,6 +75,18 @@ class Model:
     def with_identity(self, identity: ModelIdentity) -> Self:
         """Return another snapshot of the same logical Entity."""
         return replace(self, identity=identity)
+
+    def supports(self, capability_id: CapabilityId) -> bool:
+        """Query intrinsic declared support, not effective provider support."""
+        return self.capabilities.supports(capability_id)
+
+    def with_capabilities(self, capabilities: CapabilitySet) -> Self:
+        """Return a new snapshot with different intrinsic capabilities."""
+        return replace(self, capabilities=capabilities)
+
+    def with_modalities(self, modalities: ModalitySet) -> Self:
+        """Return a new snapshot with different directional modalities."""
+        return replace(self, modalities=modalities)
 
     def with_limits(self, limits: ModelLimits | None) -> Self:
         """Replace documented limits without changing identity."""
