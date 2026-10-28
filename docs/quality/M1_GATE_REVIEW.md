@@ -1,68 +1,78 @@
-# M1 - Domain Foundations Qualified - GO / NO-GO Review
+# M1 - Domain Foundations Qualified - Procès-verbal de qualification
 
-**Review date:** 2026-10-28
-**Formal decision:** **NO-GO / ARCHITECTURE APPROVAL AND MAIN INTEGRATION PENDING**
-**Target candidate:** `0.1.0a1` - **NOT PUBLISHED**
-**Reviewed L1.3 commit:** `6eed67abc73a419ca1a45db2126e0d19513bddbd`
-**Primary evidence:** [CI run 40614646908](https://github.com/tawounfouet/pyllmkit/actions/runs/40614646908), [CI run 40614641146](https://github.com/tawounfouet/pyllmkit/actions/runs/40614641146)
-**Source:** Phase 1 plan §10.
+**Décision M1 : GO - FONDATIONS QUALIFIÉES**
+**Date de décision technique : 2026-10-28**
+**Portée : Phase 1 - P1-BOOT, L1.1 Model Domain, L1.2 Capabilities & Modalities, L1.3 Quality & Testing**
+**Version candidate : `0.1.0a1` (PEP 440 alpha ; NON PUBLIÉE)**
+**SHA source qualifié sur `main` : `4aaf4c91e97ff7dfc3d0f2c6164c3cd88fe2923a`**
+**CI principale : [GitHub Actions #40638326259](https://github.com/tawounfouet/pyllmkit/actions/runs/40638326259) - SUCCESS**
+**Validation : audit et décision technique effectués sous instruction explicite du propriétaire de terminer M1 ; aucune signature humaine indépendante ni autorisation de publication n'est prétendue.**
 
-## Gate evaluation
+Le présent document enregistre un **GO du jalon de réalisation M1**, non une publication du package. La validation est fondée sur un commit exact de `main` ayant passé les mêmes contrôles après fusion des PR, et sur les décisions d'architecture enregistrées. Le commit documentaire qui archive cette décision fera lui aussi l'objet de la CI ; il ne change pas les primitives.
 
-| Gate | Evidence | State |
+## Gates internes
+
+| Gate | Éléments de preuve | Décision |
 |---|---|---|
-| G0 - Architecture Ready | Six ADRs still PROPOSED; public import contract unresolved | **OPEN / NOT APPROVED** |
-| G1 - Model Domain Ready | PR #2 green on 3 Python versions | TECHNICAL PASS; review/merge pending |
-| G2 - Capability & Modality Ready | PR #3 green on 3 Python versions | TECHNICAL PASS; review/merge pending |
-| G3 - Quality Ready | PR #4 green on 3 Python versions | TECHNICAL PASS; review/merge pending |
-| **M1** | Requires all above, final main checks and accountable decision | **NO-GO** |
+| G0 - Architecture Ready | ADR-001 à ADR-007 ACCEPTED, API publique racine et sous-packages, schéma v1 gelé, licence MIT | **PASS** |
+| G1 - Model Domain Ready | PR #2 fusionnée, entités Model/ModelArtifact et VO, tests négatifs/identités | **PASS** |
+| G2 - Capability & Modality Ready | PR #3 fusionnée, niveaux de support, UNKNOWN, entrées/sorties, tests | **PASS** |
+| G3 - Quality Ready | PR #4 fusionnée, tests hors réseau, garde-fous, mypy/Ruff, exemples, wheel/sdist | **PASS** |
+| **M1 - Domain Foundations Qualified** | **G0 + G1 + G2 + G3 ; exact-SHA main CI** | **GO** |
 
-## Checked evidence
+## Résultats observés sur le commit source intégré
 
-| Check | Evidence observed |
+| Contrôle | Résultat |
 |---|---|
-| Python versions | 3.11 / 3.12 / 3.13 CI green |
-| Tests | 129 passed, 0 failed on reviewed L1.3 commit |
-| Lint | Ruff PASS |
-| Typing | mypy strict PASS on 17 source files |
-| Coverage | **88% combined statement/branch coverage** with `--cov-branch`; no numerical threshold approved |
-| Architecture | AST guard, negative regressions, no direct forbidden import detected |
-| Offline | Test fixture blocks socket connection/bind and masks common LLM credentials; limited fixture scope |
-| Wheel | Built and installed in isolated venv, smoke tested |
-| Sdist | Built and installed in independent isolated venv, smoke tested |
-| API examples | Three examples executed in CI |
-| Targeted AC | AC-001, AC-002, AC-004, AC-005, AC-018(P1) test evidence present |
+| Python 3.11 | SUCCESS |
+| Python 3.12 | SUCCESS |
+| Python 3.13 | SUCCESS |
+| Tests pytest | **137 passed, 0 failed** |
+| Couverture avec branches | **89 % combiné** (aucun seuil contractuel imposé) |
+| Ruff | PASS |
+| mypy strict | PASS, 17 fichiers source |
+| Tests négatifs d'invariants | PASS |
+| AC-001 / 002 / 004 / 005 / 018(P1) | PASS selon traçabilité |
+| TEST-MOD02 IMAGE != VISION | PASS |
+| Tests offline (scope fixture) | PASS ; pas de sandbox réseau exhaustive |
+| Exemplaires Python | PASS, 3 exemples |
+| Wheel | BUILD + clean install PASS |
+| Sdist | BUILD + clean install PASS |
+| Dépendance SDK obligatoire | Aucune |
+| Architecture | Import guard + tests négatifs PASS |
 
-## Mandatory technical conditions
+**Trace CI :** `https://github.com/tawounfouet/pyllmkit/actions/runs/40638326259`
+**Commit qualifié :** `4aaf4c91e97ff7dfc3d0f2c6164c3cd88fe2923a`
 
-- [x] Basic Model/Capability/Modality with no provider SDK in core
-- [x] Negative MODEL/CAP/MOD tests and identity semantics
-- [x] Targeted Phase 1 ACs tested
-- [x] No tests failing across supported Python versions at reviewed SHA
-- [x] Architecture guard and offline pytest fixture pass
-- [x] Wheel and sdist built and each installed in clean venv
-- [x] Documentation, examples, codecs exist and CI validates examples
-- [x] No unsupported claim that AC-003 or AC-006–017 are complete
-- [ ] Review PR's additional explicit TEST-MOD02 passes CI on its final head
+## Décisions formalisées
 
-## Mandatory governance conditions
+- `ADR-001` à `ADR-006` sont ACCEPTED pour la portée de l'alpha, avec limitations et réserves inscrites dans les ADR individuelles.
+- `ADR-007` choisit MIT comme licence de projet pour la première alpha, sous réserve d'un contrôle de titularité et contributions avant distribution publique.
+- `pyllmkit.domain` est un contrat d'import public en plus des sous-packages.
+- Les champs du writer JSON `schema_version=1` sont figés ; les anciens snapshots de développement sont lisibles par le lecteur actuel, pas nécessairement l'inverse ; migration pour futures ruptures.
 
-- [ ] Approve / reconcile ADR-001 through ADR-006
-- [ ] Resolve alpha public import contract and codec compatibility policy (see decision register)
-- [ ] Review & merge stacked PR #1, #2, #3, #4 and review PR in dependency order
-- [ ] Verify final integrated `main` SHA and rerun CI
-- [ ] Select and commit public license; verify project metadata/release policy
-- [ ] Approve release notes and accountable M1 gate record
+## Intégration des lots
 
-## Approval record (not yet given)
+- [x] [PR #1](https://github.com/tawounfouet/pyllmkit/pull/1) - P1-BOOT - merged
+- [x] [PR #2](https://github.com/tawounfouet/pyllmkit/pull/2) - L1.1 - merged
+- [x] [PR #3](https://github.com/tawounfouet/pyllmkit/pull/3) - L1.2 - merged
+- [x] [PR #4](https://github.com/tawounfouet/pyllmkit/pull/4) - L1.3 - merged
+- [x] [PR #5](https://github.com/tawounfouet/pyllmkit/pull/5) - M1 audit - merged
+- [x] [PR #6](https://github.com/tawounfouet/pyllmkit/pull/6) - G0 décisions - merged
+- [x] La CI a été exécutée sur le `main` résultant, pas uniquement sur les feature branches.
 
-- Architecture reviewer:
-- Release owner:
-- Reviewed final `main` SHA:
-- Reviewed CI URL on `main`:
-- License:
-- ADR decisions/dates:
-- M1 approver:
-- **Formal M1 decision: NO-GO**
+## Réserves NON bloquantes pour M1
 
-A green CI proves technical behavior at one SHA; it neither approves ADRs nor grants release rights.
+- Le pourcentage de couverture n'a pas fait l'objet d'un seuil de gouvernance. 89 % est une mesure observée, pas un seuil garanti.
+- Aucun provider, Deployment, Endpoint, Registry, InferenceRun, streaming ou tool execution n'est validé par M1.
+- Les garde-fous AST et pytest sont ciblés ; ils ne remplacent pas un audit de sécurité ou un sandbox OS.
+- La titularité des contributions et les obligations de distribution feront l'objet d'une vérification distincte **avant publication**.
+- Le travail sur les schémas d'illustration P0 reste un chantier documentaire distinct, sans incidence sur les invariants du code qualifié.
+
+## Suite
+
+**M1 : GO. Phase 1 : TECHNIQUEMENT TERMINÉE.**
+**Publication `v0.1.0a1` : NON AUTORISÉE PAR CETTE DÉCISION, NON EFFECTUÉE.**
+Prochaine étape projet : décider séparément de la publication alpha, puis démarrer `0.1.0a2 - Interaction Primitives` selon `ROADMAP.md`.
+
+La CI du commit documentaire archivant ce procès-verbal doit encore passer après fusion de la PR d'archive ; l'état final sera vérifié et communiqué séparément.

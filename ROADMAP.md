@@ -8,12 +8,16 @@
 |---|---|
 | Projet | PyLLMKit |
 | Document | `ROADMAP.md` |
-| Statut | **Proposition de planification**, à valider dans le dépôt |
-| Date de référence | 2026-10-27 |
+| Statut | **Roadmap active ; M1 Phase 1 = GO (2026-10-28)** |
+| Date de référence | 2026-10-28 |
 | Portée | Consolidation des spécifications, architecture, implémentation, qualification et releases |
 | Sources vérifiées | `00_PYLLMKIT_*.md` à `09_PYLLMKIT_*.md` fournis dans la conversation |
-| État du code | **Non vérifié** : aucun audit du repository, de la CI ou des tags de release effectué |
+| État du code | **Vérifié jusqu'à M1** : source intégré sur `main`, 137 tests, CI Python 3.11–3.13 verte, licence MIT ; aucune release publiée |
 | Roadmap spécialisée | `22_PYLLMKIT_IMPLEMENTATION_ROADMAP.md` (document mentionné dans les spécifications ; existence et contenu non vérifiés) |
+
+---
+
+> **Actualisation de qualification - 28/10/2026** : **M1 - Domain Foundations Qualified : GO**, sur `main` SHA `4aaf4c91e97ff7dfc3d0f2c6164c3cd88fe2923a`, [CI #40638326259](https://github.com/tawounfouet/pyllmkit/actions/runs/40638326259) ; 137 tests, 89 % de couverture combinée, 3 versions Python. Le plan initial ci-dessous conserve certaines formulations historiques *non vérifiées* datées du 27/10. Voir `docs/quality/M1_GATE_REVIEW.md` pour l'état réel. **`0.1.0a1` n'est pas publiée.**
 
 ---
 
