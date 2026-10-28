@@ -59,6 +59,7 @@ def test_exact_prefix_not_substring(tmp_path: Path) -> None:
     assert not is_forbidden("requests_like")
     assert forbidden_imports(_write_domain_module(tmp_path, "import requests_like\n")) == []
 
+
 def test_relative_guard_uses_innermost_package_when_repo_repeats_name(
     tmp_path: Path,
 ) -> None:
@@ -68,5 +69,5 @@ def test_relative_guard_uses_innermost_package_when_repo_repeats_name(
         / "pyllmkit" / "domain" / "models" / "bad.py"
     )
     path.parent.mkdir(parents=True)
-    path.write_text("from ...providers import openai\\n", encoding="utf-8")
+    path.write_text("from ...providers import openai\n", encoding="utf-8")
     assert forbidden_imports(path), "relative import must resolve against inner package"
