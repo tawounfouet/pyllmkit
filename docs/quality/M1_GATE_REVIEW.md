@@ -1,56 +1,68 @@
-# M1 - Domain Foundations Qualified - GO / NO-GO review
+# M1 - Domain Foundations Qualified - GO / NO-GO Review
 
-**Decision:** NO-GO / PENDING FORMAL REVIEW
-**Scope:** Phase 1 - L1.1 Model Domain, L1.2 Capabilities & Modalities, L1.3 Quality & Testing
-**Release candidate:** `0.1.0a1` - **NOT PUBLISHED**
-**Source:** Phase 1 implementation plan §10.
+**Review date:** 2026-10-28
+**Formal decision:** **NO-GO / ARCHITECTURE APPROVAL AND MAIN INTEGRATION PENDING**
+**Target candidate:** `0.1.0a1` - **NOT PUBLISHED**
+**Reviewed L1.3 commit:** `6eed67abc73a419ca1a45db2126e0d19513bddbd`
+**Primary evidence:** [CI run 40614646908](https://github.com/tawounfouet/pyllmkit/actions/runs/40614646908), [CI run 40614641146](https://github.com/tawounfouet/pyllmkit/actions/runs/40614641146)
+**Source:** Phase 1 plan §10.
 
-This document deliberately separates **observed CI evidence** from **governance approval**.
+## Gate evaluation
 
-## Internal gates
-
-| Gate | Required | State |
+| Gate | Evidence | State |
 |---|---|---|
-| G0 - Architecture Ready | ADR decisions adopted, boundaries approved | **OPEN:** ADR-001 to ADR-006 PROPOSED |
-| G1 - Model Domain Ready | L1.1 implementation and tests | L1.1 CI succeeded on PR #2; merger/review pending |
-| G2 - Capability/Modality Ready | L1.2 implementation and tests | L1.2 CI succeeded on PR #3; merger/review pending |
-| G3 - Quality Ready | L1.3 CI, tests, examples, offline and packaging evidence | **PENDING:** PR #4 CI not yet recorded |
-| **M1** | **G0 + G1 + G2 + G3 accepted** | **NO-GO pending decisions** |
+| G0 - Architecture Ready | Six ADRs still PROPOSED; public import contract unresolved | **OPEN / NOT APPROVED** |
+| G1 - Model Domain Ready | PR #2 green on 3 Python versions | TECHNICAL PASS; review/merge pending |
+| G2 - Capability & Modality Ready | PR #3 green on 3 Python versions | TECHNICAL PASS; review/merge pending |
+| G3 - Quality Ready | PR #4 green on 3 Python versions | TECHNICAL PASS; review/merge pending |
+| **M1** | Requires all above, final main checks and accountable decision | **NO-GO** |
 
-## Qualification record (fill with exact checked head SHA)
+## Checked evidence
 
-- Date:
-- Commit SHA:
-- CI URL:
-- Python compatibility: 3.11 / 3.12 / 3.13
-- Unit & acceptance: passed / failed (counts and log)
-- Architecture and offline fitness: pass / fail
-- Coverage branches: observed percentage, no approved threshold
-- Wheel build and clean install: pass / fail
-- Sdist build and clean install: pass / fail
-- Code review: accepted / rejected / pending
-- ADR decisions: accepted / deferred / rejected
-- License & metadata: accepted / pending
+| Check | Evidence observed |
+|---|---|
+| Python versions | 3.11 / 3.12 / 3.13 CI green |
+| Tests | 129 passed, 0 failed on reviewed L1.3 commit |
+| Lint | Ruff PASS |
+| Typing | mypy strict PASS on 17 source files |
+| Coverage | **88% combined statement/branch coverage** with `--cov-branch`; no numerical threshold approved |
+| Architecture | AST guard, negative regressions, no direct forbidden import detected |
+| Offline | Test fixture blocks socket connection/bind and masks common LLM credentials; limited fixture scope |
+| Wheel | Built and installed in isolated venv, smoke tested |
+| Sdist | Built and installed in independent isolated venv, smoke tested |
+| API examples | Three examples executed in CI |
+| Targeted AC | AC-001, AC-002, AC-004, AC-005, AC-018(P1) test evidence present |
+
+## Mandatory technical conditions
+
+- [x] Basic Model/Capability/Modality with no provider SDK in core
+- [x] Negative MODEL/CAP/MOD tests and identity semantics
+- [x] Targeted Phase 1 ACs tested
+- [x] No tests failing across supported Python versions at reviewed SHA
+- [x] Architecture guard and offline pytest fixture pass
+- [x] Wheel and sdist built and each installed in clean venv
+- [x] Documentation, examples, codecs exist and CI validates examples
+- [x] No unsupported claim that AC-003 or AC-006–017 are complete
+- [ ] Review PR's additional explicit TEST-MOD02 passes CI on its final head
+
+## Mandatory governance conditions
+
+- [ ] Approve / reconcile ADR-001 through ADR-006
+- [ ] Resolve alpha public import contract and codec compatibility policy (see decision register)
+- [ ] Review & merge stacked PR #1, #2, #3, #4 and review PR in dependency order
+- [ ] Verify final integrated `main` SHA and rerun CI
+- [ ] Select and commit public license; verify project metadata/release policy
+- [ ] Approve release notes and accountable M1 gate record
+
+## Approval record (not yet given)
+
+- Architecture reviewer:
+- Release owner:
+- Reviewed final `main` SHA:
+- Reviewed CI URL on `main`:
+- License:
+- ADR decisions/dates:
 - M1 approver:
-- Formal decision: **NO-GO pending review**
+- **Formal M1 decision: NO-GO**
 
-## Mandatory technical gates
-
-- [ ] Import and construct Model/Capability/Modality without provider SDK
-- [ ] Validate critical MODEL/CAP/MOD negative tests
-- [ ] AC-001, AC-002, AC-004, AC-005, AC-018(P1)
-- [ ] No tests failing across supported Python versions
-- [ ] Domain boundary checks and offline tests successful
-- [ ] Wheel and sdist build + installation both pass
-- [ ] Documentation, examples and versioned codec reviewed
-- [ ] No claim that other MVP criteria were implemented
-
-## Mandatory governance gates
-
-- [ ] Review and approve applicable ADR-001 to ADR-006 or record changes with requalification
-- [ ] Review and merge PR #1, #2, #3, #4 in correct dependency order
-- [ ] Verify final `main` SHA and rerun CI on integrated code
-- [ ] Validate license and release policy before external distribution
-- [ ] Approve release notes and M1 record
-
-**A green CI only provides technical evidence. It does not itself grant the M1 GO decision or publish an alpha release.**
+A green CI proves technical behavior at one SHA; it neither approves ADRs nor grants release rights.
