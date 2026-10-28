@@ -1,12 +1,14 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyllmkit"
 version = "0.1.0a1"
-description = "Provider-agnostic domain primitives for language models (pre-release candidate)"
+description = "Provider-agnostic Python domain primitives for language models"
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.11"
 authors = []
 keywords = ["llm", "domain-driven-design", "provider-agnostic", "python"]
@@ -19,6 +21,10 @@ classifiers = [
   "Typing :: Typed",
 ]
 dependencies = []
+
+[project.urls]
+Repository = "https://github.com/tawounfouet/pyllmkit"
+Issues = "https://github.com/tawounfouet/pyllmkit/issues"
 
 [project.optional-dependencies]
 dev = [
