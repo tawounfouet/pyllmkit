@@ -21,6 +21,12 @@ from .descriptors import (
 from .identifiers import ModelArtifactId, ModelId
 from .identity import ModelIdentity
 from .model import Model, ProviderModelRef
+from .schema_l12 import (
+    capabilities_from_object,
+    capabilities_to_object,
+    modalities_from_object,
+    modalities_to_object,
+)
 
 SCHEMA_VERSION = 1
 
@@ -124,6 +130,8 @@ def model_to_dict(model: Model) -> dict[str, object]:
         "architecture": architecture,
         "limits": limits,
         "provider_refs": provider_refs,
+        "capabilities": capabilities_to_object(model.capabilities),
+        "modalities": modalities_to_object(model.modalities),
     }
 
 
@@ -131,7 +139,8 @@ def model_from_dict(payload: Mapping[str, object]) -> Model:
     """Decode a Model; reject schema changes rather than losing unknown data."""
     _allowed(
         payload,
-        {"schema_version", "id", "identity", "architecture", "limits", "provider_refs"},
+        {"schema_version", "id", "identity", "architecture", "limits", "provider_refs",
+         "capabilities", "modalities"},
         "model",
     )
     _check_schema(payload)
@@ -214,6 +223,8 @@ def model_from_dict(payload: Mapping[str, object]) -> Model:
         architecture=architecture,
         limits=limits,
         provider_refs=tuple(refs),
+        capabilities=capabilities_from_object(payload.get("capabilities", [])),
+        modalities=modalities_from_object(payload.get("modalities", None)),
     )
 
 
