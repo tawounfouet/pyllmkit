@@ -53,6 +53,13 @@ Documentation Phase 4 : [Architecture](docs/architecture/PHASE_4_TOOLING_AND_STR
 | P3-G4 - Inference JSON v1 | GO technique avec réserves | [PV G4](docs/quality/P3_G4_GATE_REVIEW.md), [CI main #42053906726](https://github.com/tawounfouet/pyllmkit/actions/runs/42053906726) |
 | **P3-G5 - Integration & Packaging** | **GO technique avec réserves** | [PV G5](docs/quality/P3_G5_GATE_REVIEW.md), [CI #42059417894](https://github.com/tawounfouet/pyllmkit/actions/runs/42059417894) |
 | **M3 - Inference Foundations (domaine hors ligne)** | **GO technique avec réserves** | [PV M3](docs/quality/M3_GATE_REVIEW.md), [CI #42069101048](https://github.com/tawounfouet/pyllmkit/actions/runs/42069101048) |
+| **P4-G0 - Architecture** | GO technique avec réserves | [PV P4-G0](docs/quality/P4_G0_GATE_REVIEW.md) |
+| **P4-G1 - Tool Declaration** | GO technique avec réserves | [PV P4-G1](docs/quality/P4_G1_GATE_REVIEW.md) |
+| **P4-G2 - Tool Call** | GO technique avec réserves | [PV P4-G2](docs/quality/P4_G2_GATE_REVIEW.md) |
+| **P4-G3 - Structured Output** | GO technique avec réserves | [PV P4-G3](docs/quality/P4_G3_GATE_REVIEW.md) |
+| **P4-G4 - Composition & Serialization** | GO technique avec réserves | [PV P4-G4](docs/quality/P4_G4_GATE_REVIEW.md), [CI #42089506022](https://github.com/tawounfouet/pyllmkit/actions/runs/42089506022) |
+| **P4-G5 - Integration & Quality** | **Non qualifié - L4.5 en développement** | [Dossier préliminaire](docs/quality/P4_G5_GATE_REVIEW.md) |
+| **M4 - Tooling & Structured Output** | **Non qualifié** | [M4 Readiness Precheck](docs/quality/M4_READINESS_PRECHECK.md) |
 
 Les preuves historiques ont été conservées dans les procès-verbaux, sans présenter les anciens statuts comme actuels. La dette M2 [#20](https://github.com/tawounfouet/pyllmkit/issues/20) est **résolue** par [PR #31](https://github.com/tawounfouet/pyllmkit/pull/31) ([CI main #42057132634](https://github.com/tawounfouet/pyllmkit/actions/runs/42057132634)). Les protections de `main` [#22](https://github.com/tawounfouet/pyllmkit/issues/22) restent **ouvertes**.
 
