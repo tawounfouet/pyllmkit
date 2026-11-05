@@ -42,7 +42,6 @@ from .reconstruction import (
     reduce_event,
     reduce_stream,
 )
-
 from .serialization import (
     STREAMING_SCHEMA_VERSION,
     event_from_dict,
