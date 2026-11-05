@@ -241,7 +241,9 @@ def structured_output_to_dict(output: StructuredOutput) -> dict[str, object]:
 def structured_output_from_dict(payload: Mapping[str, object]) -> StructuredOutput:
     data = _envelope(payload, _STRUCTURED_FIELDS, "structured_output")
     fmt = response_format_from_dict(_object(data["response_format"], "response_format"))
-    raw, present, parsed = _raw_parsed_from_dict(data)
+    raw, present, parsed = _raw_parsed_from_dict(
+        {key: data[key] for key in _ARGUMENT_FIELDS}
+    )
     output = StructuredOutput(fmt, raw=raw, parsed=parsed) if present else StructuredOutput(
         fmt, raw=raw
     )
