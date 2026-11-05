@@ -3,14 +3,28 @@
 import json
 
 from pyllmkit.domain import (
-    Content, InferenceRequest, Message, ModelId, ModelTarget, Role, TextContent,
+    Content,
+    InferenceRequest,
+    Message,
+    ModelId,
+    ModelTarget,
+    Role,
+    TextContent,
     request_to_dict,
 )
 from pyllmkit.domain.structured_output import (
-    SchemaResponseFormat, StructuredOutput, validate_structured_output,
+    SchemaResponseFormat,
+    StructuredOutput,
+    validate_structured_output,
 )
 from pyllmkit.domain.tooling import (
-    Tool, ToolArguments, ToolCall, ToolCallId, ToolChoice, ToolResult, ToolSchema,
+    Tool,
+    ToolArguments,
+    ToolCall,
+    ToolCallId,
+    ToolChoice,
+    ToolResult,
+    ToolSchema,
 )
 from pyllmkit.domain.tooling_inference import (
     ToolCallOutput,
