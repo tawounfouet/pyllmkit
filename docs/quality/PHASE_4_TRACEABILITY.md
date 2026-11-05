@@ -1,7 +1,7 @@
 # PyLLMKit - Phase 4 : traçabilité des 40 cas d'acceptation
 
 > Date : 2026-11-05.
-> **Statut : P4-G0..G4 GO techniques avec réserves, L4.5 et P4-G5 NON QUALIFIÉS.**
+> **Statut : P4-G0..G5 GO techniques avec réserves, sur SHAs main qualifiés. M4 en revue séparée.**
 > Les P4-AC-001..040 sont les cas du plan `docs/04_PYLLMKIT_PHASE_4_IMPLEMENTATION_PLAN.md`. Les ADR-022..029 sont ACCEPTED.
 > Ce registre est une traçabilité, pas une revendication de passage anticipé du gate G5.
 
@@ -41,14 +41,14 @@
 | 030 | Round-trip Tooling JSON v1 | NFR-008 | 029 | `tests/acceptance/test_p4_l44_contracts_and_codecs.py` | G4 / #46 | PASS G4 |
 | 031 | Version et kind inconnus rejetes | NFR-010 | 029 | `tests/acceptance/test_p4_l44_contracts_and_codecs.py` | G4 / #46 | PASS G4 |
 | 032 | Regressions Model/Interaction/Inference v1 | M1/M2/M3 | 028/029 | `tests/acceptance/test_p4_l44_contracts_and_codecs.py` | G4 / #46 | PASS G4 |
-| 033 | Aucun SDK/provider/executor en domaine | TOOL-003 | 022/028 | `tests/acceptance/test_p4_l45_integration.py` | G5 / #48 | PENDING G5 |
-| 034 | Domain offline sans credentials | NFR-003/005 | 022 | `tests/acceptance/test_p4_l45_integration.py` | G5 / #48 | PENDING G5 |
-| 035 | Walkthrough tool->call->result offline | UC-011/012 | 023/028 | `tests/acceptance/test_p4_l45_integration.py` | G5 / #48 | PENDING G5 |
-| 036 | Snippet README copiable | NFR-docs | 027/028 | `tests/acceptance/test_p4_l45_integration.py` | G5 / #48 | PENDING G5 |
-| 037 | Wheel/sdist et py.typed | NFR-001/004 | 029 | `tests/acceptance/test_p4_l45_integration.py + CI` | G5 / #48 | PENDING G5 |
-| 038 | Schema hostile/ref distante rejete | ADR-024 | 024/029 | `tests/acceptance/test_p4_l44_contracts_and_codecs.py + tests/acceptance/test_p4_l45_integration.py` | G4/G5 / #46/#48 | PASS G4; extension G5 PENDING |
-| 039 | Aucun secret dans erreur/repr | NFR-security | 025/029 | `tests/acceptance/test_p4_l44_contracts_and_codecs.py + tests/acceptance/test_p4_l45_integration.py` | G4/G5 / #46/#48 | PASS G4; extension G5 PENDING |
-| 040 | Revue quarante AC/gates | Convention PyKit | 022-029 | `tests/acceptance/test_p4_l45_integration.py` | G5 / #48 | PENDING G5 |
+| 033 | Aucun SDK/provider/executor en domaine | TOOL-003 | 022/028 | `tests/acceptance/test_p4_l45_integration.py` | G5 / #48 | PASS G5 |
+| 034 | Domain offline sans credentials | NFR-003/005 | 022 | `tests/acceptance/test_p4_l45_integration.py` | G5 / #48 | PASS G5 |
+| 035 | Walkthrough tool->call->result offline | UC-011/012 | 023/028 | `tests/acceptance/test_p4_l45_integration.py` | G5 / #48 | PASS G5 |
+| 036 | Snippet README copiable | NFR-docs | 027/028 | `tests/acceptance/test_p4_l45_integration.py` | G5 / #48 | PASS G5 |
+| 037 | Wheel/sdist et py.typed | NFR-001/004 | 029 | `tests/acceptance/test_p4_l45_integration.py + CI` | G5 / #48 | PASS G5 |
+| 038 | Schema hostile/ref distante rejete | ADR-024 | 024/029 | `tests/acceptance/test_p4_l44_contracts_and_codecs.py + tests/acceptance/test_p4_l45_integration.py` | G4/G5 / #46/#48 | PASS G4 + G5 |
+| 039 | Aucun secret dans erreur/repr | NFR-security | 025/029 | `tests/acceptance/test_p4_l44_contracts_and_codecs.py + tests/acceptance/test_p4_l45_integration.py` | G4/G5 / #46/#48 | PASS G4 + G5 |
+| 040 | Revue quarante AC/gates | Convention PyKit | 022-029 | `tests/acceptance/test_p4_l45_integration.py` | G5 / #48 | PASS G5 |
 
 ## Chaîne des gates sur les SHAs réellement intégrés dans main
 
@@ -59,10 +59,10 @@
 | P4-G2 | #42, #43 | `a7991d9fc6648b280744e7ca461d79c7c2544b60` | [#42084636736](https://github.com/tawounfouet/pyllmkit/actions/runs/42084636736) | GO avec réserves |
 | P4-G3 | #44, #45 | `f187fe5278980a84e578a1a3d65ed21d2a117e78` | [#42087094649](https://github.com/tawounfouet/pyllmkit/actions/runs/42087094649) | GO avec réserves |
 | P4-G4 | #46, #47 | `ab0257a0a9a08f2320b580340ba84c92609bbfc0` | [#42089506022](https://github.com/tawounfouet/pyllmkit/actions/runs/42089506022) | GO avec réserves |
-| **P4-G5** | **L4.5 PR à qualifier** | **PENDING SHA** | **PENDING CI** | **PENDING** |
+| **P4-G5** | **#48 (code), #49 (PV et seuil couverture)** | **`aad2656cbe1753dac709bb28b228ba22ecca44a2`** | **[#42092202193](https://github.com/tawounfouet/pyllmkit/actions/runs/42092202193)** | **GO avec réserves** |
 | **M4** | **Revue finale distincte** | **PENDING** | **PENDING** | **NO-GO d'attestation** |
 
-Un test de PR L4.5 ne compte pas comme PASS G5 tant qu'une CI de push sur le commit exact intégré à `main` n'a pas réussi. Les tests antérieurs AC-001..032 sont qualifiés par leurs gates respectifs; tous sont en outre repris dans les suites de régression suivantes.
+La CI de push sur le commit intégré de L4.5 est désormais SUCCESS ; ses preuves sont dans [P4_G5_GATE_REVIEW.md](P4_G5_GATE_REVIEW.md). La revue M4 reste une décision distincte. Les tests antérieurs AC-001..032 sont qualifiés par leurs gates respectifs; tous sont en outre repris dans les suites de régression suivantes.
 
 ## Préoccupations transversales
 
@@ -73,7 +73,7 @@ Un test de PR L4.5 ne compte pas comme PASS G5 tant qu'une CI de push sur le com
 - AC-037 : `pyproject.toml`, `LICENSE`, `py.typed`, imports canoniques, wheel/sdist isolés en CI.
 - AC-038 : scénarios hostiles (`$ref`, profondeur, valeurs non finies), déjà observés sur G1/G4, intégrés à G5.
 - AC-039 : protections de `repr` et DomainValidationError, charges brutes non recopiées.
-- AC-040 : matrice 001..040 et PV G0..G5 sur SHA réel; **la preuve de G5 est à compléter après merge**.
+- AC-040 : matrice 001..040 et PV G0..G5 avec SHA et CI exacts; **preuve G5 acquise** sur main@aad2656c.
 
 ## Dette et limites
 
