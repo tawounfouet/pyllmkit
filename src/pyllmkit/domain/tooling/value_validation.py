@@ -91,7 +91,7 @@ def _check(value: object, schema: dict[str, object]) -> str | None:
                 if error is not None:
                     return error
     elif type(value) is str:
-        string = cast(str, value)
+        string = value
         if "minLength" in schema and len(string) < cast(int, schema["minLength"]):
             return "min_length"
         if "maxLength" in schema and len(string) > cast(int, schema["maxLength"]):
