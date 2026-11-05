@@ -1,5 +1,8 @@
 # PyLLMKit - P3-G0 Architecture Review
 
+> **Addendum apres revue (2026-11-05) :** Le proprietaire a ensuite autorise explicitement l'**adoption ADR-014..021** et choisi les **float stricts** ainsi que **l'option A ADR-021**. Voir [P3_G0_OWNER_ARCHITECTURE_APPROVAL.md](P3_G0_OWNER_ARCHITECTURE_APPROVAL.md). Les constats et le verdict ci-dessous sont l'etat de la **revue contradictoire pre-approbation**, conserves historiquement. Le GO formel reste conditionne a l'integration et la CI exacte sur main.
+
+
 > **Date :** 2026-11-05
 > **Phase / version candidate :** P3-BOOT / 0.1.0a3 - Inference Primitives
 > **Revue :** contradictoire, technique, documentaire et pedagogique
