@@ -1,5 +1,15 @@
-"""Provider-agnostic stream event domain (P5 L5.1, ADR-030..038)."""
+"""Provider-agnostic streaming core: events, ordering and pure reduction."""
 
+from .errors import (
+    StreamDuplicateSequence,
+    StreamLifecycleError,
+    StreamLimitError,
+    StreamOutOfOrder,
+    StreamRunMismatch,
+    StreamSequenceGap,
+    StreamToolCallError,
+    StreamValidationError,
+)
 from .events import (
     ResponseCancelled,
     ResponseCompleted,
@@ -13,6 +23,7 @@ from .events import (
     UsageUpdated,
 )
 from .protocols import InferenceStream
+from .reconstruction import StreamState, StreamStatus, observe_eof, reduce_event, reduce_stream
 
 __all__ = [
     "InferenceStream",
@@ -20,10 +31,23 @@ __all__ = [
     "ResponseCompleted",
     "ResponseFailed",
     "ResponseStarted",
+    "StreamDuplicateSequence",
     "StreamEvent",
+    "StreamLifecycleError",
+    "StreamLimitError",
+    "StreamOutOfOrder",
+    "StreamRunMismatch",
+    "StreamSequenceGap",
+    "StreamState",
+    "StreamStatus",
+    "StreamToolCallError",
+    "StreamValidationError",
     "TextDelta",
     "ToolCallCompleted",
     "ToolCallDelta",
     "ToolCallStarted",
     "UsageUpdated",
+    "observe_eof",
+    "reduce_event",
+    "reduce_stream",
 ]
