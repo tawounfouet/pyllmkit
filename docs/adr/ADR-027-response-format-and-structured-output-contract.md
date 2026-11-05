@@ -1,7 +1,7 @@
 # ADR-027 - ResponseFormat and StructuredOutput contract
 
 - Date : 2026-11-05
-- Statut : ACCEPTED (owner, 2026-11-05; P4-G0 CI main a verifier)
+- Statut : ACCEPTED (owner, 2026-11-05; P4-G0 qualifié main@b66e94e3, CI #42079191595 SUCCESS)
 - Phase : L4.3
 - Sources : ADR-024/025/026, TOOL-011 a TOOL-021, P4-AC-017 a 024.
 
