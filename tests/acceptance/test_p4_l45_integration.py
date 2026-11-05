@@ -109,7 +109,7 @@ def test_p4_ac037_packaging_public_api_and_metadata() -> None:
     ):
         assert importlib.import_module(module)
     package = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]
-    assert package["version"] == __version__ == "0.1.0a2"
+    assert package["version"] == __version__
     assert importlib.metadata.version("pyllmkit") == package["version"]
     assert package["dependencies"] == []
     assert package["license"] == "MIT"
@@ -155,7 +155,7 @@ def test_p4_ac040_traceability_has_forty_cases_and_gates() -> None:
         assert f"| {number:03d} |" in trace
     for gate in range(6):
         assert (ROOT / "docs" / "quality" / f"P4_G{gate}_GATE_REVIEW.md").is_file()
-    assert "PENDING G5" in trace and "PENDING SHA" in trace
+    assert "| **P4-G5** |" in trace and "| **M4** |" in trace
     assert (ROOT / "docs" / "quality" / "M4_READINESS_PRECHECK.md").is_file()
 
 
