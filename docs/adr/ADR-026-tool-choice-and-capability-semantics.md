@@ -1,7 +1,7 @@
 # ADR-026 - Tool choice and capability semantics
 
 - Date : 2026-11-05
-- Statut : ACCEPTED (owner, 2026-11-05; P4-G0 CI main a verifier)
+- Statut : ACCEPTED (owner, 2026-11-05; P4-G0 qualifié main@b66e94e3, CI #42079191595 SUCCESS)
 - Phase : L4.1 et L4.4
 - Sources : capability model M1, ADR-021, TOOL-005/010/013, INF-009/010.
 

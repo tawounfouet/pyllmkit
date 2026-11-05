@@ -1,12 +1,19 @@
 # Changelog
 
+## [Unreleased] - M4 Tooling & Structured Output technically qualified
 
-## [Unreleased] - Phase 4 Tooling & Structured Output (G5 qualified, M4 review pending)
+- **GO technique avec réserves** pour le domaine hors ligne sur [main@92874b2e](https://github.com/tawounfouet/pyllmkit/commit/92874b2e97bcc130279e244bf1000c65a939d7e5), [CI #42093041970](https://github.com/tawounfouet/pyllmkit/actions/runs/42093041970) SUCCESS : 967 tests cumulatifs, 95,80 % global branch coverage, Python 3.11..3.13, Ruff et mypy strict.
+- [M4_GATE_REVIEW.md](docs/quality/M4_GATE_REVIEW.md) : audit final indépendant des 14 causes obligatoires de NO-GO ; [P4_POST_IMPLEMENTATION_REVIEW.md](docs/quality/P4_POST_IMPLEMENTATION_REVIEW.md) : bilan de Phase 4.
+- P4-G0..G5 GO techniques avec réserves, 40 recettes P4 tracées. L4.5 et seuil de couverture 95 % intégré via PRs #48 et #49.
+- **Release NO-GO** : version source inchangée 0.1.0a2, issues #22/#35/#36 ouvertes, aucune publication/tag autorisée.
+
+
+## [Unreleased] - Phase 4 Tooling & Structured Output (G5 qualified, M4 independently reviewed)
 
 ### Integrated on main (source only)
 - P4-G0..G4 : ADR-022..029 acceptées, outils descriptifs non exécutables, ToolCall identity/results, validation de sorties structurées, composition séparée M3/P4 et codec Tooling JSON v1 strict.
 - P4-G4 qualifié sur [main ab0257a0](https://github.com/tawounfouet/pyllmkit/commit/ab0257a0a9a08f2320b580340ba84c92609bbfc0), [CI #42089506022 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42089506022), 954 tests cumulatifs et 96 % de couverture branches sur Python 3.11.
-- Préparation L4.5 : documents d'architecture, traçabilité P4-AC-001..040, README, exemple 17, tests d'intégration et de packaging, precheck M4. **P4-G5 qualifié** après fusion [PR #48](https://github.com/tawounfouet/pyllmkit/pull/48) et [CI push/main #42092202193](https://github.com/tawounfouet/pyllmkit/actions/runs/42092202193) SUCCESS sur main@aad2656c (967 tests, 96 %, Python 3.11-3.13). **M4 reste à qualifier par revue finale séparée.**
+- Préparation L4.5 : documents d'architecture, traçabilité P4-AC-001..040, README, exemple 17, tests d'intégration et de packaging, precheck M4. **P4-G5 qualifié** après fusion [PR #48](https://github.com/tawounfouet/pyllmkit/pull/48) et [CI push/main #42092202193](https://github.com/tawounfouet/pyllmkit/actions/runs/42092202193) SUCCESS sur main@aad2656c (967 tests, 96 %, Python 3.11-3.13). **M4 est qualifié par la revue finale distincte, sans autorisation de diffusion.**
 - Aucun SDK provider, exécuteur, Inference JSON v2, changement de version, tag, GitHub Release ou publication PyPI. Issues #22/#35/#36 ouvertes.
 
 

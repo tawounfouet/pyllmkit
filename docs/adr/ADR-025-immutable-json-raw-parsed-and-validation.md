@@ -1,7 +1,7 @@
 # ADR-025 - Immutable JSON, raw/parsed and validation evidence
 
 - Date : 2026-11-05
-- Statut : ACCEPTED (owner, 2026-11-05; P4-G0 CI main a verifier)
+- Statut : ACCEPTED (owner, 2026-11-05; P4-G0 qualifié main@b66e94e3, CI #42079191595 SUCCESS)
 - Phase : L4.1 a L4.4
 - Sources : ADR-024, TOOL-008, TOOL-014, P4-AC-012/013/020/024/030/039.
 
@@ -9,7 +9,7 @@
 
 Une dataclass frozen contenant un dict mutable ne constitue pas un Value Object immuable. En outre, des arguments ou sorties parsables ne sont pas necessairement conformes au schema. Le raw peut contenir des secrets.
 
-## Decision recommandee
+## Decision adoptee
 
 1. Utiliser une representation JSON immutable recursive, avec tags explicites pour object et array et stockage defensif des valeurs scalaires. L'ordre des tableaux est preserve. Les cles d'objet sont normalisees en ordre lexicographique pour produire un mapping stable, sans pretendre que l'ordre source porte une semantique JSON.
 2. Le JSON est exactement null, bool, int, float fini, str, array ou object a cles string. bool n'est pas converti en int; NaN, Infinity, types arbitraires, dates, bytes et cycles Python sont refuses. La profondeur et la taille suivent les limites approuvees en ADR-024.

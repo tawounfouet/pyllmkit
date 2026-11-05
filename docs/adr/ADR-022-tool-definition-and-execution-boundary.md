@@ -1,7 +1,7 @@
 # ADR-022 - Tool definition and execution boundary
 
 - Date : 2026-11-05
-- Statut : ACCEPTED (owner, 2026-11-05; P4-G0 CI main a verifier)
+- Statut : ACCEPTED (owner, 2026-11-05; P4-G0 qualifié main@b66e94e3, CI #42079191595 SUCCESS)
 - Phase : P4-BOOT, L4.1 et L4.2
 - Sources : docs/04_PYLLMKIT_PHASE_4_IMPLEMENTATION_PLAN.md, domaine 00-09, principe TOOL-003.
 
@@ -11,7 +11,7 @@
 
 PyLLMKit represente des outils proposes a un LLM. Le fait qu'un modele demande l'utilisation d'un outil ne constitue ni un droit d'execution ni une instruction que le noyau doit executer. Le framework doit rester domain-first et independant de tout provider.
 
-## Decision recommandee
+## Decision adoptee
 
 1. Tool et ToolSchema sont des Value Objects descriptifs, immuables en profondeur. Tool contient un nom, une description optionnelle et un schema d'arguments. Aucun callback, fonction Python, callable, commande, endpoint, credential ni objet executable n'est admis dans ces objets.
 2. ToolCall represente une demande d'appel observee ou construite, jamais une invocation effective. ToolResult represente uniquement une observation fournie explicitement par le consommateur.

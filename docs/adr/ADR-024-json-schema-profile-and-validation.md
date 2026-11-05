@@ -1,7 +1,7 @@
 # ADR-024 - JSON Schema profile and validation limits
 
 - Date : 2026-11-05
-- Statut : ACCEPTED (owner, 2026-11-05; P4-G0 CI main a verifier)
+- Statut : ACCEPTED (owner, 2026-11-05; P4-G0 qualifié main@b66e94e3, CI #42079191595 SUCCESS)
 - Phase : L4.1, L4.3 et L4.4
 - Sources : TOOL-002/012/014, ADR-022, P4-AC-002/019/021/022/038.
 
@@ -9,7 +9,7 @@
 
 Le corpus exige des schemas valides mais ne choisit ni dialecte ni moteur de validation. Il est incorrect de revendiquer la conformite complete a JSON Schema Draft 2020-12 sans implementation et tests correspondants.
 
-## Decision recommandee : profil P4-JSON-1
+## Decision adoptee : profil P4-JSON-1
 
 1. Adopter un **sous-ensemble explicite et ferme** de JSON Schema, base sur la semantique des mots-cles standard, nomme P4-JSON-1. Ne jamais annoncer la prise en charge integrale de Draft 2020-12.
 2. Le profil accepte les types JSON object, array, string, integer, number, boolean, null; type peut etre un nom ou une liste non vide de noms uniques. Les bool ne sont pas des integer/number. L'absence de type ne garantit pas d'autres assertions que celles presentes.
