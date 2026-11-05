@@ -1,7 +1,7 @@
 # ADR-028 - Composition of P4 with qualified M3 contracts
 
 - Date : 2026-11-05
-- Statut : ACCEPTED (owner, 2026-11-05; P4-G0 CI main a verifier)
+- Statut : ACCEPTED (owner, 2026-11-05; P4-G0 qualifié main@b66e94e3, CI #42079191595 SUCCESS)
 - Phase : L4.4
 - Sources : ADR-014/017/020/021, Inference M3 qualifiee, plan P4 section 4.1.
 
