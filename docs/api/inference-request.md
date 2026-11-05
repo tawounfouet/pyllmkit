@@ -49,7 +49,7 @@ report = validate_request_support(request, snapshot)
 assert report.is_confirmed_native
 ```
 
-An explicit `SupportLevel.UNSUPPORTED` declaration triggers `DomainValidationError` naming the rejected **allowlisted parameter only**. A report containing unknown or partial support has `is_compatible is None`, not True. `is_compatible` is **parameter compatibility** only, never endpoint availability or safe execution.
+An explicit `SupportLevel.UNSUPPORTED` declaration triggers `DomainValidationError` naming the rejected **allowlisted parameter only**. A report containing unknown, partial, emulated or **no assessed parameters** has `is_compatible is None`, not True. `is_compatible` is **parameter compatibility** only, never endpoint availability or safe execution.
 
 ## Design evidence
 
