@@ -4,12 +4,12 @@ All decisions are calculated from a versioned catalog snapshot. No change is
 applied before the entire batch passes conflict and referential validation.
 """
 
+import json
 from dataclasses import fields as dataclass_fields
 from dataclasses import is_dataclass
 from datetime import datetime, timedelta
 from enum import Enum
 from hashlib import sha256
-import json
 from typing import TypeVar
 
 from pyllmkit.domain.deployments import Deployment
