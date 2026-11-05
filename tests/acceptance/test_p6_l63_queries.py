@@ -30,7 +30,6 @@ from pyllmkit.domain.models import (
 from pyllmkit.domain.providers import InferenceProvider, ProviderId
 from pyllmkit.domain.registry import CapabilityMatchMode, DeploymentQuery, ModelQuery
 
-
 TEXT = Modality("text")
 IMAGE = Modality("image")
 CHAT = CapabilityId("chat")
