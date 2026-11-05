@@ -14,12 +14,12 @@ from .capabilities import (
 )
 from .errors import DomainValidationError, PyLLMKitError
 from .inference import (
+    GENERATION_PARAMETER_NAMES,
     CompatibilityReport,
     DeploymentId,
     DeploymentTarget,
     EndpointId,
     EndpointTarget,
-    GENERATION_PARAMETER_NAMES,
     GenerationConfig,
     GenerationSupportSnapshot,
     InferenceRequest,
