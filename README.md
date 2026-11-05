@@ -2,7 +2,7 @@
 
 PyLLMKit est un framework Python de **primitives de domaine LLM agnostiques des fournisseurs**. Les modèles, capacités, contenus, demandes d'inférence, réponses et états d'exécution sont représentés par des objets Python validés, indépendamment de tout SDK ou service distant.
 
-**État du dépôt (5 novembre 2026) :** les gates techniques P3-G0 à P3-G4 sont qualifiés avec réserves. **L3.5 - Integration & Packaging est en cours et P3-G5/M3 ne sont pas encore qualifiés.** La version déclarée du package demeure `0.1.0a2`, candidat source non publié. Ni tag `0.1.0a3`, ni GitHub Release, ni PyPI.
+**État du dépôt (5 novembre 2026) :** les gates techniques **P3-G0 à P3-G5 sont qualifiés avec réserves**. Le lot L3.5 - Integration & Packaging est intégré, [PV G5](docs/quality/P3_G5_GATE_REVIEW.md), [CI main #42059417894](https://github.com/tawounfouet/pyllmkit/actions/runs/42059417894) (798 tests / 95 %, 3 versions Python). **M3 n'a pas encore reçu sa décision finale GO/NO-GO.** La version déclarée du package demeure `0.1.0a2`, candidat source non publié. Ni tag `0.1.0a3`, ni GitHub Release, ni PyPI.
 
 ## État de qualification
 
@@ -15,7 +15,7 @@ PyLLMKit est un framework Python de **primitives de domaine LLM agnostiques des 
 | P3-G2 - Response | GO technique avec réserves | [PV G2](docs/quality/P3_G2_GATE_REVIEW.md) |
 | P3-G3 - Run | GO technique avec réserves | [PV G3](docs/quality/P3_G3_GATE_REVIEW.md) |
 | P3-G4 - Inference JSON v1 | GO technique avec réserves | [PV G4](docs/quality/P3_G4_GATE_REVIEW.md), [CI main #42053906726](https://github.com/tawounfouet/pyllmkit/actions/runs/42053906726) |
-| **P3-G5 - Integration & Packaging** | **EN COURS** | [Plan Phase 3](docs/03_PYLLMKIT_PHASE_3_IMPLEMENTATION_PLAN.md) |
+| **P3-G5 - Integration & Packaging** | **GO technique avec réserves** | [PV G5](docs/quality/P3_G5_GATE_REVIEW.md), [CI #42059417894](https://github.com/tawounfouet/pyllmkit/actions/runs/42059417894) |
 | M3 - Inference Foundations | NON QUALIFIÉ | Décision indépendante à produire |
 
 Les preuves historiques ont été conservées dans les procès-verbaux, sans présenter les anciens statuts comme actuels. La dette M2 [#20](https://github.com/tawounfouet/pyllmkit/issues/20) est **résolue** par [PR #31](https://github.com/tawounfouet/pyllmkit/pull/31) ([CI main #42057132634](https://github.com/tawounfouet/pyllmkit/actions/runs/42057132634)). Les protections de `main` [#22](https://github.com/tawounfouet/pyllmkit/issues/22) restent **ouvertes**.
