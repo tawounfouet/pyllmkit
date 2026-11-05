@@ -33,8 +33,32 @@ def test_p2_boot_decision_records_exist_and_are_reviewable() -> None:
 
 def test_interaction_domain_future_imports_remain_provider_free() -> None:
     # The package is intentionally absent at BOOT; once added, this check activates.
+    excluded = (
+        "pyllmkit.domain.models",
+        "pyllmkit.domain.capabilities",
+        "pyllmkit.domain.tools",
+        "pyllmkit.domain.inference",
+    )
     for source in INTERACTIONS.rglob("*.py"):
         assert not forbidden_imports(source), source
+        tree = ast.parse(source.read_text(encoding="utf-8"), filename=str(source))
+        package = source.parent.relative_to(ROOT / "src").parts
+        for node in ast.walk(tree):
+            targets: list[str] = []
+            if isinstance(node, ast.Import):
+                targets = [alias.name for alias in node.names]
+            elif isinstance(node, ast.ImportFrom):
+                if node.level:
+                    parent = package[: len(package) - node.level + 1]
+                    base = ".".join((*parent, node.module or ""))
+                else:
+                    base = node.module or ""
+                targets = [base, *(f"{base}.{alias.name}" for alias in node.names)]
+            for target in targets:
+                assert not any(
+                    target == blocked or target.startswith(blocked + ".")
+                    for blocked in excluded
+                ), (source, target)
 
 
 def test_p2_contract_and_traceability_are_available() -> None:
