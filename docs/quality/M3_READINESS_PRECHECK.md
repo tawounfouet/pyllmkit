@@ -16,6 +16,12 @@
 | **P3-G5 Integration** | **GO technique avec reserves** | [PV G5](P3_G5_GATE_REVIEW.md), [main 49cf26e](https://github.com/tawounfouet/pyllmkit/commit/49cf26e830819675a1c4cad9dfd2860fc977f0b6), [CI #42059417894](https://github.com/tawounfouet/pyllmkit/actions/runs/42059417894) SUCCESS |
 | **M3** | **NOT QUALIFIED** | Revue independente non commencee |
 
+## Politique de revue finale
+
+Le gate M3 doit comparer explicitement le depot au [plan de Phase 3](../03_PYLLMKIT_PHASE_3_IMPLEMENTATION_PLAN.md), section 14.1 (onze cas de NO-GO obligatoires), plutot que dupliquer le PV G5.
+
+Le verdict technique (GO/NO-GO) et le verdict de publication (AUTORISE / NON AUTORISE) sont **deux decisions independantes**. Les risques de gouvernance sont documentes dans [MAIN_BRANCH_PROTECTION_RUNBOOK.md](../governance/MAIN_BRANCH_PROTECTION_RUNBOOK.md); la [procedure release](../governance/RELEASE_0_1_0a3_POLICY_AND_RUNBOOK.md) demeure non executee. Le [contrat provider](../architecture/FUTURE_PROVIDER_BOUNDARY_CONTRACT.md) est une specification future. Le [bilan P3](P3_POST_IMPLEMENTATION_REVIEW.md) ne remplace pas le PV M3.
+
 ## Prerequis pour toute decision M3
 
 - Tous les gates P3-G0 a P3-G5 justifies par des liens vers **leur propre CI de SHA main**, et non une simple PR verte.
