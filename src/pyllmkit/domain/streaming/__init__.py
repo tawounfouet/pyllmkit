@@ -43,6 +43,14 @@ from .reconstruction import (
     reduce_stream,
 )
 
+from .serialization import (
+    STREAMING_SCHEMA_VERSION,
+    event_from_dict,
+    event_to_dict,
+    stream_from_dict,
+    stream_to_dict,
+)
+
 __all__ = [
     "InferenceStream",
     "AsyncInferenceStream",
@@ -67,6 +75,11 @@ __all__ = [
     "StreamStatus",
     "StreamToolCallError",
     "StreamValidationError",
+    "STREAMING_SCHEMA_VERSION",
+    "event_from_dict",
+    "event_to_dict",
+    "stream_from_dict",
+    "stream_to_dict",
     "TextDelta",
     "ToolCallCompleted",
     "ToolCallDelta",
