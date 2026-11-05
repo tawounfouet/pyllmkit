@@ -1,5 +1,11 @@
 """Provider-agnostic streaming core: events, ordering and pure reduction."""
 
+from .consumption import (
+    MemoryAsyncInferenceStream,
+    MemoryInferenceStream,
+    consume_async_stream,
+    consume_stream,
+)
 from .errors import (
     StreamDuplicateSequence,
     StreamLifecycleError,
@@ -21,12 +27,6 @@ from .events import (
     ToolCallDelta,
     ToolCallStarted,
     UsageUpdated,
-)
-from .consumption import (
-    MemoryAsyncInferenceStream,
-    MemoryInferenceStream,
-    consume_async_stream,
-    consume_stream,
 )
 from .protocols import (
     AsyncInferenceStream,
