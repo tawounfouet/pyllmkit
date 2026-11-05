@@ -25,6 +25,8 @@ from pyllmkit.domain.inference import (
     ParameterSupport,
     evaluate_request_support,
     validate_request_support,
+    CompatibilityReport,
+    ParameterAssessment,
 )
 
 
@@ -98,8 +100,8 @@ def test_no_generation_config_does_not_invent_a_parameter() -> None:
     request = _request()
     report = evaluate_request_support(request, GenerationSupportSnapshot(request.target))
     assert report.assessments == ()
-    assert report.is_confirmed_native is True  # vacuous: no parameters requested
-    assert report.is_compatible is True  # strictly parameter compatibility, not execution
+    assert report.is_confirmed_native is False  # no positive support evidence
+    assert report.is_compatible is None  # NOT_EVALUATED, never implicit NATIVE
 
 
 def test_request_and_snapshot_targets_must_match_exactly() -> None:
@@ -135,6 +137,18 @@ def test_invalid_snapshot_content_or_type_rejected() -> None:
         evaluate_request_support(cast(InferenceRequest, None), GenerationSupportSnapshot(_request().target))
     with pytest.raises(DomainValidationError):
         evaluate_request_support(_request(), cast(GenerationSupportSnapshot, None))
+
+
+def test_report_and_assessment_require_strict_types() -> None:
+    with pytest.raises(DomainValidationError, match="assessed parameter"):
+        ParameterAssessment("not_a_parameter", SupportLevel.NATIVE)
+    with pytest.raises(DomainValidationError, match="assessment level"):
+        ParameterAssessment("top_p", cast(SupportLevel, "native"))
+    with pytest.raises(DomainValidationError, match="tuple"):
+        CompatibilityReport(cast(tuple[ParameterAssessment, ...], []))
+    good = ParameterAssessment("top_p", SupportLevel.NATIVE)
+    with pytest.raises(DomainValidationError, match="duplicate"):
+        CompatibilityReport((good, good))
 
 
 def test_snapshot_is_immutable() -> None:
