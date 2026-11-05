@@ -66,13 +66,16 @@ def _canonical(value: object) -> object:
 
 def _candidate_digest(incoming: DiscoveryResult) -> str:
     """Private SHA-256 digest binds a preview to every candidate metadata field."""
+    batches: tuple[
+        tuple[str, tuple[Model | InferenceProvider | Deployment, ...]], ...
+    ] = (
+        ("provider", incoming.providers),
+        ("model", incoming.models),
+        ("deployment", incoming.deployments),
+    )
     records = [
         [kind, item.id.value, _canonical(item)]
-        for kind, values in (
-            ("provider", incoming.providers),
-            ("model", incoming.models),
-            ("deployment", incoming.deployments),
-        )
+        for kind, values in batches
         for item in sorted(values, key=lambda entity: entity.id.value)
     ]
     wire = json.dumps(records, ensure_ascii=False, separators=(",", ":"), allow_nan=False)
