@@ -1,6 +1,6 @@
 # API publique Inference Domain - PyLLMKit P3
 
-> Source candidate `0.1.0a2` avec primitives P3 developpees et G1..G4 qualifiees; G5/M3 et publication independants.
+> Source candidate `0.1.0a2` avec primitives P3 developpees et G1..G5 qualifiees techniquement, [PV G5](../quality/P3_G5_GATE_REVIEW.md). M3 et publication demeurent des decisions independantes.
 > API de **domaine pur**, pas un SDK fournisseur ni une API d'invocation.
 
 ## Points d'entree
