@@ -60,9 +60,9 @@
 | P4-G3 | #44, #45 | `f187fe5278980a84e578a1a3d65ed21d2a117e78` | [#42087094649](https://github.com/tawounfouet/pyllmkit/actions/runs/42087094649) | GO avec réserves |
 | P4-G4 | #46, #47 | `ab0257a0a9a08f2320b580340ba84c92609bbfc0` | [#42089506022](https://github.com/tawounfouet/pyllmkit/actions/runs/42089506022) | GO avec réserves |
 | **P4-G5** | **#48 (code), #49 (PV et seuil couverture)** | **`aad2656cbe1753dac709bb28b228ba22ecca44a2`** | **[#42092202193](https://github.com/tawounfouet/pyllmkit/actions/runs/42092202193)** | **GO avec réserves** |
-| **M4** | **Revue finale distincte** | **PENDING** | **PENDING** | **NO-GO d'attestation** |
+| **M4** | **Revue finale distincte, archive #50** | **`92874b2e97bcc130279e244bf1000c65a939d7e5`** | **[#42093041970](https://github.com/tawounfouet/pyllmkit/actions/runs/42093041970)** | **GO technique avec réserves, release NO-GO** |
 
-La CI de push sur le commit intégré de L4.5 est désormais SUCCESS ; ses preuves sont dans [P4_G5_GATE_REVIEW.md](P4_G5_GATE_REVIEW.md). La revue M4 reste une décision distincte. Les tests antérieurs AC-001..032 sont qualifiés par leurs gates respectifs; tous sont en outre repris dans les suites de régression suivantes.
+La CI de push sur le commit intégré de L4.5 est désormais SUCCESS ; ses preuves sont dans [P4_G5_GATE_REVIEW.md](P4_G5_GATE_REVIEW.md). La revue M4 est une décision distincte, désormais motivée dans [M4_GATE_REVIEW.md](M4_GATE_REVIEW.md) sur main@92874b2e et CI #42093041970. Les tests antérieurs AC-001..032 sont qualifiés par leurs gates respectifs; tous sont en outre repris dans les suites de régression suivantes.
 
 ## Préoccupations transversales
 
