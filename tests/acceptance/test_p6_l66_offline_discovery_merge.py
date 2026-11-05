@@ -258,6 +258,28 @@ def test_ac047_idempotent_replay_is_no_op_and_preserves_original_provenance() ->
     assert catalog.snapshot() == snapshot
 
 
+def test_ac047_preview_binds_complete_metadata_not_just_identifiers() -> None:
+    catalog = InMemoryCatalog()
+    service = CatalogMergeService(catalog)
+    initial = _full_batch()
+    preview = service.preview(initial, now=NOW)
+    modified = _batch(
+        providers=(_provider(label="CHANGED"),),
+        models=(_model(context_window=2048),),
+        deployments=(
+            _deployment().with_status(DeploymentStatus.UNAVAILABLE),
+        ),
+    )
+    assert preview.additions == service.preview(modified, now=NOW).additions
+    assert preview.candidate_digest != service.preview(modified, now=NOW).candidate_digest
+    with pytest.raises(RegistryStaleSnapshotError, match="Preview"):
+        service.apply(modified, preview, now=NOW)
+    assert catalog.snapshot().revision == 0
+    assert catalog.models.list() == ()
+    assert catalog.providers.list() == ()
+    assert catalog.deployments.list() == ()
+
+
 def test_ac047_stale_preview_after_direct_registry_change_is_rejected() -> None:
     catalog = InMemoryCatalog()
     service = CatalogMergeService(catalog)
