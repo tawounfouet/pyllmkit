@@ -997,6 +997,7 @@ La dette ci-dessous est **constatée au bilan M2**, pas découverte ou corrigée
 5. **Avant P3-G4 :** assurer la fermeture du codec, l'offline, la non-régression M1/M2.
 6. **Avant P3-G5 :** aligner docs, packaging et contrôles GitHub.
 7. **Avant publication future :** protections, provenance d'artefacts, secrets, politique de release et décision explicite.
+
 ---
 
 ## 16. Software Design & Learning - principes à nommer et démontrer
