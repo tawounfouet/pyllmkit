@@ -1,6 +1,9 @@
 # ADR-020 - Inference JSON v1, objets et snapshots
+> **Decision owner P3-G0 (2026-11-05)** : `ACCEPTED`, sous autorite du proprietaire dans la conversation du projet. Cette autorisation concerne les contrats et leur integration, **pas** une GitHub review externe ni la publication d'un package. 
+> **Arbitrage retenu :** Independent strict INFERENCE_SCHEMA_VERSION=1; Request/Response/Run envelopes and six valid Run snapshots, timestamps UTC, full Interaction JSON v1 nested, preserve null.
 
-- **Statut : REVISED / PROPOSED** - revue P3-G0 du 2026-11-05. Non approuvee.
+
+- **Statut : ACCEPTED** - adoption explicite par le proprietaire pour P3-G0 le 2026-11-05. Contrat de conception adopte, implementation Python non commencee.
 - **Sources :** plan Phase 3 section 8; ADR-004, ADR-012, ADR-014..019, SER-001..006, PIR2-03/04/06.
 - **Portee :** mapping JSON de domaine, pas payload provider ni parser HTTP.
 
@@ -118,4 +121,4 @@ Pour FAILED, response=null et failure={"code":"inference_failed"} ; pour CANCELL
 - Non-regression M1/M2 et controle de fuite d'informations dans les exceptions.
 - Policy future de parseur strict a la frontiere HTTP (PIR2-04), sans le revendiquer comme disponible aujourd'hui.
 
-**Statut : PROPOSED.** L'implementation et les noms des symboles sont soumis a P3-G0.
+**Statut : ACCEPTED pour la conception P3.** L'implementation des symboles reste a realiser.
