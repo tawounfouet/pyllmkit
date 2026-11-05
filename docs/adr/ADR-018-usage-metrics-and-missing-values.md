@@ -1,6 +1,9 @@
 # ADR-018 - Usage, granularite et valeurs manquantes
+> **Decision owner P3-G0 (2026-11-05)** : `ACCEPTED`, sous autorite du proprietaire dans la conversation du projet. Cette autorisation concerne les contrats et leur integration, **pas** une GitHub review externe ni la publication d'un package. 
+> **Arbitrage retenu :** Nullable observed token counters, no defaults as 0, total_tokens is provider observation only; no Pricing/Cost in Usage.
 
-- Statut : **PROPOSED** (P3-BOOT, 2026-11-05).
+
+- **Statut : ACCEPTED** - adoption explicite par le proprietaire pour P3-G0 le 2026-11-05. Contrat de conception adopte, implementation Python non commencee.
 - Sources : plan Phase 3 section 6.3, FR-030, INV-008, USG-001..006.
 
 ## Contexte
