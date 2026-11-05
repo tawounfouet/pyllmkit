@@ -6,6 +6,7 @@ from enum import StrEnum
 
 from pyllmkit.domain.errors import DomainValidationError
 from pyllmkit.domain.inference import InferenceRunId, Usage
+from pyllmkit.domain.tooling import ToolArguments, ToolCall
 from pyllmkit.domain.tooling.identifiers import ToolCallId
 
 from .errors import (
@@ -33,6 +34,7 @@ from .events import (
 MAX_EVENTS = 100_000
 MAX_TEXT_BYTES = 8 * 1024 * 1024
 MAX_TOOL_CALLS = 128
+MAX_TOOL_ARGUMENT_BYTES = 1_048_576
 
 
 class StreamStatus(StrEnum):
@@ -51,6 +53,26 @@ class _TextPart:
 
 
 @dataclass(frozen=True, slots=True)
+class ToolCallProgress:
+    """Immutable raw-only reception state for a descriptive tool call (ADR-033)."""
+
+    call_id: ToolCallId
+    tool_name: str
+    _tail: _TextPart | None = field(default=None, repr=False)
+    size_bytes: int = 0
+    closed: bool = False
+
+    @property
+    def raw(self) -> str:
+        parts: list[str] = []
+        node = self._tail
+        while node is not None:
+            parts.append(node.value)
+            node = node.previous
+        return "".join(reversed(parts))
+
+
+@dataclass(frozen=True, slots=True)
 class StreamState:
     """Immutable reduction snapshot, not an InferenceRun or final InferenceResponse."""
 
@@ -64,6 +86,7 @@ class StreamState:
     error_code: str | None = field(default=None, repr=False)
     _opened: tuple[ToolCallId, ...] = field(default=(), repr=False)
     _seen: tuple[ToolCallId, ...] = field(default=(), repr=False)
+    _tool_progress: tuple[ToolCallProgress, ...] = field(default=(), repr=False)
 
     def __post_init__(self) -> None:
         if type(self.run_id) is not InferenceRunId:
@@ -76,6 +99,20 @@ class StreamState:
     @property
     def is_complete(self) -> bool:
         return self.status is StreamStatus.COMPLETED
+
+    @property
+    def completed_tool_calls(self) -> tuple[ToolCall, ...]:
+        """Construct descriptive M4 ToolCall values, never ToolResults."""
+        return tuple(
+            ToolCall(progress.call_id, progress.tool_name, ToolArguments(raw=progress.raw))
+            for progress in self._tool_progress
+            if progress.closed
+        )
+
+    @property
+    def partial_tool_calls(self) -> tuple[ToolCallProgress, ...]:
+        """Inspect unfinished calls explicitly without inventing a final ToolCall."""
+        return tuple(progress for progress in self._tool_progress if not progress.closed)
 
     @property
     def text(self) -> str:
@@ -134,16 +171,43 @@ def reduce_event(state: StreamState, event: StreamEvent) -> StreamState:
             next_state,
             _opened=state._opened + (event.call_id,),
             _seen=state._seen + (event.call_id,),
+            _tool_progress=state._tool_progress + (
+                ToolCallProgress(event.call_id, event.tool_name),
+            ),
         )
     if isinstance(event, (ToolCallDelta, ToolCallCompleted)):
         if event.call_id not in state._opened:
             raise StreamToolCallError("tool call not open")
+        position = next(
+            i for i, progress in enumerate(state._tool_progress)
+            if progress.call_id == event.call_id
+        )
+        progress = state._tool_progress[position]
         if isinstance(event, ToolCallCompleted):
+            updated = replace(progress, closed=True)
             return replace(
                 next_state,
                 _opened=tuple(x for x in state._opened if x != event.call_id),
+                _tool_progress=(
+                    state._tool_progress[:position] + (updated,)
+                    + state._tool_progress[position + 1:]
+                ),
             )
-        return next_state  # L5.3 introduces raw argument reassembly per ID.
+        delta_bytes = len(event.delta.encode("utf-8"))
+        if progress.size_bytes + delta_bytes > MAX_TOOL_ARGUMENT_BYTES:
+            raise StreamLimitError("tool raw argument byte budget exceeded")
+        updated = replace(
+            progress,
+            _tail=_TextPart(event.delta, progress._tail),
+            size_bytes=progress.size_bytes + delta_bytes,
+        )
+        return replace(
+            next_state,
+            _tool_progress=(
+                state._tool_progress[:position] + (updated,)
+                + state._tool_progress[position + 1:]
+            ),
+        )
     if isinstance(event, UsageUpdated):
         if state.usage_final:
             raise StreamLifecycleError("usage already marked final")
