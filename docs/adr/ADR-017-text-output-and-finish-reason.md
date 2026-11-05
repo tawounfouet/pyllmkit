@@ -1,6 +1,9 @@
 # ADR-017 - TextOutput et FinishReason normalise
+> **Decision owner P3-G0 (2026-11-05)** : `ACCEPTED`, sous autorite du proprietaire dans la conversation du projet. Cette autorisation concerne les contrats et leur integration, **pas** une GitHub review externe ni la publication d'un package. 
+> **Arbitrage retenu :** TextOutput including empty text, absent FinishReason distinct from UNKNOWN; normalized code plus optional native reason; no Tool execution.
 
-- Statut : **PROPOSED** (P3-BOOT, 2026-11-05).
+
+- **Statut : ACCEPTED** - adoption explicite par le proprietaire pour P3-G0 le 2026-11-05. Contrat de conception adopte, implementation Python non commencee.
 - Sources : plan Phase 3 section 6, FR-019/021, INF-022..026, architecture Inference.
 
 ## Contexte
