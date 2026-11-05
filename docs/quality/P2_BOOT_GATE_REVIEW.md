@@ -1,52 +1,74 @@
-# P2-BOOT - Architecture gate preparation and owner review
+# PyLLMKit - P2-BOOT G0 Architecture Ready - Gate Review
 
-- **Date:** 2026-11-05
-- **Scope:** P2-BOOT, interaction contracts, ADR-008..ADR-013, traceability and architecture fitness baseline.
-- **Status:** OWNER APPROVED / G0 PENDING INTEGRATED MAIN CI; technical decision recorded 2026-11-05.
-- **Reference main:** `d7f06072d246819fb976c6a456949995ae33562d`.
-- **Main workflow:** https://github.com/tawounfouet/pyllmkit/actions/runs/40638604245 - SUCCESS (M1 baseline only).
-- **Public package:** `0.1.0a1` (not published), Python >= 3.11; no provider runtime dependencies.
-- **Existing M1 tests:** 137 passed / 89% coverage on old main; not proof of P2 implementation.
-- **PR branch:** `feature/p2-boot-interaction-contracts`.
-- **Main branch protection:** GitHub reports `protected: false` as of this audit; manual review gate required.
+**Decision:** **G0 = GO**  
+**Date:** 2026-11-05  
+**Authority:** Project owner explicitly reviewed and approved ADR-008 to ADR-013 in the PyLLMKit conversation on 2026-11-05. This is a project-owner engineering decision, not a separate GitHub review submission or third-party sign-off.  
+**Qualified baseline:** `main` @ [`93e9467e2bef819201507aa2c4f06fdf4a4b04da`](https://github.com/tawounfouet/pyllmkit/commit/93e9467e2bef819201507aa2c4f06fdf4a4b04da)  
+**Integrated main CI:** [run #42005569202](https://github.com/tawounfouet/pyllmkit/actions/runs/42005569202) - **SUCCESS**  
+**Integration:** [PR #8](https://github.com/tawounfouet/pyllmkit/pull/8) - MERGED via squash  
+**Version metadata:** `0.1.0a1`, candidate alpha not published.
 
-## P2-BOOT progress
+## 1. Gate interpretation
 
-| ID | Check | Result |
+The Phase 2 implementation plan defines G0 as **Architecture Ready**: ADR-008..ADR-013 adopted, Interaction Domain / Role / Content contracts and independent codec fixed, and candidate tests and evidence available.
+
+**GO authorizes starting L2.1, L2.2, L2.3 and L2.4 as subsequent implementation increments.** It is not a G1/G2/G3/G4 or M2 GO. No Message, Content, ImageContent, inference primitive, provider adapter, or production invocation is claimed implemented by P2-BOOT.
+
+## 2. Decisions approved
+
+| ADR | Status | Decision |
 |---|---|---|
-| P2-BOOT-T01 | Verify baseline SHA, CI, version and open PRs | DONE |
-| P2-BOOT-T02 | Create dedicated P2-BOOT branch and six ADR files | DONE; owner-approved decisions |
-| P2-BOOT-T03 | Define Role taxonomy, unknown roles and TOOL boundary | PROPOSED ADR-008 |
-| P2-BOOT-T04 | Define Message value semantics, Conversation choice | PROPOSED ADR-009 |
-| P2-BOOT-T05 | Define Content polymorphism, Media refs, codec | PROPOSED ADR-010/011/012/013 |
-| P2-BOOT-T06 | Define imports and public package boundaries | PROPOSED contract + architecture test |
+| ADR-008 | ACCEPTED | Five canonical roles; reject unknown and silent role downgrade |
+| ADR-009 | ACCEPTED | Immutable Message VO; Conversation implementation optional and deferred |
+| ADR-010 | ACCEPTED | Typed immutable ordered nonempty ContentPart collection; intentional empty TextContent accepted |
+| ADR-011 | ACCEPTED | Passive URI/asset media references; no fetch, local path or embedded bytes |
+| ADR-012 | ACCEPTED | Strict versioned Interaction JSON codec, independent from frozen Model v1 |
+| ADR-013 | ACCEPTED | Text and image M2 priority; audio/video/document/tool-part implementations deferred |
 
-## Decision register (draft)
+These are future implementation contracts; an accepted ADR is not evidence that its code exists. No independent GitHub review approval is asserted.
 
-| ADR | Decision summary | State |
+## 3. GitHub evidence
+
+| Control | Evidence | Result |
 |---|---|---|
-| 008 | Five canonical roles, reject unknown, no implicit mapping | ACCEPTED BY PROJECT OWNER |
-| 009 | Message VO, Conversation deferred from a2 | ACCEPTED BY PROJECT OWNER |
-| 010 | Ordered nonempty Content, immutable parts, empty text allowed | ACCEPTED BY PROJECT OWNER |
-| 011 | Passive URI/asset media refs, no I/O | ACCEPTED BY PROJECT OWNER |
-| 012 | Strict independent Interaction schema v1, preserve M1 codec | ACCEPTED BY PROJECT OWNER |
-| 013 | Text/image mandatory, audio/video/docs/tool content deferred | ACCEPTED BY PROJECT OWNER |
+| Original M1 baseline | `main` `d7f06072d246819fb976c6a456949995ae33562d`, [CI #40638604245](https://github.com/tawounfouet/pyllmkit/actions/runs/40638604245) | M1 GO; 137 tests; 89% |
+| PR #8 source integration | [PR #8](https://github.com/tawounfouet/pyllmkit/pull/8) | MERGED |
+| P2-BOOT main SHA | [`93e9467e2bef819201507aa2c4f06fdf4a4b04da`](https://github.com/tawounfouet/pyllmkit/commit/93e9467e2bef819201507aa2c4f06fdf4a4b04da) | Verified |
+| Post-merge main CI | [#42005569202](https://github.com/tawounfouet/pyllmkit/actions/runs/42005569202) | SUCCESS |
+| Python matrix | CI jobs `validate (3.11)`, `validate (3.12)`, `validate (3.13)` | 3/3 SUCCESS |
+| Pytest on main | Python 3.11 CI log | **140 passed**, no failure |
+| Branch-inclusive coverage | Python 3.11 CI log | **89%** |
+| Ruff, mypy strict | Python 3.11 CI log | PASS, mypy 17 source files |
+| Wheel and sdist | Python 3.11 CI log | Builds and clean smoke PASS |
+| GitGuardian | PR check on accepted ADR commit | SUCCESS |
+| Branch protection | `main` GitHub branch API at review | `protected: false` (risk) |
 
-## Gate G0 acceptance checklist
+The three additional tests beyond M1 are architectural/documentary checks, **not implementation acceptance tests** for AC-006/AC-007.
 
-- [x] Baseline exact SHA and main CI identified.
-- [x] Proposed architecture and public contracts documented.
-- [x] ADR alternatives, consequences and negative tests specified.
-- [x] Source-document traceability index prepared.
-- [x] No L2.x implementation pretended.
-- [x] ADR-008..013 reviewed and accepted as project decisions (owner approval received 2026-11-05, no independent GitHub review asserted).
-- [x] Branch and PR CI passed on `bbe00134b5bd7eaedb888be618aeba3e53d4e174` (140 passed; 89% coverage; Python 3.11/3.12/3.13; GitGuardian). New approval commit CI must be independently checked.
-- [ ] PR reviewed and deliberately integrated; integrated main CI verified.
-- [ ] G0 verdict and responsible decision recorded after evidence.
+## 4. Decision checklist
 
-**Verdict at owner approval: G0 PENDING INTEGRATED MAIN QUALIFICATION.** No M2 GO and no publication authorization. See the subsequent closure record for final exact-SHA main CI.
+- [x] Main baseline, package version, open PRs and CI verified.
+- [x] Six architecture decisions explicitly approved by project owner and committed.
+- [x] Role, Message, Content, media source and codec contracts documented.
+- [x] Provider-agnostic and M1 compatibility boundaries preserved.
+- [x] Candidate architecture fitness tests green.
+- [x] PR #8 merged; integrated main SHA and CI verified.
+- [ ] Implement and qualify AC-006 (text Message) - G1.
+- [ ] Implement and qualify AC-007 (text/image Message) - G2.
+- [ ] Qualify Interaction codec and package for M2 - G3/G4.
+- [ ] M2 exact SHA gate and release decision - later, separately.
 
+## 5. Risks / governance
 
-## Owner decision (2026-11-05)
+1. `main` is not branch-protected. Continue via explicit PRs, CI and exact SHA verification; configuring required checks is recommended as a separate governance action.
+2. Foundational documents 00 to 09 are project-provided drafts and not all tracked in GitHub. The source-traceability index does not change their repository status.
+3. No independent GitHub reviewer has signed this decision; it follows direct owner authorization in conversation.
+4. No Git tag, GitHub Release, PyPI upload or change from `0.1.0a1` was authorized by G0.
 
-Project owner explicitly stated that all six ADRs had been reviewed and approved, and authorized continuing to the G0 decision. ADR-008..ADR-013 were therefore accepted as **project engineering decisions**, not claimed as an independent GitHub APPROVED review or external sign-off. PR #8 remains to be merged only after the acceptance commit receives a successful CI. Final G0 GO is reserved until integrated main CI success is verified and archived.
+## 6. Next execution sequence
+
+Build `ContentPart`, `TextContent`, immutable `Content`, and canonical `Role`; compose `Message` for AC-006; then `MediaSourceRef`, `ImageContent` for AC-007; finally implement strict Interaction JSON codec, tests, API examples and packaging.
+
+## 7. Archival integrity
+
+The GO evidence references the **already qualified** merge SHA `93e9467e2bef819201507aa2c4f06fdf4a4b04da`. This report is archived via a separate documentation PR. Archiving creates a new `main` SHA and requires its own CI check; record the archival SHA and run in the closure PR comment after integration. Do not rewrite this evidence as if a future SHA had already passed.
