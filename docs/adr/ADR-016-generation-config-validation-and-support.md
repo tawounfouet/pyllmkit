@@ -1,6 +1,9 @@
 # ADR-016 - GenerationConfig, absence, types numeriques et compatibilite
+> **Decision owner P3-G0 (2026-11-05)** : `ACCEPTED`, sous autorite du proprietaire dans la conversation du projet. Cette autorisation concerne les contrats et leur integration, **pas** une GitHub review externe ni la publication d'un package. 
+> **Arbitrage retenu :** Exact finite float for decimal parameters (including temperature=0.0 but not integer 0); strict integer excluding bool; optional fields None; no provider defaults.
 
-- **Statut : REVISED / PROPOSED** - revue P3-G0 du 2026-11-05. Non approuvee.
+
+- **Statut : ACCEPTED** - adoption explicite par le proprietaire pour P3-G0 le 2026-11-05. Contrat de conception adopte, implementation Python non commencee.
 - Sources : Phase 3 sections 4 et 5.2, FR-016/017, INF-001..005, SER-004.
 
 ## Contexte
@@ -10,7 +13,7 @@ GenerationConfig exprime des intentions de generation, sans copier les options o
 ## Decision proposee
 
 1. Value Object frozen, slots, compare par valeur, et sans dependances provider. Les 8 champs optionnels valent **None** lorsqu'ils ne sont pas specifies.
-2. **float exact et fini** pour temperature, top_p, presence_penalty, frequency_penalty (donc **temperature=0.0 valide, temperature=0 int invalide**, tout comme True, NaN et Infinity). Ce choix strict et pedagogique doit etre **explicitement approuve en G0**; alternative possible : accepter int et float hors bool avec une representation canonique.
+2. **float exact et fini** pour temperature, top_p, presence_penalty, frequency_penalty (donc **temperature=0.0 valide, temperature=0 int invalide**, tout comme True, NaN et Infinity). Ce choix strict et pedagogique est **approuve explicitement en G0**; alternative possible : accepter int et float hors bool avec une representation canonique.
 3. **int exact** hors bool pour top_k, max_output_tokens et seed. Aucun cast implicite de float, str ou bool en int.
 4. Valeurs initiales proposees : temperature >= 0.0, 0.0 < top_p <= 1.0, top_k >= 1, max_output_tokens >= 1. seed est tout entier, y compris 0 et negatif, tant qu'aucune borne commune n'est justifiee. Les deux penalties doivent etre finis, sans imposer un intervalle fournisseur.
 5. **stop_sequences** vaut None, ou un **tuple exact** de strings exactes non vides; () explicite est autorise et distinct de None. Ordre et repetitions preserves. Pas de coercition depuis list ou iterateur; le JSON utilise un tableau uniquement lorsqu'une valeur est presente.
@@ -47,4 +50,4 @@ Les exemples de penalties ne promettent pas un support provider ou une borne uni
 - Tableau de support UNKNOWN / support connu sans network.
 - Decision G0 specifique sur la **rigidite des types float** et les valeurs negatives de seed.
 
-**Statut : PROPOSED.** Aucune implementation ni approbation n'est revendiquee.
+**Statut : ACCEPTED pour la conception P3.** Aucune implementation n'est revendiquee.
