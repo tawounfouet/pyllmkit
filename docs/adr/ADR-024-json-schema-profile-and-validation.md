@@ -1,7 +1,7 @@
 # ADR-024 - JSON Schema profile and validation limits
 
 - Date : 2026-11-05
-- Statut : RECOMMENDED FOR P4-G0 ADOPTION
+- Statut : ACCEPTED (owner, 2026-11-05; P4-G0 CI main a verifier)
 - Phase : L4.1, L4.3 et L4.4
 - Sources : TOOL-002/012/014, ADR-022, P4-AC-002/019/021/022/038.
 
