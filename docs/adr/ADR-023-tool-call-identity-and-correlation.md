@@ -1,7 +1,7 @@
 # ADR-023 - ToolCall identity and correlation
 
 - Date : 2026-11-05
-- Statut : ACCEPTED (owner, 2026-11-05; P4-G0 CI main a verifier)
+- Statut : ACCEPTED (owner, 2026-11-05; P4-G0 qualifié main@b66e94e3, CI #42079191595 SUCCESS)
 - Phase : L4.2
 - Sources : ADR-022, TOOL-004 a TOOL-010, domaine 05/06, P4-AC-009 a 016.
 
@@ -11,7 +11,7 @@
 
 Plusieurs appels peuvent utiliser le meme outil avec les memes arguments. Leur egalite de contenu ne suffit pas pour determiner a quel appel rattacher un resultat.
 
-## Decision recommandee
+## Decision adoptee
 
 1. ToolCallId est un Identifier/Value Object opaque, sensible a la casse, de type str exact, non vide apres une verification de blanc, avec une longueur maximale documentee de 256 caracteres. Aucun UUID automatique et aucune normalisation destructive.
 2. ToolCall est une Entity immutable par snapshot. Son egalite et son hachage reposent sur ToolCallId; sa comparaison par contenu est une operation differente. Deux appels a arguments identiques mais a IDs distincts sont deux appels.
