@@ -1,6 +1,6 @@
 # PyLLMKit - Inference JSON v1 contract (L3.4)
 
-> **Status:** implementation candidate for P3-G4 (not yet qualified until main CI and gate report).
+> **Status (2026-11-05): P3-G4 GO technique avec reserves.** [PR #29](https://github.com/tawounfouet/pyllmkit/pull/29) integrated on [main d72b1ce](https://github.com/tawounfouet/pyllmkit/commit/d72b1ce82a4a34c62888ad48b50bcf07537f83d1), [CI #42053906726 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42053906726) (779 tests / 95 % coverage, Python 3.11-3.13); [gate report](../quality/P3_G4_GATE_REVIEW.md). Source metadata 0.1.0a2, no release.
 > **Authority:** ADR-020 ACCEPTED at P3-G0, after P3-G1, G2 and G3.
 > **Scope:** JSON-compatible domain dictionaries. There is no LLM wire protocol, HTTP, JSON streaming, provider SDK or network I/O.
 

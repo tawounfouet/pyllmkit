@@ -1,4 +1,7 @@
 # ADR-020 - Inference JSON v1, objets et snapshots
+
+**Note d'implementation (2026-11-05) :** ADR-020 acceptee a P3-G0, implementee dans [PR #29](https://github.com/tawounfouet/pyllmkit/pull/29) et qualifiee sur [main d72b1ce](https://github.com/tawounfouet/pyllmkit/commit/d72b1ce82a4a34c62888ad48b50bcf07537f83d1), [CI #42053906726 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42053906726), [PV P3-G4](../quality/P3_G4_GATE_REVIEW.md). Les formulations historiques ci-dessous restent un enregistrement de la conception initiale, pas une absence d'implementation. La detection des cles dupliquees dans le texte JSON demeure a la frontiere de parsing.
+
 > **Decision owner P3-G0 (2026-11-05)** : `ACCEPTED`, sous autorite du proprietaire dans la conversation du projet. Cette autorisation concerne les contrats et leur integration, **pas** une GitHub review externe ni la publication d'un package. 
 > **Arbitrage retenu :** Independent strict INFERENCE_SCHEMA_VERSION=1; Request/Response/Run envelopes and six valid Run snapshots, timestamps UTC, full Interaction JSON v1 nested, preserve null.
 

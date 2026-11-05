@@ -1,5 +1,8 @@
 # PyLLMKit - P3 L3.4 Inference JSON Codec & Quality - Implementation Summary
 
+**POST-INTEGRATION (2026-11-05): P3-G4 GO TECHNIQUE AVEC RESERVES.** [PR #29](https://github.com/tawounfouet/pyllmkit/pull/29) merged, [main d72b1ce](https://github.com/tawounfouet/pyllmkit/commit/d72b1ce82a4a34c62888ad48b50bcf07537f83d1), [CI #42053906726 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42053906726) 779 tests / 95 % coverage, 3/3 Python versions. Voir [PV G4](P3_G4_GATE_REVIEW.md). Les mentions PENDING ci-dessous decrivent la preparation avant CI, pas le statut actuel.
+
+
 > Date: 2026-11-05
 > Status: IMPLEMENTED ON FEATURE BRANCH, P3-G4 NOT YET QUALIFIED
 > Architecture authority: ADR-020 (ACCEPTED by owner at P3-G0)
