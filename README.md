@@ -131,6 +131,11 @@ python examples/01_define_model.py
 python examples/02_define_artifacts.py
 python examples/03_define_capabilities.py
 python examples/07_round_trip_interaction.py
+python examples/08_define_inference_request.py
+python examples/09_define_inference_response.py
+python examples/10_define_inference_run.py
+python examples/11_round_trip_inference_json.py
+python examples/12_full_inference_walkthrough.py
 python -m build
 ```
 
