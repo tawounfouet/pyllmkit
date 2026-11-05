@@ -21,7 +21,6 @@ from pyllmkit.domain.providers import InferenceProvider, ProviderId
 from pyllmkit.domain.registry import CapabilityResolver, LimitResolver, ResolutionReason
 from pyllmkit.domain.registry.constraints import merge_constraints
 
-
 CHAT = CapabilityId("chat")
 TOOLS = CapabilityId("tool_calling")
 
