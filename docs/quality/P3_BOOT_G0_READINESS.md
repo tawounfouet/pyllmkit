@@ -1,5 +1,8 @@
 # P3-BOOT - Preflight et preparation de P3-G0
 
+**Post-integration evidence (2026-11-05): P3-G0 = GO ARCHITECTURE AVEC RESERVES.** Owner-accepted ADR-014..021 merged via [PR #19](https://github.com/tawounfouet/pyllmkit/pull/19) into `main` SHA [`965311db`](https://github.com/tawounfouet/pyllmkit/commit/965311dbef527ad59222b7586f9c801bb713bead), [CI #42029448967 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42029448967) 3/3 Python jobs. See [P3_G0_GATE_REVIEW.md](P3_G0_GATE_REVIEW.md) for formal gate decision and reservations. The checklist below preserves pre-integration tracking/history; G1/M3 and publication are not authorized by G0.
+
+
 > Date : 2026-11-05
 > Etat : **OWNER ADR ACCEPTED / INTEGRATION AND FINAL G0 CI PENDING**
 > Cible : 0.1.0a3 - Inference Primitives
