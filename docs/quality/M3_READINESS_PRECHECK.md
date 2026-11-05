@@ -6,7 +6,7 @@
 
 ## Evidence deja disponible
 
-| Gate | Etat avant L3.5 | Preuve |
+| Gate | Etat apres L3.5 | Preuve |
 |---|---|---|
 | P3-G0 Architecture | GO avec reserves | `P3_G0_GATE_REVIEW.md` |
 | P3-G1 Request | GO technique avec reserves | `P3_G1_GATE_REVIEW.md` |
