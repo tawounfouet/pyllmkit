@@ -1,5 +1,8 @@
 # PyLLMKit - P3 / L3.1 Implementation Summary
 
+**Post-integration qualification (2026-11-05) : P3-G1 GO TECHNIQUE AVEC RESERVES.** [PR #23](https://github.com/tawounfouet/pyllmkit/pull/23) fusionnee; [main SHA f1ef04b8](https://github.com/tawounfouet/pyllmkit/commit/f1ef04b8ff1bb52a1ee17defa0ec8b20f84ac9d3), [CI #42036557565 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42036557565) : 432 tests, 93 %, Python 3.11/12/13. Voir [PV G1](P3_G1_GATE_REVIEW.md). Le suivi historique PENDING ci-dessous est conserve comme trace pre-integration, pas comme verdict courant.
+
+
 > **Date:** 2026-11-05
 > **Milestone:** L3.1 - Inference Request Domain
 > **Status:** IMPLEMENTED ON FEATURE BRANCH - **P3-G1 PENDING QUALIFICATION**

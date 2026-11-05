@@ -1,5 +1,8 @@
 # PyLLMKit
 
+**Phase 3 / P3-G1 (2026-11-05): REQUEST READY - TECHNICAL GO WITH RESERVATIONS.** L3.1 integrated by [PR #23](https://github.com/tawounfouet/pyllmkit/pull/23), [main SHA f1ef04b8](https://github.com/tawounfouet/pyllmkit/commit/f1ef04b8ff1bb52a1ee17defa0ec8b20f84ac9d3), [CI #42036557565 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42036557565): 432 tests, 93% coverage, Python 3.11/3.12/3.13. [P3-G1 gate](docs/quality/P3_G1_GATE_REVIEW.md) and [Request API](docs/api/inference-request.md). ADR-021 option A and P3-AC-001..007 qualified. **Next: L3.2 Response Domain. G2..M3 not qualified. Source metadata 0.1.0a2, unpublished.**
+
+
 **Phase 3 / P3-G0 (2026-11-05): ARCHITECTURE GO WITH RESERVATIONS.** ADR-014..021 owner-accepted and merged via [PR #19](https://github.com/tawounfouet/pyllmkit/pull/19); exact integrated `main` SHA [`965311db`](https://github.com/tawounfouet/pyllmkit/commit/965311dbef527ad59222b7586f9c801bb713bead), [CI SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42029448967) on Python 3.11/3.12/3.13. [Gate record](docs/quality/P3_G0_GATE_REVIEW.md). **Only architecture is qualified; L3.1..L3.5 and M3 are not implemented or qualified. Metadata remains `0.1.0a2`, unpublished; no `0.1.0a3` tag or release.**
 
 
