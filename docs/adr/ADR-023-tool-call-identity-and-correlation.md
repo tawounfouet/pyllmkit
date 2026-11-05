@@ -1,9 +1,11 @@
 # ADR-023 - ToolCall identity and correlation
 
 - Date : 2026-11-05
-- Statut : RECOMMENDED FOR P4-G0 ADOPTION
+- Statut : ACCEPTED (owner, 2026-11-05; P4-G0 CI main a verifier)
 - Phase : L4.2
 - Sources : ADR-022, TOOL-004 a TOOL-010, domaine 05/06, P4-AC-009 a 016.
+
+> Approbation du proprietaire : [P4_G0_OWNER_ARCHITECTURE_APPROVAL.md](../quality/P4_G0_OWNER_ARCHITECTURE_APPROVAL.md). Aucune revue tierce revendiquee.
 
 ## Contexte
 
