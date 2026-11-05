@@ -63,7 +63,7 @@ def _request() -> InferenceRequest:
             top_k=1,
             max_output_tokens=123,
             seed=0,
-            stop_sequences=("",) if False else ("A", "A"),
+            stop_sequences=("A", "A"),
             presence_penalty=0.0,
             frequency_penalty=-0.2,
         ),
