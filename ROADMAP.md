@@ -1,6 +1,9 @@
 # PyLLMKit - Roadmap
 
-**2026-11-05 - Phase 6 Registry & Discovery : CANDIDAT EN BRANCHES.** Architecture PR #59 puis lots L6.1..L6.7 en PR #60..#66, non fusionnées. Cible 0.1.0b2 indicative, version source 0.1.0a2. Pas de GO P6-G0..G7 ou M6 sans revues et CI push/main sur chacun des SHAs exacts. Voir `docs/quality/PHASE_6_TRACEABILITY.md`, `docs/quality/P6_G7_IMPLEMENTATION_PRECHECK.md`, exemples 23..28. La branche main non protégée et les issues #22, #35 et #36 restent des réserves. Aucune release.
+**2026-11-05 - M6 Registry & Discovery : GO TECHNIQUE AVEC RÉSERVES**. PR #59..#66 fusionnées, gates G0..G7 qualifiés sur main@6c58b052 CI #42123870931, 1189 tests et couverture avec branches 96,61 %, 3/3 Python. Archivage PR #67 sur main@670ccab9 CI #42124522939 réussi. Revue M6 : `docs/quality/M6_GATE_REVIEW.md` ; P7-G0 Provider Adapters prêt pour conception : `docs/roadmap/P7_PROVIDER_ADAPTERS_ENTRY_CRITERIA.md`. Publication 0.1.0b2 NO-GO, version source 0.1.0a2, réserves #22/#35/#36.
+
+
+**2026-11-05 - Historique de préqualification P6 :** PR #59..#66 initialement candidates, désormais fusionnées. Les huit PV et les CI exact-main sont dans `docs/quality/PHASE_6_TRACEABILITY.md`. Version 0.1.0a2, aucun tag ni release, gouvernance #22/#35/#36 sous réserve.
 
 **2026-11-05 - M5 Streaming Domain : GO TECHNIQUE AVEC RÉSERVES, hors réseau.** [Revue M5](docs/quality/M5_GATE_REVIEW.md) sur [main@e733264c](https://github.com/tawounfouet/pyllmkit/commit/e733264cf914d1ada33dbd76df932102139533a4), [CI #42104049873 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42104049873) : 1048 tests cumulatifs, 96,08 % couverture de branches, seuil 95 %, Python 3.11/3.12/3.13, Ruff, mypy strict, wheel/sdist et exemples 18..22. P5-G0..G6 qualifiés. Release 0.1.0b1 NON AUTORISÉE ; version source 0.1.0a2. Réserves #22/#35/#36.
 

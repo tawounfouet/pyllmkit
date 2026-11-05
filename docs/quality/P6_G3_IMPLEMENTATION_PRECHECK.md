@@ -1,5 +1,8 @@
 # P6-G3 - L6.3 Queries & Catalog Search candidate
 
+> **Précheck historique de candidature.** La qualification actuelle est consignée dans [`P6_G4_GATE_REVIEW.md`](P6_G4_GATE_REVIEW.md) et dans la revue finale [`M6_GATE_REVIEW.md`](M6_GATE_REVIEW.md). Les cases « pending » ci-dessous représentent l'état à la création du document, pas l'état actuel.
+
+
 - Status: DRAFT, NOT QUALIFIED
 - Branch: p6/l63-typed-catalog-queries
 - Depends on: P6-G0 architecture, L6.1, L6.2 exact-main qualification

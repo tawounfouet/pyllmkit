@@ -1,5 +1,8 @@
 # P6-G7 - Integration & Quality: précheck de candidature
 
+> **Précheck historique de candidature.** La qualification actuelle est consignée dans [`P6_G8_GATE_REVIEW.md`](P6_G8_GATE_REVIEW.md) et dans la revue finale [`M6_GATE_REVIEW.md`](M6_GATE_REVIEW.md). Les cases « pending » ci-dessous représentent l'état à la création du document, pas l'état actuel.
+
+
 - Date : 2026-11-05
 - Statut : CANDIDAT EN PR, PAS DE GO sur main.
 - Dépendance : PR #59 (P6-G0) -> PR #60..#65 (L6.1..L6.6) -> L6.7.

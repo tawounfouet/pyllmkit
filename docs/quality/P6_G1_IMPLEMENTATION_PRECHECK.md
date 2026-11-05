@@ -1,5 +1,8 @@
 # P6-G1 - L6.1 Provider & Deployment Domain - candidate precheck
 
+> **Précheck historique de candidature.** La qualification actuelle est consignée dans [`P6_G2_GATE_REVIEW.md`](P6_G2_GATE_REVIEW.md) et dans la revue finale [`M6_GATE_REVIEW.md`](M6_GATE_REVIEW.md). Les cases « pending » ci-dessous représentent l'état à la création du document, pas l'état actuel.
+
+
 - Status: IMPLEMENTATION CANDIDATE / NOT QUALIFIED GO
 - Baseline: stacked onto P6-G0 architecture commit `62e2bceddbdedae3fa27a26d4828fcc9cdb497b4`
 - Dependency: P6-G0 design approval + merge + successful exact-main CI
