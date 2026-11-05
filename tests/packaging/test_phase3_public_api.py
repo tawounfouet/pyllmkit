@@ -38,7 +38,6 @@ def test_m1_m2_m3_schema_versions_are_independent_v1() -> None:
     assert (MODEL_SCHEMA_VERSION, INTERACTION_SCHEMA_VERSION, INFERENCE_SCHEMA_VERSION) == (
         1, 1, 1
     )
-    assert len({id(MODEL_SCHEMA_VERSION), id(INTERACTION_SCHEMA_VERSION)}) >= 1
 
 
 def test_package_is_explicitly_unpublished_a2_source_candidate() -> None:
