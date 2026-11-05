@@ -56,9 +56,9 @@ def freeze_json(value: object) -> FrozenJSON:
         if item is None or type(item) in (bool, int, str):
             return cast(JSONScalar, item)
         if type(item) is float:
-            if not isfinite(cast(float, item)):
+            if not isfinite(item):
                 raise DomainValidationError("JSON number must be finite")
-            return cast(float, item)
+            return item
         if type(item) is list:
             ident = id(item)
             if ident in active:
