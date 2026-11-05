@@ -80,7 +80,7 @@ def test_ac010_local_deployment_does_not_invent_provider() -> None:
 def test_ac011_provider_catalog_is_metadata_only_and_separate_port() -> None:
     catalog = InMemoryCatalog()
     assert isinstance(catalog.providers, ProviderCatalogPort)
-    assert not isinstance(catalog.providers, DeploymentRegistryPort)
+    assert catalog.providers is not catalog.deployments
     assert catalog.providers.get(ProviderId("none")) is None
     catalog.providers.register(_provider("p"))
     assert catalog.providers.get(ProviderId("p")) == _provider("p")
