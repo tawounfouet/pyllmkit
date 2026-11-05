@@ -1,6 +1,6 @@
 # Interaction Domain - Content Primitives (L2.2)
 
-**Status:** implementation candidate on `feature/p2-l22-content-domain`, pending PR CI and integration.
+**Status:** implemented and integrated in main (PR #11), G1 qualified 2026-11-05. CI #42008750610 SUCCESS.
 **Decisions:** [ADR-010](../adr/ADR-010-content-polymorphism-and-order.md) and G0.
 **Target:** `0.1.0a2`; not a PyPI release.
 

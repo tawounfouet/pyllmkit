@@ -1,6 +1,6 @@
 # Interaction Domain - Message and Roles (L2.1)
 
-**Status:** implementation candidate pending L2.1 PR integration and exact-SHA main CI.
+**Status:** implemented and integrated in main (PR #12), G1 qualified 2026-11-05. CI #42008750610 SUCCESS.
 **Decisions:** [ADR-008](../adr/ADR-008-role-taxonomy.md), [ADR-009](../adr/ADR-009-message-conversation-ownership.md), [ADR-010](../adr/ADR-010-content-polymorphism-and-order.md).
 **Acceptance:** AC-006 - a provider-agnostic text Message.
 
