@@ -12,7 +12,7 @@
 
 Une execution concrete possede identite, etat, horloge, reponse ou echec. Elle est distincte de l'intention InferenceRequest. Les etats terminaux doivent etre serialisables sans construire d'informations imaginaires.
 
-## Decision proposee
+## Decision adoptee
 
 1. **InferenceRun** est une **Entity / Aggregate Root** identifiee par un InferenceRunId fort fourni explicitement. La request reste un **Value Object** sans UUID implicite.
 2. Les transitions produisent des **snapshots immuables** du meme RunId. Aucune mutation de l'ancien snapshot, aucune persistance ou transaction imposee.
