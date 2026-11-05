@@ -4,6 +4,7 @@ Parsing JSON text, provider invocation and auto-repair remain out of scope.
 """
 
 from dataclasses import dataclass, field
+
 from pyllmkit.domain.errors import DomainValidationError
 from pyllmkit.domain.tooling.json_values import FrozenJSON, freeze_json, thaw_json
 from pyllmkit.domain.tooling.validation import ValidationStatus
