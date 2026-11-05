@@ -1,5 +1,8 @@
 # PyLLMKit - Roadmap
 
+**Preparation M3 et closeout (2026-11-05) :** [bilan P3](docs/quality/P3_POST_IMPLEMENTATION_REVIEW.md), [runbook protection main #22](docs/governance/MAIN_BRANCH_PROTECTION_RUNBOOK.md), [procedure release 0.1.0a3](docs/governance/RELEASE_0_1_0a3_POLICY_AND_RUNBOOK.md), [frontiere provider future](docs/architecture/FUTURE_PROVIDER_BOUNDARY_CONTRACT.md), [convention de livraison](docs/governance/PYKIT_DELIVERY_AND_LEARNING_LOOP.md). **M3 GO/NO-GO a prononcer sur SHA exact apres qualification des nouvelles docs.** Publication NO-GO, main non protegee.
+
+
 **2026-11-05 - P3-G5 Integration & Packaging : GO technique avec reserves.** [PR #32](https://github.com/tawounfouet/pyllmkit/pull/32) integree sur [main 49cf26e](https://github.com/tawounfouet/pyllmkit/commit/49cf26e830819675a1c4cad9dfd2860fc977f0b6), [CI #42059417894 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42059417894): 798 tests, 95 % couverture, Python 3.11/12/13. [PV G5](docs/quality/P3_G5_GATE_REVIEW.md), P3-AC-001..030 couverts. **Prochaine etape : revue M3 GO/NO-GO distincte.** Version source reste 0.1.0a2, sans publication.
 
 **Historique de preparation :** L3.5, avant qualification. PR #31 de remediation PIR2-01/02/03 fusionnee, main `2ec317de`, [CI #42057132634 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42057132634): 789 tests et 95 % couverture. Issue #20 resolue. Les artefacts L3.5 (contrats architecture, schema JSON v1, concepts et API, traceabilite P3-AC-001..030, README executable, example 12, clean-install wheel/sdist) sont sur branche de travail. **G5 doit encore recevoir PR finale, CI exacte sur main et proces-verbal distinct.** M3 et publication restent non qualifies.
