@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased] - M5 Streaming Domain technically qualified (no release)
+
+- **GO technique avec réserves** pour Streaming hors réseau : [main@e733264c](https://github.com/tawounfouet/pyllmkit/commit/e733264cf914d1ada33dbd76df932102139533a4), [CI #42104049873](https://github.com/tawounfouet/pyllmkit/actions/runs/42104049873) SUCCESS (1048 tests cumulatifs, 96,08 % couverture avec branches, Python 3.11-3.13, Ruff, mypy, build et exemples wheel/sdist).
+- P5-G0..G6 qualifiés, PRs #51 à #57 fusionnées. Neuf ADR-030..038, 48 AC, événements typés, ordre strict, ToolCallDelta raw, consommation sync/async, EOF/annulation, Streaming JSON v1 indépendant et exemples offline 18..22.
+- [Revue finale M5](docs/quality/M5_GATE_REVIEW.md) et [PV G6](docs/quality/P5_G6_GATE_REVIEW.md) : domaine qualifié uniquement hors réseau ; aucun appel de modèle, executor ou transport provider.
+- **NO-GO release / publication** : version toujours 0.1.0a2, cible 0.1.0b1 non publiée, issues #22/#35/#36 ouvertes, main non protégée et revue GitHub tierce absente.
+
 ## [Unreleased] - M4 Tooling & Structured Output technically qualified
 
 - **GO technique avec réserves** pour le domaine hors ligne sur [main@92874b2e](https://github.com/tawounfouet/pyllmkit/commit/92874b2e97bcc130279e244bf1000c65a939d7e5), [CI #42093041970](https://github.com/tawounfouet/pyllmkit/actions/runs/42093041970) SUCCESS : 967 tests cumulatifs, 95,80 % global branch coverage, Python 3.11..3.13, Ruff et mypy strict.

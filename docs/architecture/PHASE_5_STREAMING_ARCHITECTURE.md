@@ -1,6 +1,6 @@
 # PyLLMKit P5 - Streaming architecture contract
 
-> Status: ADR-030..038 accepted at P5-G0. L5.1..L5.5 qualified on main; L5.6 and M5 require distinct evidence.
+> Status: ADR-030..038 accepted at P5-G0; L5.1..L5.6 and M5 technically qualified with reservations for the offline domain, main@e733264cf914d1ada33dbd76df932102139533a4, CI #42104049873 SUCCESS. Release NO-GO.
 > Baseline: c896cbf22bf7893f8a0eb722c9fc3db641ed624b. Installed package stays at 0.1.0a2; 0.1.0b1 is a target only.
 
 ## Architecture
@@ -43,4 +43,4 @@ P5-G0 design then L5.1 events, L5.2 ordering, L5.3 tool deltas, L5.4 sync/async,
 
 ## Qualification provenance
 
-P5-G0 through P5-G5 have qualifying main SHAs and successful Python 3.11/3.12/3.13 runs recorded in docs/quality. L5.6 integrates the offline end-to-end example, documentation, 48 acceptance cases and wheel/sdist smoke, while M5 release remains separate and unauthorized.
+P5-G0 through P5-G6 have qualifying main SHAs and successful Python 3.11/3.12/3.13 runs recorded in docs/quality. M5 technical qualification is recorded separately in docs/quality/M5_GATE_REVIEW.md. L5.6 includes the offline end-to-end example, documentation, 48 acceptance cases and wheel/sdist smoke. The 0.1.0b1 release remains unauthorized.

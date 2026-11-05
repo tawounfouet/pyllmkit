@@ -1,5 +1,7 @@
 # PyLLMKit - Roadmap
 
+**2026-11-05 - M5 Streaming Domain : GO TECHNIQUE AVEC RÉSERVES, hors réseau.** [Revue M5](docs/quality/M5_GATE_REVIEW.md) sur [main@e733264c](https://github.com/tawounfouet/pyllmkit/commit/e733264cf914d1ada33dbd76df932102139533a4), [CI #42104049873 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42104049873) : 1048 tests cumulatifs, 96,08 % couverture de branches, seuil 95 %, Python 3.11/3.12/3.13, Ruff, mypy strict, wheel/sdist et exemples 18..22. P5-G0..G6 qualifiés. Release 0.1.0b1 NON AUTORISÉE ; version source 0.1.0a2. Réserves #22/#35/#36.
+
 **2026-11-05 - M4 Tooling & Structured Output Qualified : GO TECHNIQUE AVEC RÉSERVES.** [Revue indépendante M4](docs/quality/M4_GATE_REVIEW.md), [main@92874b2e](https://github.com/tawounfouet/pyllmkit/commit/92874b2e97bcc130279e244bf1000c65a939d7e5), [CI #42093041970 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42093041970) : **967 tests cumulatifs**, 95,80 % couverture branches, seuil 95 % obligatoire, Python 3.11/3.12/3.13, Ruff et mypy strict verts. Les **14 causes M4 de NO-GO** sont examinées séparément; aucune bloquante constatée dans le domaine hors réseau. [Bilan P4](docs/quality/P4_POST_IMPLEMENTATION_REVIEW.md). **AUCUNE RELEASE** : version source 0.1.0a2, issues #22/#35/#36 et review tierce ouvertes. Suite possible : conception Phase 5 Streaming, indépendamment du release pipeline.
 
 
@@ -657,6 +659,6 @@ L5.2 Ordering & Lifecycle: PR #53, main 9039a1b (CI #42101437194 SUCCESS).
 L5.3 ToolCall Delta: PR #54, main 53a965c (CI #42102029484 SUCCESS).
 L5.4 Streaming Sync/Async: PR #55, main 6388711 (CI #42102577288 SUCCESS).
 L5.5 Independent Streaming JSON v1: PR #56, main 6070ca4 (CI #42103272574 SUCCESS).
-L5.6 Integration & Quality: PR d'implementation et CI main encore a qualifier au moment de la redaction.
+L5.6 Integration & Quality: PR #57 fusionnee, main e733264cf914d1ada33dbd76df932102139533a4, CI #42104049873 SUCCESS. P5-G6 et revue M5 qualifiés pour le domaine hors réseau, avec réserves.
 
 Les neuf ADR-030..038 sont le contrat de conception du domaine. Le noyau n'appelle aucun provider, ne parse pas de flux HTTP, ne reconstitue pas automatiquement un resultat d'outil et conserve UNKNOWN / sortie partielle. Chaque gate reste specifique a son SHA. Objectif indicatif 0.1.0b1, version actuelle 0.1.0a2, publication NO-GO et pas de tag.
