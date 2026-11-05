@@ -283,3 +283,16 @@ assert state.is_complete and state.text == "Bonjour"
 The domain uses the same event semantics for synchronous and asynchronous consumption. An incomplete stream is not silently marked as a finished response. ToolCall values from streamed raw arguments are descriptions with parsed absent, never ToolResults. No API keys or provider SDKs are needed.
 
 **Release governance:** The package still declares 0.1.0a2. The proposed 0.1.0b1 target is not a published version. M5 has a technical GO with reservations for the offline domain, but a separate release approval, enforced branch protection and provider boundary governance remain required.
+
+## Phase 6 - Registry & Discovery (candidat non fusionné)
+
+Le travail de conception P6-G0 (PR #59) et les sept lots L6.1..L6.7 (PR #60..#66) sont réalisés sur des branches empilées. **Aucun GO P6 ou M6 sur main n'est revendiqué** à ce stade. Les SDK providers exécutables et la découverte en réseau sont hors périmètre.
+
+- Description de providers et deployments, registres typés et recherche filtrée déterministe.
+- Support et limites effectifs conservateurs, sélection explicite d'un seul deployment, erreurs typées en cas d'ambiguïté.
+- Découverte statique hors ligne, provenance datée UTC, prévisualisation, conflits et import atomique en mémoire via version de snapshot.
+- Exemples 23..28, traçabilité P6-AC-001..056, tests d'architecture et validation checkout/wheel/sdist.
+
+Voir [API Registry & Discovery](docs/api/registry-discovery.md), [architecture P6](docs/architecture/PHASE_6_REGISTRY_ARCHITECTURE.md), [matrice de recettes](docs/quality/PHASE_6_TRACEABILITY.md) et [précheck L6.7](docs/quality/P6_G7_IMPLEMENTATION_PRECHECK.md).
+
+Cette branche est un **candidat en PR**. L'intégration ordonnée sur main, la validation des ADR et les preuves CI post-merge restent nécessaires. La version source reste **0.1.0a2**, la version cible **0.1.0b2** n'est pas publiée. Réserves #22, #35 et #36.
