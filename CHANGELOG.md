@@ -1,12 +1,12 @@
 # Changelog
 
 
-## [Unreleased] - Phase 4 Tooling & Structured Output (G4 qualified, G5 pending)
+## [Unreleased] - Phase 4 Tooling & Structured Output (G5 qualified, M4 review pending)
 
 ### Integrated on main (source only)
 - P4-G0..G4 : ADR-022..029 acceptées, outils descriptifs non exécutables, ToolCall identity/results, validation de sorties structurées, composition séparée M3/P4 et codec Tooling JSON v1 strict.
 - P4-G4 qualifié sur [main ab0257a0](https://github.com/tawounfouet/pyllmkit/commit/ab0257a0a9a08f2320b580340ba84c92609bbfc0), [CI #42089506022 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42089506022), 954 tests cumulatifs et 96 % de couverture branches sur Python 3.11.
-- Préparation L4.5 : documents d'architecture, traçabilité P4-AC-001..040, README, exemple 17, tests d'intégration et de packaging, precheck M4. **P4-G5 et M4 non qualifiés jusqu'à CI de main et revue distincte.**
+- Préparation L4.5 : documents d'architecture, traçabilité P4-AC-001..040, README, exemple 17, tests d'intégration et de packaging, precheck M4. **P4-G5 qualifié** après fusion [PR #48](https://github.com/tawounfouet/pyllmkit/pull/48) et [CI push/main #42092202193](https://github.com/tawounfouet/pyllmkit/actions/runs/42092202193) SUCCESS sur main@aad2656c (967 tests, 96 %, Python 3.11-3.13). **M4 reste à qualifier par revue finale séparée.**
 - Aucun SDK provider, exécuteur, Inference JSON v2, changement de version, tag, GitHub Release ou publication PyPI. Issues #22/#35/#36 ouvertes.
 
 
