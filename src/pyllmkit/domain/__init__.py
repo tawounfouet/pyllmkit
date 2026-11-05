@@ -15,6 +15,7 @@ from .capabilities import (
 from .errors import DomainValidationError, PyLLMKitError
 from .inference import (
     GENERATION_PARAMETER_NAMES,
+    INFERENCE_SCHEMA_VERSION,
     CompatibilityReport,
     DeploymentId,
     DeploymentTarget,
@@ -38,6 +39,12 @@ from .inference import (
     TextOutput,
     Usage,
     evaluate_request_support,
+    request_from_dict,
+    request_to_dict,
+    response_from_dict,
+    response_to_dict,
+    run_from_dict,
+    run_to_dict,
     validate_request_support,
 )
 from .interactions import (
@@ -102,6 +109,7 @@ __all__ = [
     "DomainValidationError",
     "ImageContent",
     "INTERACTION_SCHEMA_VERSION",
+    "INFERENCE_SCHEMA_VERSION",
     "MediaSourceRef",
     "Message",
     "Model",
@@ -133,5 +141,11 @@ __all__ = [
     "model_to_dict",
     "message_from_dict",
     "message_to_dict",
+    "request_from_dict",
+    "request_to_dict",
+    "response_from_dict",
+    "response_to_dict",
+    "run_from_dict",
+    "run_to_dict",
     "validate_request_support",
 ]
