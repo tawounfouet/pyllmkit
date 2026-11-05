@@ -1,5 +1,6 @@
-"""Deterministic, network-free registry adapters (P6 L6.2)."""
+"""Deterministic, network-free registry and discovery adapters (P6)."""
 
+from .discovery import StaticDiscoverySource
 from .in_memory import (
     InMemoryCatalog,
     InMemoryDeploymentRegistry,
@@ -8,8 +9,6 @@ from .in_memory import (
 )
 
 __all__ = [
-    "InMemoryCatalog",
-    "InMemoryModelRegistry",
-    "InMemoryDeploymentRegistry",
-    "InMemoryProviderCatalog",
+    "InMemoryCatalog", "InMemoryModelRegistry", "InMemoryDeploymentRegistry",
+    "InMemoryProviderCatalog", "StaticDiscoverySource",
 ]
