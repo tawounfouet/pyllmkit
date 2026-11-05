@@ -16,7 +16,6 @@ from .errors import DomainValidationError, PyLLMKitError
 from .interactions import (
     Content,
     ContentPart,
-    INTERACTION_SCHEMA_VERSION,
     ImageContent,
     MediaSourceRef,
     Message,
@@ -25,6 +24,7 @@ from .interactions import (
     message_from_dict,
     message_to_dict,
 )
+from .interactions.serialization import INTERACTION_SCHEMA_VERSION
 from .modalities import Modality, ModalitySet
 from .models import (
     Model,
