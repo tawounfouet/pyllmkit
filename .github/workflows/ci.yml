@@ -42,6 +42,7 @@ jobs:
           python examples/07_round_trip_interaction.py
           python examples/08_define_inference_request.py
           python examples/09_define_inference_response.py
+          python examples/10_define_inference_run.py
       - name: Build wheel and sdist
         run: python -m build
       - name: Wheel clean environment smoke
@@ -55,6 +56,9 @@ jobs:
       - name: L3.2 clean wheel smoke
         run: |
           .venv-wheel/bin/python -c "from pyllmkit.domain import InferenceResponse, InferenceRunId, TextOutput, Usage; x=InferenceResponse(InferenceRunId('smoke'), TextOutput(''), usage=Usage(output_tokens=0)); assert x.usage.output_tokens == 0"
+      - name: L3.3 clean wheel smoke
+        run: |
+          .venv-wheel/bin/python -c "from datetime import datetime, timezone; from pyllmkit.domain import Content, Message, Role, TextContent, ModelId, ModelTarget, InferenceRequest, InferenceRun, InferenceRunId, InferenceResponse, TextOutput, InferenceRunState; r=InferenceRun(InferenceRunId('smoke'), InferenceRequest(ModelTarget(ModelId('model')), (Message(Role.USER, Content((TextContent('hi'),))),))); now=datetime(2026,11,5,tzinfo=timezone.utc); done=r.start(now).complete(InferenceResponse(r.run_id, TextOutput('ok')), now); assert done.state is InferenceRunState.COMPLETED"
       - name: Sdist clean environment smoke
         run: |
           python -m venv .venv-sdist
@@ -62,3 +66,4 @@ jobs:
           .venv-sdist/bin/python -c "from pyllmkit.domain import Content, ImageContent, MediaSourceRef, Message, Role, TextContent, message_to_dict, message_from_dict; m=Message(Role.USER, Content((TextContent('x'), ImageContent(MediaSourceRef('asset', 'image-1'))))); assert message_from_dict(message_to_dict(m)) == m"
           .venv-sdist/bin/python -c "from pyllmkit.domain import GenerationConfig, DeploymentId, DeploymentTarget, InferenceRequest, Message, Content, Role, TextContent; r=InferenceRequest(DeploymentTarget(DeploymentId('dep-1')), (Message(Role.USER, Content((TextContent('test'),))),), GenerationConfig(temperature=0.0)); assert r.target.kind == 'deployment'"
           .venv-sdist/bin/python -c "from pyllmkit.domain import FinishReason, FinishReasonCode, InferenceResponse, InferenceRunId, TextOutput; x=InferenceResponse(InferenceRunId('smoke'), TextOutput(''), FinishReason(FinishReasonCode.UNKNOWN, 'vendor')); assert x.finish_reason.code is FinishReasonCode.UNKNOWN"
+          .venv-sdist/bin/python -c "from datetime import datetime, timezone; from pyllmkit.domain import Content, Message, Role, TextContent, ModelId, ModelTarget, InferenceRequest, InferenceRun, InferenceRunId, InferenceFailure, InferenceRunState; r=InferenceRun(InferenceRunId('sdist'), InferenceRequest(ModelTarget(ModelId('model')), (Message(Role.USER, Content((TextContent('hi'),))),))); t=datetime(2026,11,5,tzinfo=timezone.utc); fail=r.start(t).fail(InferenceFailure('timeout'),t); assert fail.state is InferenceRunState.FAILED"
