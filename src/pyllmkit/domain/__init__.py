@@ -1,4 +1,4 @@
-"""Public provider-agnostic Domain API (M1 and Phase 2 text interactions).
+"""Public provider-agnostic Domain API (M1 and Phase 2 interactions).
 
 Subpackages remain valid canonical import paths; explicit root reexports
 are ergonomic alpha aliases, not a provider-specific SDK facade.
@@ -13,7 +13,15 @@ from .capabilities import (
     SupportLevel,
 )
 from .errors import DomainValidationError, PyLLMKitError
-from .interactions import Content, ContentPart, Message, Role, TextContent
+from .interactions import (
+    Content,
+    ContentPart,
+    ImageContent,
+    MediaSourceRef,
+    Message,
+    Role,
+    TextContent,
+)
 from .modalities import Modality, ModalitySet
 from .models import (
     Model,
@@ -43,6 +51,8 @@ __all__ = [
     "Content",
     "ContentPart",
     "DomainValidationError",
+    "ImageContent",
+    "MediaSourceRef",
     "Message",
     "Model",
     "ModelArchitecture",
