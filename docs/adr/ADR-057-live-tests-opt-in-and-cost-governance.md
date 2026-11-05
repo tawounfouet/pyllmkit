@@ -1,7 +1,7 @@
 # ADR-057 - Essais live, budgets et preuves
 
 - Date : 2026-11-06
-- Statut : PROPOSED - P7-G0, non encore accepté par le propriétaire
+- Statut : ACCEPTED FOR TECHNICAL P7-G0 BASELINE, sous autorisation de poursuite du propriétaire le 2026-11-06 ; revue humaine indépendante non constatée
 - Milestone : P7 Provider Adapters / M7
 - Baseline : main@08a1cd5fc3d7a786e340727b446049c15c000ba7
 - Références : ADR-021, ADR-035, ADR-039..048, FUTURE_PROVIDER_BOUNDARY_CONTRACT et plan P7/M7.
@@ -24,4 +24,4 @@ P7-AC-017..018, 024, 032, 040, 048, 060; preuves par provider vérifiables et CI
 
 ## Gouvernance
 
-Ce texte fixe une proposition de contrat, et non une preuve d'implémentation. L'acceptation requiert la décision explicite du propriétaire sur la PR documentaire P7-G0, une analyse de sécurité et la CI post-merge sur le SHA exact de main. Aucun code provider ni test réseau n'est autorisé par la seule création de l'ADR.
+La poursuite du chantier a été explicitement demandée après la présentation de P7-G0 le 2026-11-06. Ce statut accepte les décisions comme baseline de développement, sans prétendre à une revue humaine indépendante ni à une qualification post-merge déjà obtenue. Les contrôles de sécurité, CI sur SHA exact de main et gates de code demeurent obligatoires. Aucune publication ni test live payant n'est autorisé.

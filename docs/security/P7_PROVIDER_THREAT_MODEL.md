@@ -1,7 +1,7 @@
 # PyLLMKit - P7 Provider Threat Model
 
 - Date : 2026-11-06
-- Statut : PROPOSED - validation de sécurité P7-G0 requise
+- Statut : BASELINE DE RISQUES P7-G0 pour implémentation contrôlée, revue de sécurité humaine indépendante encore requise
 - Baseline : main@08a1cd5fc3d7a786e340727b446049c15c000ba7
 - Périmètre : invocations HTTP/SDK, secrets, mapping, streaming, logs, qualité et dépenses.
 

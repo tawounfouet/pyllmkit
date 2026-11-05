@@ -1,7 +1,7 @@
 # PyLLMKit - P7-G0 Architecture Precheck
 
 - Date: 2026-11-06
-- Statut: PRECHECK PROPOSÉ - NO-GO DE CODE AVANT ACCEPTATION
+- Statut: PRECHECK TECHNIQUE SATISFAIT sur PR HEAD; GO de poursuite demandé le 2026-11-06, sous réserve de CI post-merge et revue humaine indépendante
 - Base main: 08a1cd5fc3d7a786e340727b446049c15c000ba7
 - Nature: examen des décisions; pas une attestation de CI ni un PV post-merge.
 

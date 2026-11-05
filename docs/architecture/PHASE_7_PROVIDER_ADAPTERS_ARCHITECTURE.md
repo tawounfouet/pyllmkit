@@ -1,7 +1,7 @@
 # PyLLMKit - P7 Provider Adapters - Architecture cible
 
 - Date : 2026-11-06
-- Statut : PROPOSED - P7-G0; aucun code provider implémenté par ce document
+- Statut : BASELINE P7-G0 validée pour poursuivre sous réserves, revue indépendante non constatée; aucun code provider implémenté par ce document
 - Baseline : main@08a1cd5fc3d7a786e340727b446049c15c000ba7
 - Invariants : Domain-First, DIP, ports/adapters, UNKNOWN != NATIVE, aucune release implicite.
 
