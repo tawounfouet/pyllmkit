@@ -1,4 +1,7 @@
 # ADR-019 - InferenceRun : Aggregate Root, machine a etats et horloge
+
+**Note d'implementation (2026-11-05)** : l'ADR-019 approuvee a P3-G0 est maintenant implementee dans [PR #27](https://github.com/tawounfouet/pyllmkit/pull/27), qualifiee sur [main 361791ff](https://github.com/tawounfouet/pyllmkit/commit/361791ff546612e10b407874c54014b1c0e1ce86), [CI #42044787119 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42044787119) et [PV P3-G3](../quality/P3_G3_GATE_REVIEW.md). Les formulations ci-dessous sur l'etat pre-implementation sont conservees comme historique des decisions; elles ne representent plus le statut actuel. Aucun streaming reel ni codec JSON v1 ne sont ajoutes par G3.
+
 > **Decision owner P3-G0 (2026-11-05)** : `ACCEPTED`, sous autorite du proprietaire dans la conversation du projet. Cette autorisation concerne les contrats et leur integration, **pas** une GitHub review externe ni la publication d'un package. 
 > **Arbitrage retenu :** Immutable run snapshots with identity equality RunId, explicit timezone-aware clock, finished_at for all terminal states, minimal InferenceFailure and optional cancellation code, six states.
 
