@@ -48,8 +48,12 @@ jobs:
           python -m venv .venv-wheel
           .venv-wheel/bin/python -m pip install --no-index --no-deps dist/*.whl
           .venv-wheel/bin/python -c "from pyllmkit.domain import Content, Message, Role, TextContent, message_to_dict, message_from_dict; m=Message(Role.USER, Content((TextContent('x'),))); assert message_from_dict(message_to_dict(m)) == m"
+      - name: L3.1 clean wheel smoke
+        run: |
+          .venv-wheel/bin/python -c "from pyllmkit.domain import Content, InferenceRequest, Message, ModelId, ModelTarget, Role, TextContent; r=InferenceRequest(ModelTarget(ModelId('smoke')), (Message(Role.USER, Content((TextContent('x'),))),)); assert r.target.kind == 'model'"
       - name: Sdist clean environment smoke
         run: |
           python -m venv .venv-sdist
           .venv-sdist/bin/python -m pip install --no-deps dist/*.tar.gz
           .venv-sdist/bin/python -c "from pyllmkit.domain import Content, ImageContent, MediaSourceRef, Message, Role, TextContent, message_to_dict, message_from_dict; m=Message(Role.USER, Content((TextContent('x'), ImageContent(MediaSourceRef('asset', 'image-1'))))); assert message_from_dict(message_to_dict(m)) == m"
+          .venv-sdist/bin/python -c "from pyllmkit.domain import GenerationConfig, DeploymentId, DeploymentTarget, InferenceRequest, Message, Content, Role, TextContent; r=InferenceRequest(DeploymentTarget(DeploymentId('dep-1')), (Message(Role.USER, Content((TextContent('test'),))),), GenerationConfig(temperature=0.0)); assert r.target.kind == 'deployment'"
