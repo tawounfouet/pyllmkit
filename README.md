@@ -1,10 +1,10 @@
 # PyLLMKit
 
-**Status:** M1/G0/G1/G2 qualified on `main`; L2.4 Interaction JSON v1 is an implementation candidate pending integration and G3/G4/M2 review. The metadata version `0.1.0a2` is a **repository alpha candidate**, not published. No Git tag, GitHub Release or PyPI upload.
+**Status:** M1/G0/G1/G2/G3 qualified on `main`. L2.4 strict Interaction JSON v1 is integrated, [CI SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42015194077): 342 tests, 91% coverage. G4 documentation finalization and M2 review remain pending. Metadata `0.1.0a2` is a **repository alpha candidate**, not published. No Git tag, GitHub Release or PyPI upload.
 
 PyLLMKit models provider-agnostic LLM primitives as typed Python domain objects, separate from model-serving providers, deployments and inference APIs.
 
-**Phase 2 architecture (2026-11-05):** **P2-BOOT G0 = GO**. ADR-008..013 were accepted by the project owner and integrated in [PR #8](https://github.com/tawounfouet/pyllmkit/pull/8); the [G0 review](docs/quality/P2_BOOT_GATE_REVIEW.md) and [decision register](docs/quality/PHASE_2_ARCHITECTURE_DECISION_REGISTER.md) were archived via PR #9, and the integrated `main` CI passed. **L2.1/L2.2 and AC-006 are now implemented and G1 = GO on integrated main** ([CI #42008750610](https://github.com/tawounfouet/pyllmkit/actions/runs/42008750610): 204 tests, 90% coverage). **L2.3 and AC-007 now implemented, G2 = GO** ([CI #42011868937](https://github.com/tawounfouet/pyllmkit/actions/runs/42011868937): 252 tests, 90% coverage). Interaction JSON codec v1 is proposed in L2.4 and requires integrated CI before qualification. G3/G4 and M2 remain pending. No release has been published.
+**Phase 2 architecture (2026-11-05):** **P2-BOOT G0 = GO**. ADR-008..013 were accepted by the project owner and integrated in [PR #8](https://github.com/tawounfouet/pyllmkit/pull/8); the [G0 review](docs/quality/P2_BOOT_GATE_REVIEW.md) and [decision register](docs/quality/PHASE_2_ARCHITECTURE_DECISION_REGISTER.md) were archived via PR #9, and the integrated `main` CI passed. **L2.1/L2.2 and AC-006 are now implemented and G1 = GO on integrated main** ([CI #42008750610](https://github.com/tawounfouet/pyllmkit/actions/runs/42008750610): 204 tests, 90% coverage). **L2.3 and AC-007 now implemented, G2 = GO** ([CI #42011868937](https://github.com/tawounfouet/pyllmkit/actions/runs/42011868937): 252 tests, 90% coverage). L2.4 codec integrated and G3 GO ([CI #42015194077](https://github.com/tawounfouet/pyllmkit/actions/runs/42015194077), 342 tests, 91% coverage). G4 and M2 remain pending until documentation integration and final main CI. No release has been published.
 
 ## Phase 2 text/image interaction API (G2 GO)
 
@@ -20,7 +20,7 @@ assert message.content.parts[0].text == "Bonjour PyLLMKit"
 - [G1 Gate Review](docs/quality/P2_G1_GATE_REVIEW.md), [Interaction API](docs/api/interaction.md).
 - L2.3: immutable `MediaSourceRef` and `ImageContent`, ordered mixed text/image Content, AC-007.
 - [G2 Gate Review](docs/quality/P2_G2_GATE_REVIEW.md), [Media and Images](docs/concepts/media-and-images.md).
-- L2.4 implementation candidate: strict Interaction JSON mapping codec v1; [schema](docs/architecture/INTERACTION_JSON_SCHEMA_V1.md). Await CI and G3/G4 qualification. No alpha publication.
+- L2.4 integrated: strict Interaction JSON mapping codec v1; [schema](docs/architecture/INTERACTION_JSON_SCHEMA_V1.md) and [G3 Gate Review](docs/quality/P2_G3_GATE_REVIEW.md). G3 GO, no alpha publication.
 
 ### AC-007 multimodal Message
 
@@ -40,7 +40,7 @@ assert tuple(part.kind for part in message.content.parts) == ("text", "image", "
 
 The domain does **not** resolve or download URLs. Accepted HTTP(S) URL syntax is not proof of SSRF safety; actual media access requires a future adapter's independent security controls.
 
-### Interaction JSON v1 (L2.4 candidate)
+### Interaction JSON v1 (L2.4 integrated, G3 GO)
 
 ```python
 import json
@@ -70,6 +70,7 @@ python -m pytest -q --cov=pyllmkit.domain --cov-branch --cov-report=term-missing
 python examples/01_define_model.py
 python examples/02_define_artifacts.py
 python examples/03_define_capabilities.py
+python examples/07_round_trip_interaction.py
 python -m build
 ```
 
