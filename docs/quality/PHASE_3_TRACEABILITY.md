@@ -43,7 +43,7 @@ Les `P3-AC-001..030` sont les cas de recette propres au plan de Phase 3, et non 
 | 027 | Aucun secret URI dans les erreurs | ADR-011/020 | `test_p3_l34_inference_json_v1.py` | G4 / #29 | PASS G4 |
 | 028 | ContentPart inconnu refuse | ADR-010/012 | meme fichier | G4 / #29 | PASS G4 |
 | 029 | Horloge injectee, deterministe | ADR-019 | `test_p3_l33_inference_run.py` | G3 / #27 | PASS G3 |
-| 030 | README/snippet P3 copiable | PIR2-02 / NFR-Docs | `tests/acceptance/test_p3_l35_readme_snippets.py` | **G5 / PR L3.5** | **PENDING final main CI** |
+| 030 | README/snippet P3 copiable | PIR2-02 / NFR-Docs | `tests/acceptance/test_p3_l35_readme_snippets.py` | **G5 / #32** | **PASS G5** |
 
 Pour les chemins courts `test_compatibility.py`, `test_serialization_strict.py`, consulter `tests/unit/domain/inference/`. Tous les tests de gates G1..G4 ont deja ete executes sur `main` qualifie; pour AC-030, la presence d'un fichier ne constitue pas une preuve PASS avant CI.
 
@@ -57,7 +57,7 @@ Pour les chemins courts `test_compatibility.py`, `test_serialization_strict.py`,
 | P3-G3 | #27, #28 | `361791ff546612e10b407874c54014b1c0e1ce86` | [#42044787119](https://github.com/tawounfouet/pyllmkit/actions/runs/42044787119) SUCCESS | GO technique avec reserves |
 | P3-G4 | #29, #30 | `d72b1ce82a4a34c62888ad48b50bcf07537f83d1` | [#42053906726](https://github.com/tawounfouet/pyllmkit/actions/runs/42053906726) SUCCESS | GO technique avec reserves |
 | PIR2 correctifs | #31 | `2ec317de98bd9d0897fe1e48801a9727e4f7ced6` | [#42057132634](https://github.com/tawounfouet/pyllmkit/actions/runs/42057132634) SUCCESS (789 tests, 95 %) | #20 CLOSED |
-| **P3-G5** | PR L3.5 et PV distinct | **PENDING** | **PENDING exact main CI** | **NON QUALIFIE** |
+| **P3-G5** | #32 et PV d'archivage | `49cf26e830819675a1c4cad9dfd2860fc977f0b6` | [#42059417894](https://github.com/tawounfouet/pyllmkit/actions/runs/42059417894) SUCCESS (798 tests, 95 %) | **GO technique avec reserves** |
 | **M3** | Revue et decision separee | **PENDING** | **PENDING** | **NON QUALIFIE** |
 
 Les SHA ci-dessus sont les **SHAs applicatifs** de qualification. Les archives documentaires ont des SHAs differents, chacun avec sa propre CI mentionnee dans la PR d'archivage. Aucun chiffre de CI futur n'est pre-annonce.
@@ -79,4 +79,4 @@ Les SHA ci-dessus sont les **SHAs applicatifs** de qualification. Les archives d
 - **Parser JSON texte :** duplicate keys non garanties par `json.loads` standard; la politique appartient au futur boundary d'application (ADR-020).
 - **Release :** metadata `0.1.0a2`, aucune publication ni tag prevu par G5. Revue M3 et release sont deux decisions distinctes.
 
-**Etat courant : P3-G5 et M3 non qualifies tant que les preuves de fusion et CI sur main ne sont pas archivees.**
+**Etat courant : P3-G0..G5 GO techniques avec reserves, PV G5 et main CI #42059417894. M3 demeure NON QUALIFIE jusqu'a sa revue distincte.**
