@@ -1,13 +1,13 @@
 # PyLLMKit - P4-G0 Architecture Ready - Revue de gate
 
-> Etat au 2026-11-05 : **PENDING / NO-GO DE QUALIFICATION FINALE**.
-> Nature : dossier d'instruction, pas proces-verbal GO archive.
+> Etat au 2026-11-05 : **ADOPTION OWNER ACQUISE / GO FINAL SUSPENDU A LA CI MAIN**.
+> Nature : dossier de qualification avant integration; GO final sur preuve post-merge.
 > Prochain verdict possible : GO TECHNIQUE AVEC RESERVES **apres** adoption des ADR, integration GitHub et CI exacte de main.
 
 ## Contrats et decisions examinees
 
 - P4-BOOT : frontiere pure/offline, pas d'execution de tools et pas de SDK provider.
-- ADR-022..029 : huit recommandations redigees, avec alternatives et tests de qualification; statut individuel RECOMMENDED FOR ADOPTION.
+- ADR-022..029 : huit decisions ACCEPTED par le proprietaire, avec alternatives et tests de qualification.
 - ADR-024 : schema P4-JSON-1, profil ferme (pas Draft 2020-12 complet), limites locales et validation d'instance distincte.
 - ADR-025 : immutable profond, raw/parsed/ABSENT, validation prouvee.
 - ADR-028 : Option B, wrappers P4 externes a M3 et aucun changement du codec Inference v1.
@@ -19,8 +19,8 @@
 |---|---|---|
 | Baseline M3 identifiee | PASS | main@3d5ffc811c33ae6dabf392b2c7d24f7ec2a27dc6 ; M3_GATE_REVIEW |
 | Revue contradictoire | PASS | P4_G0_ARCHITECTURE_REVIEW.md |
-| Huit ADR instruites | PASS / non adoptees | ADR-022..029, registre |
-| Adoption explicite de chaque ADR par le proprietaire | PENDING | Instruction de validation reçue, pas de signature des arbitrages finaux |
+| Huit ADR instruites | PASS / ACCEPTED | ADR-022..029, registre |
+| Adoption explicite de chaque ADR par le proprietaire | PASS | P4_G0_OWNER_ARCHITECTURE_APPROVAL.md |
 | Plan P4 integre dans main | PENDING | PR #38 encore ouverte en draft |
 | CI du head de PR incluant les ADR | PENDING | A relire apres commit P4-G0 |
 | CI push/main apres merge | PENDING | Aucun SHA main resultant |
@@ -36,7 +36,7 @@ Une CI verte sur la branche ou une approbation en conversation seule ne doivent 
 
 ## Autorite et reserves
 
-Le proprietaire decide de l'adoption et de l'integration. La revue a ete effectuee par assistance technique, et non par un pair humain independant. Risques #22 (main protection), #35 (release), #36 (provider boundary) restent visibles. Aucune version, publication ou developpement L4.1 ne sont autorises par ce document.
+Le proprietaire a approuve l'adoption et autorise l'integration. La revue a ete effectuee par assistance technique, et non par un pair humain independant. Risques #22 (main protection), #35 (release), #36 (provider boundary) restent visibles. Aucune version, publication ou developpement L4.1 ne sont autorises par ce document.
 
 ## Journal de qualification a completer apres integration
 
