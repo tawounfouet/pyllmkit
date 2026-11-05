@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased development] - 0.1.0a3 Inference Primitives (G3 only, not released)
+
+### Added (L3.3 - Run Lifecycle Ready)
+- Immutable `InferenceRun` Aggregate Root with six states, pure transitions, injected timezone-aware timestamps, terminal `finished_at`, RunId identity equality and strict snapshot invariants.
+- `InferenceFailure` normalized snake_case codes and optional cancellation code, without native provider payload; response correlation checked during completion.
+- P3-AC-014..020 and P3-AC-029, negative tests and reconstructed snapshot validation, offline example 10, public API docs and wheel/sdist smoke.
+- G3 technical qualification: [PR #27](https://github.com/tawounfouet/pyllmkit/pull/27), [main 361791ff](https://github.com/tawounfouet/pyllmkit/commit/361791ff546612e10b407874c54014b1c0e1ce86), [CI #42044787119](https://github.com/tawounfouet/pyllmkit/actions/runs/42044787119), 679 tests, 94 % coverage and three Python versions. [G3 report](docs/quality/P3_G3_GATE_REVIEW.md).
+
+**Still excluded:** real streaming, network/provider invocation, persistence, retry engine, event bus and Inference JSON v1 codec (L3.4). No version bump, tag or release.
+
+
 ## [Unreleased development] - 0.1.0a3 Inference Primitives (G2 only, not released)
 
 ### Added (L3.2 - Response Ready)
