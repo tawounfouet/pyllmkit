@@ -184,7 +184,7 @@ class CapabilityResolver:
                 raise DomainValidationError("duplicate capability_ids")
             ids = tuple(sorted(capability_ids, key=lambda x: x.value))
         else:
-            sources = (model.capabilities, deployment.capabilities)
+            sources: tuple[CapabilitySet | None, ...] = (model.capabilities, deployment.capabilities)
             if provider is not None:
                 sources += (provider.capabilities,)
             ids = tuple(sorted(
