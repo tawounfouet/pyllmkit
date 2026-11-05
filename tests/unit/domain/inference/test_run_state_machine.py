@@ -1,7 +1,7 @@
 """ADR-019 state transition matrix, identity and timestamps."""
 
 from dataclasses import FrozenInstanceError, replace
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta, timezone
 from typing import cast
 
 import pytest
@@ -23,7 +23,7 @@ from pyllmkit.domain import (
     TextOutput,
 )
 
-T0 = datetime(2026, 11, 5, 11, 0, tzinfo=timezone.utc)
+T0 = datetime(2026, 11, 5, 11, 0, tzinfo=UTC)
 T1 = T0 + timedelta(seconds=1)
 T2 = T0 + timedelta(seconds=2)
 
@@ -239,7 +239,7 @@ def test_clock_must_be_aware_and_explicit(at: object, match: str) -> None:
 def test_offset_aware_clock_is_accepted_and_ordered_by_instant() -> None:
     paris = timezone(timedelta(hours=1))
     start = datetime(2026, 11, 5, 12, 0, tzinfo=paris)
-    end = datetime(2026, 11, 5, 11, 0, tzinfo=timezone.utc)
+    end = datetime(2026, 11, 5, 11, 0, tzinfo=UTC)
     run = created().start(start)
     done = run.complete(InferenceResponse(run.run_id, TextOutput("")), end)
     assert done.started_at == done.finished_at
