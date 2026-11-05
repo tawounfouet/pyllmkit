@@ -1,6 +1,6 @@
 # PyLLMKit - Inference Response Domain API (L3.2)
 
-> Scope: implementation candidate for `0.1.0a3`, before P3-G2 qualification.
+> Scope (2026-11-05): **P3-G2 GO technique avec reserves**, code integre via [PR #25](https://github.com/tawounfouet/pyllmkit/pull/25), [main SHA 783aa438](https://github.com/tawounfouet/pyllmkit/commit/783aa4381dc05a4b9bc431faab282f2bbe37d38d), [CI #42039312011 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42039312011) (545 tests / 94 %, Python 3.11; 3 versions). [PV G2](../quality/P3_G2_GATE_REVIEW.md). Package 0.1.0a2 unpublished; a3 not released.
 > Based on accepted ADR-014, ADR-017, ADR-018; preserves P3-G0 and P3-G1 contracts.
 > Domain data only: no SDK, provider I/O, streaming, Run lifecycle or JSON Inference v1 codec.
 
