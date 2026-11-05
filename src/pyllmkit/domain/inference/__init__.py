@@ -17,6 +17,15 @@ from .output import InferenceOutput, TextOutput
 from .request import InferenceRequest
 from .response import InferenceResponse
 from .run import InferenceRun, InferenceRunState
+from .serialization import (
+    INFERENCE_SCHEMA_VERSION,
+    request_from_dict,
+    request_to_dict,
+    response_from_dict,
+    response_to_dict,
+    run_from_dict,
+    run_to_dict,
+)
 from .targets import (
     DeploymentId,
     DeploymentTarget,
@@ -45,6 +54,13 @@ __all__ = [
     "InferenceFailure",
     "InferenceRun",
     "InferenceRunState",
+    "INFERENCE_SCHEMA_VERSION",
+    "request_from_dict",
+    "request_to_dict",
+    "response_from_dict",
+    "response_to_dict",
+    "run_from_dict",
+    "run_to_dict",
     "InferenceRunId",
     "TextOutput",
     "Usage",
