@@ -1,6 +1,8 @@
 # ADR-008 - Role taxonomy and provider neutrality
 
-- **Status:** PROPOSED FOR REVIEW (P2-BOOT, 2026-11-05). Not yet accepted or merged.
+- **Status:** ACCEPTED for Phase 2 design (P2-BOOT, 2026-11-05). Implementation and M2 qualification remain pending.
+- **Authorization:** Explicit review and approval by the repository project owner in the PyLLMKit project conversation on 2026-11-05. This is an owner decision, not a GitHub review submission or independent architecture audit.
+- **Decision effective date:** 2026-11-05.
 - **Context:** Interaction uses semantic roles. Providers differ in supported roles and some APIs omit a developer or tool role.
 - **Sources:** specifications 03, 05, 07 (INT-004, INT-006, INT-007); Phase 2 plan section 5; ADR-005/006.
 

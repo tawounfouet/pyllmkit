@@ -1,6 +1,8 @@
 # ADR-009 - Message value semantics and optional Conversation
 
-- **Status:** PROPOSED FOR REVIEW (P2-BOOT, 2026-11-05). Not yet accepted or merged.
+- **Status:** ACCEPTED for Phase 2 design (P2-BOOT, 2026-11-05). Implementation and M2 qualification remain pending.
+- **Authorization:** Explicit review and approval by the repository project owner in the PyLLMKit project conversation on 2026-11-05. This is an owner decision, not a GitHub review submission or independent architecture audit.
+- **Decision effective date:** 2026-11-05.
 - **Context:** A message is a value representation of one speaker's ordered content. A conversation may group messages but is not a prerequisite for inference.
 - **Sources:** specifications 05, 06 (sections 28-30), 07 (INT-001/002/005), 08 (BuildMessage); Phase 2 plan.
 

@@ -1,6 +1,6 @@
 # Phase 2 - Interaction contracts (P2-BOOT)
 
-**Status:** PROPOSED / REVIEW REQUIRED, 2026-11-05. This describes **future APIs** for `0.1.0a2`, not functionality present on main.
+**Status:** DESIGN APPROVED BY PROJECT OWNER (2026-11-05). ADR-008..ADR-013 accepted. This specifies **future APIs** for `0.1.0a2`, not functionality already present on main. G0 integration validation is tracked separately.
 **Baseline:** `main` at `d7f06072d246819fb976c6a456949995ae33562d` (M1-qualified, CI run 40638604245).
 **Decision set:** ADR-008..ADR-013. Phase 2 execution plan: `docs/02_PYLLMKIT_PHASE_2_IMPLEMENTATION_PLAN.md`.
 

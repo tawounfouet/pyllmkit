@@ -1,6 +1,8 @@
 # ADR-013 - Multimodal extension policy for a2
 
-- **Status:** PROPOSED FOR REVIEW (P2-BOOT, 2026-11-05). Not yet accepted or merged.
+- **Status:** ACCEPTED for Phase 2 design (P2-BOOT, 2026-11-05). Implementation and M2 qualification remain pending.
+- **Authorization:** Explicit review and approval by the repository project owner in the PyLLMKit project conversation on 2026-11-05. This is an owner decision, not a GitHub review submission or independent architecture audit.
+- **Decision effective date:** 2026-11-05.
 - **Context:** The broad domain language includes audio, video, documents and tools, but a2's required acceptance cases are text and image.
 - **Sources:** specifications 03, 04, 05, 07 (INT-010/011); Phase 2 plan section 5; ROADMAP 0.1.0a2.
 

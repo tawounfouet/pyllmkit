@@ -1,6 +1,8 @@
 # ADR-012 - Independent versioned Interaction JSON codec
 
-- **Status:** PROPOSED FOR REVIEW (P2-BOOT, 2026-11-05). Not yet accepted or merged.
+- **Status:** ACCEPTED for Phase 2 design (P2-BOOT, 2026-11-05). Implementation and M2 qualification remain pending.
+- **Authorization:** Explicit review and approval by the repository project owner in the PyLLMKit project conversation on 2026-11-05. This is an owner decision, not a GitHub review submission or independent architecture audit.
+- **Decision effective date:** 2026-11-05.
 - **Context:** Interaction VOs need deterministic serialization without reusing the frozen Model schema v1 or adopting a provider API wire format.
 - **Sources:** ADR-004; Phase 2 plan section 5; specifications 07 (INT-003/007), 05, 06.
 

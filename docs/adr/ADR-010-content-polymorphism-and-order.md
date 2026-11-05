@@ -1,6 +1,8 @@
 # ADR-010 - Immutable ContentPart polymorphism and ordered content
 
-- **Status:** PROPOSED FOR REVIEW (P2-BOOT, 2026-11-05). Not yet accepted or merged.
+- **Status:** ACCEPTED for Phase 2 design (P2-BOOT, 2026-11-05). Implementation and M2 qualification remain pending.
+- **Authorization:** Explicit review and approval by the repository project owner in the PyLLMKit project conversation on 2026-11-05. This is an owner decision, not a GitHub review submission or independent architecture audit.
+- **Decision effective date:** 2026-11-05.
 - **Context:** Interleaved text and images need a canonical, ordered and provider-independent representation; a plain `str` or unordered collection is insufficient.
 - **Sources:** specifications 03, 05/06, 07 (INT-003/005/008, MOD-003/005); ADR-006; Phase 2 plan.
 
