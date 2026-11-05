@@ -3,6 +3,7 @@
 These are architecture/document checks, not proof that L2.x is implemented.
 """
 
+import ast
 from pathlib import Path
 
 from tests.architecture.guard import forbidden_imports
@@ -26,7 +27,8 @@ def test_p2_boot_decision_records_exist_and_are_reviewable() -> None:
             "## Follow-ups",
         ):
             assert section in content, (candidates[0], section)
-        assert "PROPOSED" in content
+        status = next(line for line in content.splitlines() if line.startswith("- **Status:**"))
+        assert any(state in status for state in ("PROPOSED", "ACCEPTED", "REVISED"))
 
 
 def test_interaction_domain_future_imports_remain_provider_free() -> None:
