@@ -11,7 +11,7 @@
 
 Le corpus distingue Model, Deployment et Endpoint. M2 n'implemente pas de Deployment ni Endpoint operables. Une cible doit pouvoir etre decrite sans promettre la resolution ou la disponibilite effective.
 
-## Decision proposee
+## Decision adoptee
 
 1. Introduire **InferenceTarget** et trois variantes fermees au schema a3 : **ModelTarget**, **DeploymentTarget**, **EndpointTarget**.
 2. ModelTarget reference un **ModelId** du domaine M1. DeploymentTarget et EndpointTarget referencent des identifiants opaques et distinctement types, non vides, sans construire d'Entity Serving.
