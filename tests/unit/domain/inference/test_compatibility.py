@@ -16,17 +16,17 @@ from pyllmkit.domain import (
     TextContent,
 )
 from pyllmkit.domain.inference import (
+    CompatibilityReport,
     DeploymentId,
     DeploymentTarget,
     GenerationConfig,
     GenerationSupportSnapshot,
     InferenceRequest,
     ModelTarget,
+    ParameterAssessment,
     ParameterSupport,
     evaluate_request_support,
     validate_request_support,
-    CompatibilityReport,
-    ParameterAssessment,
 )
 
 
