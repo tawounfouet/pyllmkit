@@ -1,6 +1,6 @@
 # PyLLMKit Interaction API - text and image content
 
-**Scope:** L2.1/L2.2/L2.3 G2 qualified. L2.4 Interaction codec implemented on its PR candidate, with G3/G4 qualification still pending. Not published.
+**Scope:** L2.1/L2.2/L2.3 G2 GO; L2.4 strict Interaction codec integrated and **G3 GO** on `main` SHA `fb4760aa890dceb8c08b16738500b5b28574e60b`, [CI SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42015194077). G4/M2 still pending. Not published.
 
 ## Public imports
 

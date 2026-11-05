@@ -1,6 +1,6 @@
 # Interaction JSON v1 - PyLLMKit Domain Contract
 
-**Status:** L2.4 implementation candidate; qualification requires PR and integrated main CI.
+**Status:** L2.4 integrated, **G3 GO**, 2026-11-05. Qualified `main` SHA `fb4760aa890dceb8c08b16738500b5b28574e60b`, [CI SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42015194077) (342 tests, 91% coverage). G4/M2 pending.
 **Decision:** ADR-012 ACCEPTED; independent from the Model Domain schema.
 **Scope:** 0.1.0a2 candidate, not a published external wire standard.
 

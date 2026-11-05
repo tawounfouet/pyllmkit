@@ -1,6 +1,6 @@
 # Phase 2 - Interaction contracts (P2-BOOT)
 
-**Status:** DESIGN APPROVED; text and image Interaction primitives (`Role`, `Message`, `ContentPart`, `TextContent`, `Content`, `MediaSourceRef`, `ImageContent`) **IMPLEMENTED / G2 GO** on 2026-11-05. ADR-008..ADR-013 accepted. The independent Interaction JSON codec in the example below remains a future L2.4 API, not functionality already present on main.
+**Status:** DESIGN APPROVED; text and image Interaction primitives (`Role`, `Message`, `ContentPart`, `TextContent`, `Content`, `MediaSourceRef`, `ImageContent`) **IMPLEMENTED / G2 GO** on 2026-11-05. ADR-008..ADR-013 accepted. The independent Interaction JSON codec v1 from L2.4 is now integrated and G3 qualified on main; see docs/architecture/INTERACTION_JSON_SCHEMA_V1.md.
 **Baseline:** `main` at `d7f06072d246819fb976c6a456949995ae33562d` (M1-qualified, CI run 40638604245).
 **Decision set:** ADR-008..ADR-013. Phase 2 execution plan: `docs/02_PYLLMKIT_PHASE_2_IMPLEMENTATION_PLAN.md`.
 
@@ -22,7 +22,7 @@ Conversation (aggregate, optional) -> NOT implemented in a2
 InferenceRequest / ToolCall / streaming -> later versions
 ```
 
-## Target text/image signatures (constructors available, JSON codec still illustrative)
+## Text/image signatures and Interaction JSON codec (implemented and G3 qualified)
 
 ```python
 from pyllmkit.domain.interactions import (
@@ -83,7 +83,7 @@ Interaction does **not** import domain Model Entities, provider SDKs, HTTP clien
 }
 ```
 
-Only the Interaction codec uses this shape. Strictly reject unknown keys/kinds/schema versions; preserve exact ordered parts. The Model domain `schema_version=1` writer/reader are not modified. JSON examples in this file are **future L2.4 codec contract proposals**, not output from executable code.
+Only the Interaction codec uses this shape. Strictly reject unknown keys/kinds/schema versions; preserve exact ordered parts. The Model domain `schema_version=1` writer/reader are not modified. JSON examples here express the now-tested Interaction JSON v1 schema; the codec is exercised by CI round-trip tests and the L2.4 example.
 
 ## Traceable acceptance contract
 

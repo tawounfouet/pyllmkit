@@ -8,11 +8,11 @@
 |---|---|
 | Projet | PyLLMKit |
 | Document | `ROADMAP.md` |
-| Statut | **Roadmap active ; M1 = GO ; P2-BOOT G0 = GO ; G1 = GO ; L2.3 G2 = GO (2026-11-05)** |
+| Statut | **Roadmap active ; M1 = GO ; G0/G1/G2/G3 = GO (2026-11-05) ; G4/M2 en revue** |
 | Date de référence | 2026-11-05 |
 | Portée | Consolidation des spécifications, architecture, implémentation, qualification et releases |
 | Sources vérifiées | `00_PYLLMKIT_*.md` à `09_PYLLMKIT_*.md` fournis dans la conversation |
-| État du code | **Vérifié jusqu'à G2 (Phase 2 texte/image)** : `main` SHA `8e4d8c1df998d17e20e50a79b5c6904fe5de0616`, 252 tests, 90 % couverture, CI Python 3.11-3.13 verte ; aucune release publiée |
+| État du code | **Vérifié jusqu'à G3 (Interaction JSON v1)** : `main` SHA `fb4760aa890dceb8c08b16738500b5b28574e60b`, 342 tests, 91 % couverture, CI Python 3.11-3.13 verte, version candidate 0.1.0a2 ; aucune release publiée |
 | Roadmap spécialisée | `22_PYLLMKIT_IMPLEMENTATION_ROADMAP.md` (document mentionné dans les spécifications ; existence et contenu non vérifiés) |
 
 ---
@@ -30,6 +30,10 @@
 ---
 
 > **Phase 2 G2 - Multimodal Content Ready: GO (2026-11-05).** [PR #14](https://github.com/tawounfouet/pyllmkit/pull/14) intégrée : `MediaSourceRef`, `ImageContent`, contenu ordonné texte/image, AC-007. CI de `main` sur SHA `8e4d8c1df998d17e20e50a79b5c6904fe5de0616` : [SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42011868937), 252 tests, 90 % de couverture, 3 versions Python. [Procès-verbal G2](docs/quality/P2_G2_GATE_REVIEW.md). Codec JSON L2.4, G3/G4 et M2 restant à qualifier ; package non publié.
+
+---
+
+> **Phase 2 G3 - Quality Ready: GO (2026-11-05).** [PR #16](https://github.com/tawounfouet/pyllmkit/pull/16) intégrée : codec JSON Interaction v1, tests négatifs et round-trips AC-006/007, packaging candidat `0.1.0a2`. CI de `main` sur SHA `fb4760aa890dceb8c08b16738500b5b28574e60b`: [SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42015194077), 342 tests, 91 % de couverture. [Procès-verbal G3](docs/quality/P2_G3_GATE_REVIEW.md). G4 et M2 à qualifier après archivage documentaire ; aucune publication effectuée.
 
 ---
 
