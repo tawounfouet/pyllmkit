@@ -1,6 +1,7 @@
-# PyLLMKit - M6 Registry & Discovery: readiness precheck (NO-GO integration)
+# PyLLMKit - M6 Registry & Discovery: précheck historique avant intégration
 
-- Audit : 2026-11-05
+- **Document historique** : état antérieur à la fusion des PR #59..#66. Voir la qualification actualisée `PHASE_6_TRACEABILITY.md`, les PV `P6_G0_GATE_REVIEW.md` à `P6_G7_GATE_REVIEW.md`, puis la revue finale M6.
+- Audit initial : 2026-11-05
 - Baseline main vérifiée : `19cc1c9e1d5598711890ddc3e14f1da94c79ce70`, `protected=false`.
 - Version source : `0.1.0a2`. Objectif `0.1.0b2` non publié et non autorisé.
 - Périmètre : P6-G0 architecture et L6.1..L6.7, registre et découverte **hors réseau**.

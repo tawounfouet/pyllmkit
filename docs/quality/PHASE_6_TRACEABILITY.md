@@ -1,9 +1,9 @@
 # Phase 6 - Registry & Discovery: traçabilité des 56 cas d'acceptation
 
 - Date : 2026-11-05
-- Statut : candidats sur branches de PR, aucun gate P6 ni M6 qualifié sur main.
+- Statut : **P6-G0..P6-G7 GO techniques avec réserves sur main**; la revue finale distincte M6 et la publication doivent faire l'objet de décisions séparées.
 - Source : libellés dérivés des tests exécutables et contrat ADR-039..048. Ce n'est pas une transcription garantie du plan détaillé externe.
-- CI de référence : à renseigner sur le SHA exact du dernier lot.
+- CI de référence : **main@6c58b052**, GitHub Actions **#42123870931**, completed/success, Python 3.11/3.12/3.13, 1189 tests cumulatifs, couverture du domaine avec branches 96.61 %.
 
 ## Matrice des cas effectivement identifiés
 
@@ -73,3 +73,18 @@
 - Chaque gate nécessite une approbation documentaire et une CI push/main après fusion sur le SHA exact. Une CI de PR ne remplace pas cette preuve.
 - Revue finale M6 séparée de P6-G7. Release 0.1.0b2 non autorisée; version source 0.1.0a2.
 - Sujets #22 (main), #35 (release), #36 (frontière providers) restent sous réserve.
+
+## Chaîne de preuves CI qualifiantes sur main
+
+| Gate | PR fusionnée | SHA main | Run push/main | Tests cumulatifs | Couverture branches |
+|---|---|---|---|---:|---:|
+| P6-G0 | [#59](https://github.com/tawounfouet/pyllmkit/pull/59) | [`d1e7841a`](https://github.com/tawounfouet/pyllmkit/commit/d1e7841ae717d56a78740905698a4e82889d4091) | [#42122809277](https://github.com/tawounfouet/pyllmkit/actions/runs/42122809277) SUCCESS | 1048 | 96.08 % |
+| P6-G1 | [#60](https://github.com/tawounfouet/pyllmkit/pull/60) | [`a1e2f0ca`](https://github.com/tawounfouet/pyllmkit/commit/a1e2f0cacfa4af8f83030756076de8ec9397886c) | [#42122966414](https://github.com/tawounfouet/pyllmkit/actions/runs/42122966414) SUCCESS | 1081 | 96.21 % |
+| P6-G2 | [#61](https://github.com/tawounfouet/pyllmkit/pull/61) | [`614af324`](https://github.com/tawounfouet/pyllmkit/commit/614af32440a891cf44d066c58fb99a3652a2b073) | [#42123116242](https://github.com/tawounfouet/pyllmkit/actions/runs/42123116242) SUCCESS | 1094 | 96.22 % |
+| P6-G3 | [#62](https://github.com/tawounfouet/pyllmkit/pull/62) | [`9f3edaab`](https://github.com/tawounfouet/pyllmkit/commit/9f3edaabed7e5c9a331ff4f426282e9994d88de0) | [#42123260072](https://github.com/tawounfouet/pyllmkit/actions/runs/42123260072) SUCCESS | 1106 | 96.35 % |
+| P6-G4 | [#63](https://github.com/tawounfouet/pyllmkit/pull/63) | [`3bdfd84d`](https://github.com/tawounfouet/pyllmkit/commit/3bdfd84df9c414e755d6dd939eca0a15b99d769d) | [#42123414949](https://github.com/tawounfouet/pyllmkit/actions/runs/42123414949) SUCCESS | 1137 | 96.50 % |
+| P6-G5 | [#64](https://github.com/tawounfouet/pyllmkit/pull/64) | [`5f0b8ad5`](https://github.com/tawounfouet/pyllmkit/commit/5f0b8ad54198697b53548c863becd418c887e54d) | [#42123564296](https://github.com/tawounfouet/pyllmkit/actions/runs/42123564296) SUCCESS | 1154 | 96.56 % |
+| P6-G6 | [#65](https://github.com/tawounfouet/pyllmkit/pull/65) | [`1b92a784`](https://github.com/tawounfouet/pyllmkit/commit/1b92a78456dc9fff40e420b9c4f5a86187914964) | [#42123710290](https://github.com/tawounfouet/pyllmkit/actions/runs/42123710290) SUCCESS | 1180 | 96.57 % |
+| P6-G7 | [#66](https://github.com/tawounfouet/pyllmkit/pull/66) | [`6c58b052`](https://github.com/tawounfouet/pyllmkit/commit/6c58b0523edbbba009cd1b437db9d6f82dcba7a3) | [#42123870931](https://github.com/tawounfouet/pyllmkit/actions/runs/42123870931) SUCCESS | 1189 | 96.61 % |
+
+Les chiffres sont tirés des logs Python 3.11 des runs exacts de `main`, pas une estimation. Chaque gate conserve son procès-verbal dédié. Les 56 identifiants AC distincts sont contrôlés en G7 ; l'égalité des intitulés avec le plan source intégral n'est pas ici certifiée.
