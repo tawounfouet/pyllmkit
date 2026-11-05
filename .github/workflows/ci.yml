@@ -40,6 +40,7 @@ jobs:
           python examples/05_define_text_message.py
           python examples/06_define_multimodal_message.py
           python examples/07_round_trip_interaction.py
+          python examples/08_define_inference_request.py
       - name: Build wheel and sdist
         run: python -m build
       - name: Wheel clean environment smoke
