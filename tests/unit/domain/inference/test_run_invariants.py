@@ -5,7 +5,7 @@ not by bypassing the aggregate's state/date/payload checks.
 """
 
 from dataclasses import replace
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import cast
 
 import pytest
@@ -27,7 +27,7 @@ from pyllmkit.domain import (
     TextOutput,
 )
 
-T0 = datetime(2026, 11, 5, 11, 0, tzinfo=timezone.utc)
+T0 = datetime(2026, 11, 5, 11, 0, tzinfo=UTC)
 T1 = T0 + timedelta(seconds=1)
 T2 = T0 + timedelta(seconds=2)
 
