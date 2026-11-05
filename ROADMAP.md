@@ -1,5 +1,8 @@
 # PyLLMKit - Roadmap
 
+**2026-11-05 - Phase 3 P3-G1 = GO technique (Request Ready, avec reserves).** PR [#23](https://github.com/tawounfouet/pyllmkit/pull/23) integree sur [main f1ef04b8](https://github.com/tawounfouet/pyllmkit/commit/f1ef04b8ff1bb52a1ee17defa0ec8b20f84ac9d3) ; [CI #42036557565 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42036557565) Python 3.11-3.13, **432 tests / 93 % coverage**. [P3-G1 PV](docs/quality/P3_G1_GATE_REVIEW.md). L3.1 InferenceTarget/GenerationConfig/InferenceRequest et compatibilite offline sont integres; P3-AC-001..007 PASS. Prochain lot L3.2, G2..M3 PENDING; version de depot 0.1.0a2 non publiee.
+
+
 **2026-11-05 - Phase 3 P3-G0 = GO (architecture with reservations).** ADR-014..021 owner-approved and integrated on [PR #19](https://github.com/tawounfouet/pyllmkit/pull/19), `main` SHA [`965311db`](https://github.com/tawounfouet/pyllmkit/commit/965311dbef527ad59222b7586f9c801bb713bead), [CI SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42029448967). [P3-G0 gate review](docs/quality/P3_G0_GATE_REVIEW.md). Next L3.1 Request Domain, P3-G1 pending. P3-AC-007 REQUIRED (ADR-021 option A). Debt [#20](https://github.com/tawounfouet/pyllmkit/issues/20) open; no a3 implementation or publication.
 
 
