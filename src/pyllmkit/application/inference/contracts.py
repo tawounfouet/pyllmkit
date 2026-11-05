@@ -12,9 +12,9 @@ from pyllmkit.domain.inference import (
     CompatibilityReport,
     DeploymentId,
     InferenceRequest,
+    InferenceResponse,
     InferenceRun,
     InferenceRunId,
-    InferenceResponse,
 )
 from pyllmkit.domain.providers import ProviderId
 

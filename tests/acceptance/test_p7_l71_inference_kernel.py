@@ -39,7 +39,6 @@ from pyllmkit.domain.providers import InferenceProvider, ProviderId
 from pyllmkit.domain.registry import AmbiguousDeploymentError, NoCompatibleDeploymentError
 from pyllmkit.protocols import AsyncInferencePort, InferencePort
 
-
 NOW = datetime(2026, 11, 6, tzinfo=UTC)
 TEXT = Modality("text")
 MODALITIES = ModalitySet(frozenset((TEXT,)), frozenset((TEXT,)))
