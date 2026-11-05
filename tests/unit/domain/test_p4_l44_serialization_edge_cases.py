@@ -5,7 +5,15 @@ from typing import cast
 
 import pytest
 
-from pyllmkit.domain import Content, InferenceRequest, Message, ModelId, ModelTarget, Role, TextContent
+from pyllmkit.domain import (
+    Content,
+    InferenceRequest,
+    Message,
+    ModelId,
+    ModelTarget,
+    Role,
+    TextContent,
+)
 from pyllmkit.domain.capabilities import CapabilitySupport, SupportLevel
 from pyllmkit.domain.errors import DomainValidationError
 from pyllmkit.domain.structured_output import (
