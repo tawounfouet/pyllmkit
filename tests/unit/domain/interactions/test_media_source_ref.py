@@ -1,9 +1,9 @@
 """L2.3 passive URI/asset media refs, no I/O, no sensitive URL in repr."""
 
-from dataclasses import FrozenInstanceError
 import socket
-from typing import cast
 import urllib.request
+from dataclasses import FrozenInstanceError
+from typing import cast
 
 import pytest
 

@@ -1,8 +1,8 @@
 """Passive media source reference with syntactic validation only (ADR-011)."""
 
+import re
 from dataclasses import dataclass
 from ipaddress import IPv6Address
-import re
 from urllib.parse import urlsplit
 
 from pyllmkit.domain.errors import DomainValidationError
