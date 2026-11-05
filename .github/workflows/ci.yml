@@ -46,6 +46,7 @@ jobs:
           python examples/11_round_trip_inference_json.py
           python examples/12_full_inference_walkthrough.py
           python examples/13_define_tools.py
+          python examples/14_define_tool_call_and_result.py
       - name: Build wheel and sdist
         run: python -m build
       - name: Wheel clean environment smoke
@@ -57,6 +58,9 @@ jobs:
         run: |
           .venv-wheel/bin/python -c "from pyllmkit.domain.tooling import Tool, ToolSchema, ToolChoice, validate_tool_set, validate_tool_choice; t=Tool('demo', None, ToolSchema({'type':'object'})); validate_tool_choice(ToolChoice.specific('demo'),validate_tool_set((t,)))"
           .venv-wheel/bin/python examples/13_define_tools.py
+      - name: P4 L4.2 wheel smoke
+        run: |
+          .venv-wheel/bin/python examples/14_define_tool_call_and_result.py
       - name: L3.1 clean wheel smoke
         run: |
           .venv-wheel/bin/python -c "from pyllmkit.domain import Content, InferenceRequest, Message, ModelId, ModelTarget, Role, TextContent; r=InferenceRequest(ModelTarget(ModelId('smoke')), (Message(Role.USER, Content((TextContent('x'),))),)); assert r.target.kind == 'model'"
@@ -84,3 +88,4 @@ jobs:
           .venv-sdist/bin/python -c "from datetime import UTC, datetime; from pyllmkit.domain import Content, Message, Role, TextContent, ModelId, ModelTarget, InferenceRequest, InferenceRun, InferenceRunId, InferenceFailure, InferenceRunState, run_from_dict, run_to_dict; r=InferenceRun(InferenceRunId('sdist-json'), InferenceRequest(ModelTarget(ModelId('model')), (Message(Role.USER, Content((TextContent('x'),))),))).start(datetime(2026,11,5,tzinfo=UTC)); failed=r.fail(InferenceFailure('timeout'),datetime(2026,11,5,tzinfo=UTC)); d=run_to_dict(failed); assert run_to_dict(run_from_dict(d)) == d"
           .venv-sdist/bin/python examples/12_full_inference_walkthrough.py
           .venv-sdist/bin/python examples/13_define_tools.py
+          .venv-sdist/bin/python examples/14_define_tool_call_and_result.py
