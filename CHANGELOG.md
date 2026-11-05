@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased development] - 0.1.0a3 Inference Primitives (G4 only, not released)
+
+### Added (L3.4 - Inference JSON Codec & Quality)
+- Strict independent INFERENCE_SCHEMA_VERSION=1: complete JSON-compatible dictionaries for InferenceRequest, InferenceResponse and all six InferenceRun snapshots.
+- Exact required nullable keys; nested Interaction JSON v1 messages; canonical UTC timestamps; typed config, reason, usage and Run invariant validation.
+- Negative schema and sanitized-error tests, P3-AC-021..028, six-state round-trips, offline example 11, clean wheel/sdist codec smoke tests and API guide.
+- G4 qualification on [PR #29](https://github.com/tawounfouet/pyllmkit/pull/29), [main d72b1ce](https://github.com/tawounfouet/pyllmkit/commit/d72b1ce82a4a34c62888ad48b50bcf07537f83d1), [CI #42053906726](https://github.com/tawounfouet/pyllmkit/actions/runs/42053906726): **779 tests / 95 % coverage**, Python 3.11/3.12/3.13. [Gate report](docs/quality/P3_G4_GATE_REVIEW.md).
+
+**Not implemented:** provider or network inference, streaming, HTTP parser duplicate-key policy, production release. Metadata remains 0.1.0a2.
+
+
 ## [Unreleased development] - 0.1.0a3 Inference Primitives (G3 only, not released)
 
 ### Added (L3.3 - Run Lifecycle Ready)
