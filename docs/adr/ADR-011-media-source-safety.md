@@ -1,6 +1,8 @@
 # ADR-011 - Passive typed media sources and security boundary
 
 - **Status:** ACCEPTED for Phase 2 design (P2-BOOT, 2026-11-05). Implementation and M2 qualification remain pending.
+> **Post-implementation clarification (2026-11-05):** This line records the historical P2-BOOT decision, not the current implementation state. M2's source candidate was subsequently implemented and qualified on [`main@560d3a46`](https://github.com/tawounfouet/pyllmkit/commit/560d3a46c74cecebdf6a55301b2b8ca4e34331d4), [CI #42015825424](https://github.com/tawounfouet/pyllmkit/actions/runs/42015825424) PASS, [M2_GATE_REVIEW](../quality/M2_GATE_REVIEW.md). Package metadata `0.1.0a2` remained unpublished. This note does not revise the 2026-11-05 owner architecture decision.
+
 - **Authorization:** Explicit review and approval by the repository project owner in the PyLLMKit project conversation on 2026-11-05. This is an owner decision, not a GitHub review submission or independent architecture audit.
 - **Decision effective date:** 2026-11-05.
 - **Context:** ImageContent needs an explicit reference to media without forcing network access, file reads or large bytes into a domain value object.

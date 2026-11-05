@@ -13,7 +13,7 @@ from pyllmkit.domain.interactions.serialization import (
 ```
 
 `message_to_dict(message: Message) -> dict[str, object]` emits a JSON-compatible mapping.
-`message_from_dict(payload: Mapping[str, object]) -> Message` strictly recreates immutable Domain Core values. Text parsing is performed by the caller using standard `json.dumps` / `json.loads`.
+`message_from_dict(payload: Mapping[str, object]) -> Message` strictly recreates immutable Domain Core values, accepting any read-only `Mapping` including `MappingProxyType`, recursively at nested object positions; JSON arrays must still be lists. This contract was made consistent with runtime behavior in the PIR2-03 reconciliation (L3.5), without changing the v1 wire shape. Text parsing is performed by the caller using standard `json.dumps` / `json.loads`.
 
 ## Canonical v1 payload
 

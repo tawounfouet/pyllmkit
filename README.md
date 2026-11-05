@@ -94,7 +94,19 @@ The domain core has no mandatory provider SDK dependencies. The tests remove com
 ## Domain example
 
 ```python
-from pyllmkit.domain import (\n    Capability, CapabilityId, CapabilitySet, CapabilitySupport,\n    Model, ModelFamily, ModelId, ModelIdentity, Modality, ModalitySet, SupportLevel,\n)
+from pyllmkit.domain import (
+    Capability,
+    CapabilityId,
+    CapabilitySet,
+    CapabilitySupport,
+    Model,
+    ModelFamily,
+    ModelId,
+    ModelIdentity,
+    Modality,
+    ModalitySet,
+    SupportLevel,
+)
 
 model = Model(
     id=ModelId("example/vision"),
