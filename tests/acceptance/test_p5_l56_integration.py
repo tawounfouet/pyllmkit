@@ -4,7 +4,6 @@ import asyncio
 import copy
 import time
 from pathlib import Path
-from typing import cast
 
 import pytest
 
@@ -12,7 +11,6 @@ from pyllmkit import __version__
 from pyllmkit.domain.errors import DomainValidationError
 from pyllmkit.domain.inference import InferenceRunId, Usage
 from pyllmkit.domain.streaming import (
-    MAX_EVENTS,
     MemoryAsyncInferenceStream,
     MemoryInferenceStream,
     ResponseCancelled,
@@ -34,6 +32,7 @@ from pyllmkit.domain.streaming import (
     stream_from_dict,
     stream_to_dict,
 )
+from pyllmkit.domain.streaming.reconstruction import MAX_EVENTS
 from pyllmkit.domain.tooling import ToolCallId
 
 ROOT = Path(__file__).resolve().parents[2]
