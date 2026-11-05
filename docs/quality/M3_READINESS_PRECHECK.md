@@ -13,7 +13,7 @@
 | P3-G2 Response | GO technique avec reserves | `P3_G2_GATE_REVIEW.md` |
 | P3-G3 Run | GO technique avec reserves | `P3_G3_GATE_REVIEW.md` |
 | P3-G4 Codec | GO technique avec reserves | `P3_G4_GATE_REVIEW.md` |
-| **P3-G5 Integration** | **PENDING** | CI finale sur SHA main et PV G5 necessaires |
+| **P3-G5 Integration** | **GO technique avec reserves** | [PV G5](P3_G5_GATE_REVIEW.md), [main 49cf26e](https://github.com/tawounfouet/pyllmkit/commit/49cf26e830819675a1c4cad9dfd2860fc977f0b6), [CI #42059417894](https://github.com/tawounfouet/pyllmkit/actions/runs/42059417894) SUCCESS |
 | **M3** | **NOT QUALIFIED** | Revue independente non commencee |
 
 ## Prerequis pour toute decision M3
