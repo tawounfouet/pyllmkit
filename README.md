@@ -1,5 +1,8 @@
 # PyLLMKit
 
+**Phase 3 / P3-G0 (2026-11-05): ARCHITECTURE GO WITH RESERVATIONS.** ADR-014..021 owner-accepted and merged via [PR #19](https://github.com/tawounfouet/pyllmkit/pull/19); exact integrated `main` SHA [`965311db`](https://github.com/tawounfouet/pyllmkit/commit/965311dbef527ad59222b7586f9c801bb713bead), [CI SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42029448967) on Python 3.11/3.12/3.13. [Gate record](docs/quality/P3_G0_GATE_REVIEW.md). **Only architecture is qualified; L3.1..L3.5 and M3 are not implemented or qualified. Metadata remains `0.1.0a2`, unpublished; no `0.1.0a3` tag or release.**
+
+
 **Status:** M1/G0/G1/G2/G3/G4 qualified on `main`. M2 = GO for source candidate on 2026-11-05. L2.4 strict Interaction JSON v1 is integrated, [CI SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42015194077): 342 tests, 91% coverage. M2 source candidate [qualification](https://github.com/tawounfouet/pyllmkit/actions/runs/42015825424) is complete, with [M2 report](docs/quality/M2_GATE_REVIEW.md) pending archival PR qualification. Metadata `0.1.0a2` is a **repository alpha candidate**, not published. No Git tag, GitHub Release or PyPI upload.
 
 PyLLMKit models provider-agnostic LLM primitives as typed Python domain objects, separate from model-serving providers, deployments and inference APIs.

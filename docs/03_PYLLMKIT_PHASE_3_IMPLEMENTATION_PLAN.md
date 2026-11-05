@@ -1,5 +1,8 @@
 # 03_PYLLMKIT_PHASE_3_IMPLEMENTATION_PLAN
 
+**Mise a jour du 2026-11-05 : P3-G0 GO architecture avec reserves** apres adoption owner ADR-014..021 ([PR #19](https://github.com/tawounfouet/pyllmkit/pull/19), `main` SHA `965311dbef527ad59222b7586f9c801bb713bead`, [CI SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42029448967)). Voir [PV de gate](quality/P3_G0_GATE_REVIEW.md). Les formulations historiques *plan propose / ADR a arbitrer* ci-dessous documentent l'etat d'origine. L3.1..L3.5 restent a realiser; P3-AC-007 requis (ADR-021 option A), aucune publication.
+
+
 > **Projet :** PyLLMKit  
 > **Phase :** P3 - Inference Primitives  
 > **Incrément visé :** `0.1.0a3`  

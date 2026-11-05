@@ -1,5 +1,8 @@
 # PyLLMKit - Registre de decisions d'architecture Phase 3
 
+**Gate decision archived (2026-11-05): P3-G0 GO architecture avec reserves.** ADR-014..021 ACCEPTED by owner and merged in [PR #19](https://github.com/tawounfouet/pyllmkit/pull/19); main SHA [`965311db`](https://github.com/tawounfouet/pyllmkit/commit/965311dbef527ad59222b7586f9c801bb713bead), [CI SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42029448967). See [P3_G0_GATE_REVIEW.md](P3_G0_GATE_REVIEW.md). Existing PENDING language below documents the historical pre-qualification gate checklist, not current status.
+
+
 > Date : 2026-11-05
 > Version visee : 0.1.0a3 - Inference Primitives
 > Statut global : **ADR-014..021 ACCEPTED by owner - G0 integration CI PENDING**
