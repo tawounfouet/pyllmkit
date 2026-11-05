@@ -1,7 +1,7 @@
 # P3-BOOT - Preflight et preparation de P3-G0
 
 > Date : 2026-11-05
-> Etat : **PREPARATION / PAS DE DECISION GO**
+> Etat : **OWNER ADR ACCEPTED / INTEGRATION AND FINAL G0 CI PENDING**
 > Cible : 0.1.0a3 - Inference Primitives
 > Baseline M2 : main acd6dfb76d73c260ccca523cf904be44ec249288.
 > Enveloppe : documentation et decisions; aucun code d'inference execute.
@@ -13,11 +13,11 @@
 - [x] ADR-014..020 ecrites avec statut PROPOSED; ADR-021 optionnelle egalement redigee.
 - [x] Contrat de conception propose et registre d'arbitrages.
 - [x] Revue technique contradictoire : recommandations et arbitrages dans P3_G0_ARCHITECTURE_REVIEW.md; validation du proprietaire encore requise.
-- [ ] Acceptation explicite du proprietaire des ADR-014..020; decision ADR-021.
+- [x] Adoption explicite ADR-014..021 par le proprietaire, avec ADR-021 option A et float exact (voir P3_G0_OWNER_ARCHITECTURE_APPROVAL.md).
 - [x] CI initiale de PR #19 : run [#42024327072](https://github.com/tawounfouet/pyllmkit/actions/runs/42024327072), SUCCESS sur SHA 4ca6d76584499e59a9f94f5f000e935458381fb6.
 - [ ] Requalifier les nouveaux commits de revue et collecter la CI exacte de PR #19 sur sa tete finale.
 - [ ] Apres integration eventuelle, qualifier la CI sur le SHA exact de main (pas de merge autorise dans la revue).
-- [ ] Produire un proces-verbal P3-G0 factuel apres adoption et preuve CI main.
+- [ ] Produire un proces-verbal P3-G0 factuel apres verification de la CI sur main, avec SHA exact.
 
 ## Dette P2 a traiter avec preuves
 
@@ -39,13 +39,13 @@ Ces dettes n'ont **pas** ete corrigees par la seule production de ce rapport. Le
 
 | Critere | Etat actuel | Preuve a collecter |
 |---|---|---|
-| Contrat Request / Run / Response clair | PROPOSED | ADR-014 et contrats approuves |
-| Target et Config bornes | PROPOSED | ADR-015/016 adoptees |
-| Response, Usage et run lifecycle | PROPOSED | ADR-017..019 adoptees |
-| Politique JSON v1 et absence de rupture M1/M2 | PROPOSED | ADR-020 adoptee + tests |
-| Port/compatibilite effective | REVISED / OPTIONAL | ADR-021 : evaluator pur AC-007 ou DEFERRED documente |
+| Contrat Request / Run / Response clair | ACCEPTED DESIGN | ADR-014 et owner decision |
+| Target et Config bornes | ACCEPTED DESIGN | ADR-015/016, float exact choisi |
+| Response, Usage et run lifecycle | ACCEPTED DESIGN | ADR-017..019 adoptees |
+| Politique JSON v1 et absence de rupture M1/M2 | ACCEPTED DESIGN | ADR-020 adoptee, tests de futur lot L3.4 |
+| Port/compatibilite effective | OPTION A ACCEPTED | Evaluateur pur AC-007 requis; port public non executable |
 | Dette PIR2-01..03 traitee ou isolee | ISOLATED / OPEN | Issue #20; correctifs non appliques |
 | CI exacte sur main apres integration | PENDING | SHA + URL run + conclusion |
-| Autorite de decision | PENDING | Revue mandatee, **aucune adoption ADR attestee** |
+| Autorite de decision | OWNER ACCEPTED | Decision P3_G0_OWNER_ARCHITECTURE_APPROVAL.md, sans GitHub APPROVED review independante |
 
-**Verdict de preparation : DOSSIER SOUMETTABLE A REVUE, G0 PENDING.** Ne pas fusionner G0 et M3 et ne pas qualifier sur les resultats de la seule branche.
+**Verdict : adoption de conception acquise, G0 PENDING jusqu'a integration, CI du main SHA exact et PV.** Ne pas fusionner G0 et M3 et ne pas qualifier sur les resultats de la seule branche.
