@@ -15,10 +15,7 @@ from pyllmkit.application.inference import (
     InvocationPreconditionError,
 )
 from pyllmkit.application.registry import DeploymentResolver
-from pyllmkit.domain.capabilities import (
-    CapabilitySupport,
-    SupportLevel,
-)
+from pyllmkit.domain.capabilities import CapabilitySupport, SupportLevel
 from pyllmkit.domain.deployments import Deployment, DeploymentStatus
 from pyllmkit.domain.inference import (
     DeploymentId,
@@ -35,9 +32,7 @@ from pyllmkit.domain.inference import (
     ParameterSupport,
     TextOutput,
 )
-from pyllmkit.domain.interactions import (
-    Content, ImageContent, MediaSourceRef, Message, Role, TextContent,
-)
+from pyllmkit.domain.interactions import Content, Message, Role, TextContent
 from pyllmkit.domain.modalities import Modality, ModalitySet
 from pyllmkit.domain.models import Model, ModelFamily, ModelId, ModelIdentity
 from pyllmkit.domain.providers import InferenceProvider, ProviderId

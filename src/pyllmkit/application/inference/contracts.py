@@ -1,5 +1,7 @@
 """Immutable P7 application execution boundary; no transport or SDK imports."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from datetime import datetime
 from math import isfinite
@@ -12,6 +14,7 @@ from pyllmkit.domain.inference import (
     InferenceRequest,
     InferenceRun,
     InferenceRunId,
+    InferenceResponse,
 )
 from pyllmkit.domain.providers import ProviderId
 
@@ -140,6 +143,6 @@ class InferenceExecution:
             raise DomainValidationError("InferenceExecution requires a terminal InferenceRun")
 
     @property
-    def response(self):  # type: ignore[no-untyped-def]
+    def response(self) -> InferenceResponse | None:
         """Use the Run's own response; do not create a second result identity."""
         return self.run.response
