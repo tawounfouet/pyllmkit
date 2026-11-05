@@ -1,11 +1,13 @@
 # ADR-026 - Tool choice and capability semantics
 
 - Date : 2026-11-05
-- Statut : RECOMMENDED FOR P4-G0 ADOPTION
+- Statut : ACCEPTED (owner, 2026-11-05; P4-G0 CI main a verifier)
 - Phase : L4.1 et L4.4
 - Sources : capability model M1, ADR-021, TOOL-005/010/013, INF-009/010.
 
-## Decision recommandee
+> Approbation du proprietaire : [P4_G0_OWNER_ARCHITECTURE_APPROVAL.md](../quality/P4_G0_OWNER_ARCHITECTURE_APPROVAL.md). Aucune revue tierce revendiquee.
+
+## Decision adoptee
 
 1. ToolChoice est une union discriminable de quatre politiques : AUTO, NONE, REQUIRED et SPECIFIC_TOOL(name). name est obligatoire et non vide uniquement pour SPECIFIC_TOOL. Le modele est immutable et serialisable.
 2. Le domaine verifie la coherence interne de la politique et du ToolSet fourni : REQUIRED exige au moins un outil; SPECIFIC_TOOL doit nommer un outil existant; les doublons de noms sont interdits. NONE peut coexister avec une declaration de tools mais n'autorise aucun appel implicite.
