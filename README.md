@@ -20,6 +20,17 @@ PyLLMKit est un framework Python de **primitives de domaine LLM agnostiques des 
 
 Les preuves historiques ont été conservées dans les procès-verbaux, sans présenter les anciens statuts comme actuels. La dette M2 [#20](https://github.com/tawounfouet/pyllmkit/issues/20) est **résolue** par [PR #31](https://github.com/tawounfouet/pyllmkit/pull/31) ([CI main #42057132634](https://github.com/tawounfouet/pyllmkit/actions/runs/42057132634)). Les protections de `main` [#22](https://github.com/tawounfouet/pyllmkit/issues/22) restent **ouvertes**.
 
+## Cloture Phase 3 et prochaines decisions
+
+La Phase 3 est **techniquement integree et qualifiee sur P3-G0..G5**; [bilan post-implementation](docs/quality/P3_POST_IMPLEMENTATION_REVIEW.md). **M3 attend encore une revue GO/NO-GO independante**, sans confondre qualite du domaine et publication.
+
+Les cinq suites operationnelles sont documentees et auditablement separees :
+- [Runbook de protection GitHub main](docs/governance/MAIN_BRANCH_PROTECTION_RUNBOOK.md) : issue [#22](https://github.com/tawounfouet/pyllmkit/issues/22) OPEN, aucune protection effective revendiquee.
+- [Politique de versionnement et release 0.1.0a3](docs/governance/RELEASE_0_1_0a3_POLICY_AND_RUNBOOK.md) : aucune action de publication n'est autorisee par le gate M3.
+- [Contrat de frontiere pour futurs adapters provider](docs/architecture/FUTURE_PROVIDER_BOUNDARY_CONTRACT.md) : parsing, limits, secrets, retries et transport hors Value Objects.
+- [Cycle PyKit de delivery et d'apprentissage](docs/governance/PYKIT_DELIVERY_AND_LEARNING_LOOP.md) : exigences -> ADR -> code -> tests -> PR CI -> main CI -> PV.
+- [Precheck M3](docs/quality/M3_READINESS_PRECHECK.md) : criteres de decision et limites.
+
 ## Phase 3 : exemple complet hors ligne (P3-AC-030)
 
 Le script suivant **construit une réponse fictive en mémoire** : il ne contacte aucun modèle ni fournisseur. Il démontre les frontières Request, Run, Response et le round-trip JSON v1.
