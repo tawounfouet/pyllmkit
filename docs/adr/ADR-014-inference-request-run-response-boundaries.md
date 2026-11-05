@@ -12,7 +12,7 @@
 
 Le domaine M2 sait representer les messages mais ne sait pas encore distinguer l'intention d'inference de l'execution et du resultat. Copier un modele de reponse fournisseur produirait un couplage durable.
 
-## Decision proposee
+## Decision adoptee
 
 1. **InferenceRequest** est un Value Object immuable, compare par valeur et independant du provider. Il possede une cible et des messages ordonnes; aucun identifiant auto-genere ne change sa nature en Entity.
 2. **InferenceRun** est l'Aggregate Root d'une execution concrete avec un **InferenceRunId** stable, un etat, une tentative et exactement une request logique. Deux runs peuvent partager la meme request.
