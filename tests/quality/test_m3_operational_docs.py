@@ -63,6 +63,6 @@ def test_protection_runbook_is_explicitly_unverified_and_requires_evidence() -> 
     assert "STATUT OBSERVE : NON APPLIQUE" in runbook
     assert "protected=false" in runbook
     assert "HTTP 403" in runbook
-    assert "Issue #22" not in runbook or "#22" in runbook
+    assert "https://github.com/tawounfouet/pyllmkit/issues/22" in runbook
     assert "enforcement" in runbook
     assert "reviewer distinct" in runbook
