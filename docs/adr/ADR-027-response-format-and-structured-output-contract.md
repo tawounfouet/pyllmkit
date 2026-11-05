@@ -1,11 +1,13 @@
 # ADR-027 - ResponseFormat and StructuredOutput contract
 
 - Date : 2026-11-05
-- Statut : RECOMMENDED FOR P4-G0 ADOPTION
+- Statut : ACCEPTED (owner, 2026-11-05; P4-G0 CI main a verifier)
 - Phase : L4.3
 - Sources : ADR-024/025/026, TOOL-011 a TOOL-021, P4-AC-017 a 024.
 
-## Decision recommandee
+> Approbation du proprietaire : [P4_G0_OWNER_ARCHITECTURE_APPROVAL.md](../quality/P4_G0_OWNER_ARCHITECTURE_APPROVAL.md). Aucune revue tierce revendiquee.
+
+## Decision adoptee
 
 1. ResponseFormat est une union typée de TextResponseFormat, JsonResponseFormat et SchemaResponseFormat. L'absence de format signifie non specifie, pas JSON par defaut.
 2. TextResponseFormat autorise du texte libre sans reclamer STRUCTURED_OUTPUT. JsonResponseFormat demande une valeur JSON sans pretendre a une validation de schema. SchemaResponseFormat comporte un schema du profil P4-JSON-1.
