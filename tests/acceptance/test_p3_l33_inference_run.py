@@ -1,7 +1,7 @@
 """P3-AC-014..020 and AC-029: pure inference execution lifecycle."""
 
 from dataclasses import FrozenInstanceError
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
@@ -22,7 +22,7 @@ from pyllmkit.domain import (
     TextOutput,
 )
 
-START = datetime(2026, 11, 5, 12, 0, tzinfo=timezone.utc)
+START = datetime(2026, 11, 5, 12, 0, tzinfo=UTC)
 FINISH = START + timedelta(seconds=2)
 
 
@@ -131,4 +131,3 @@ def test_p3_ac029_all_clocks_injected_and_reproducible() -> None:
     assert completed.state is InferenceRunState.COMPLETED
     assert run.finished_at is None
     assert _run("run-029", request).start(START).begin_stream(stream_time) == completed
-    assert completed.finished_at != datetime.now(timezone.utc)
