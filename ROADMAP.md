@@ -12,7 +12,7 @@
 | Date de référence | 2026-11-05 |
 | Portée | Consolidation des spécifications, architecture, implémentation, qualification et releases |
 | Sources vérifiées | `00_PYLLMKIT_*.md` à `09_PYLLMKIT_*.md` fournis dans la conversation |
-| État du code | **Vérifié jusqu'à G3 (Interaction JSON v1)** : `main` SHA `fb4760aa890dceb8c08b16738500b5b28574e60b`, 342 tests, 91 % couverture, CI Python 3.11-3.13 verte, version candidate 0.1.0a2 ; aucune release publiée |
+| État du code | **M2 qualifié (G0 à G4 GO)** : `main` SHA `560d3a46c74cecebdf6a55301b2b8ca4e34331d4`, 342 tests, 91 % couverture, CI Python 3.11-3.13 verte, version candidate `0.1.0a2` ; aucune release publiée |
 | Roadmap spécialisée | `22_PYLLMKIT_IMPLEMENTATION_ROADMAP.md` (document mentionné dans les spécifications ; existence et contenu non vérifiés) |
 
 ---
@@ -21,19 +21,19 @@
 
 ---
 
-> **P2-BOOT G0 - Architecture Ready: GO (2026-11-05).** Six ADR d'interaction (`008` à `013`) acceptées par le propriétaire et intégrées via [PR #8](https://github.com/tawounfouet/pyllmkit/pull/8). CI de `main` sur le SHA de qualification `93e9467e2bef819201507aa2c4f06fdf4a4b04da`: [SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42005569202). Procès-verbal et registre archivés via [PR #9](https://github.com/tawounfouet/pyllmkit/pull/9), CI de l'archive sur SHA `0eb2d54b93eaa9375237674916504d5ab45ab373`: [SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42006193308). La Phase 2 n'est pas encore implémentée ; M2 reste à qualifier ; aucune publication réalisée. Voir [G0 gate](docs/quality/P2_BOOT_GATE_REVIEW.md).
+> **P2-BOOT G0 - Architecture Ready: GO (2026-11-05).** Six ADR d'interaction (`008` à `013`) acceptées par le propriétaire et intégrées via [PR #8](https://github.com/tawounfouet/pyllmkit/pull/8). CI de `main` sur le SHA de qualification `93e9467e2bef819201507aa2c4f06fdf4a4b04da`: [SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42005569202). Procès-verbal et registre archivés via [PR #9](https://github.com/tawounfouet/pyllmkit/pull/9), CI de l'archive sur SHA `0eb2d54b93eaa9375237674916504d5ab45ab373`: [SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42006193308). À la date de ce jalon historique G0, la Phase 2 et M2 restaient à réaliser ; les jalons G1 à M2 ont été qualifiés ensuite. Aucune publication réalisée. Voir [G0 gate](docs/quality/P2_BOOT_GATE_REVIEW.md).
 
 ---
 
-> **Phase 2 G1 - Content & Message Ready: GO (2026-11-05).** [PR #11](https://github.com/tawounfouet/pyllmkit/pull/11) (ContentPart, TextContent, Content) et [PR #12](https://github.com/tawounfouet/pyllmkit/pull/12) (Role, Message, AC-006) intégrées. CI de `main` sur SHA `1fd7a476f0aa0b0040c0749ae36236fa24d6f8e6`: [SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42008750610), 204 tests et couverture 90 %. [Procès-verbal G1](docs/quality/P2_G1_GATE_REVIEW.md). G2/G3/G4 et M2 restent à qualifier ; la version reste `0.1.0a1`, non publiée.
+> **Phase 2 G1 - Content & Message Ready: GO (2026-11-05).** [PR #11](https://github.com/tawounfouet/pyllmkit/pull/11) (ContentPart, TextContent, Content) et [PR #12](https://github.com/tawounfouet/pyllmkit/pull/12) (Role, Message, AC-006) intégrées. CI de `main` sur SHA `1fd7a476f0aa0b0040c0749ae36236fa24d6f8e6`: [SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42008750610), 204 tests et couverture 90 %. [Procès-verbal G1](docs/quality/P2_G1_GATE_REVIEW.md). Au jalon G1, G2/G3/G4/M2 restaient à qualifier ; les jalons ont été qualifiés ensuite. La version de G1 était `0.1.0a1`, non publiée.
 
 ---
 
-> **Phase 2 G2 - Multimodal Content Ready: GO (2026-11-05).** [PR #14](https://github.com/tawounfouet/pyllmkit/pull/14) intégrée : `MediaSourceRef`, `ImageContent`, contenu ordonné texte/image, AC-007. CI de `main` sur SHA `8e4d8c1df998d17e20e50a79b5c6904fe5de0616` : [SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42011868937), 252 tests, 90 % de couverture, 3 versions Python. [Procès-verbal G2](docs/quality/P2_G2_GATE_REVIEW.md). Codec JSON L2.4, G3/G4 et M2 restant à qualifier ; package non publié.
+> **Phase 2 G2 - Multimodal Content Ready: GO (2026-11-05).** [PR #14](https://github.com/tawounfouet/pyllmkit/pull/14) intégrée : `MediaSourceRef`, `ImageContent`, contenu ordonné texte/image, AC-007. CI de `main` sur SHA `8e4d8c1df998d17e20e50a79b5c6904fe5de0616` : [SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42011868937), 252 tests, 90 % de couverture, 3 versions Python. [Procès-verbal G2](docs/quality/P2_G2_GATE_REVIEW.md). Au jalon G2, le codec JSON L2.4 et G3/G4/M2 restaient à qualifier ; ces jalons ont été validés ensuite. Package non publié.
 
 ---
 
-> **Phase 2 G3 - Quality Ready: GO (2026-11-05).** [PR #16](https://github.com/tawounfouet/pyllmkit/pull/16) intégrée : codec JSON Interaction v1, tests négatifs et round-trips AC-006/007, packaging candidat `0.1.0a2`. CI de `main` sur SHA `fb4760aa890dceb8c08b16738500b5b28574e60b`: [SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42015194077), 342 tests, 91 % de couverture. [Procès-verbal G3](docs/quality/P2_G3_GATE_REVIEW.md). G4 et M2 à qualifier après archivage documentaire ; aucune publication effectuée.
+> **Phase 2 G3 - Quality Ready: GO (2026-11-05).** [PR #16](https://github.com/tawounfouet/pyllmkit/pull/16) intégrée : codec JSON Interaction v1, tests négatifs et round-trips AC-006/007, packaging candidat `0.1.0a2`. CI de `main` sur SHA `fb4760aa890dceb8c08b16738500b5b28574e60b`: [SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42015194077), 342 tests, 91 % de couverture. [Procès-verbal G3](docs/quality/P2_G3_GATE_REVIEW.md). G4 et M2 ont ensuite été qualifiés sur la CI d'intégration documentaire ; aucune publication effectuée.
 
 ---
 
