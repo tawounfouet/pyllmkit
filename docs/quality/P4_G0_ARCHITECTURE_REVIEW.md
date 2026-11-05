@@ -1,6 +1,6 @@
 # P4-G0 - Revue contradictoire de l'architecture
 
-> Date de revue : 2026-11-05. Etat : TECHNICAL DESIGN REVIEW COMPLETED; owner sign-off et gate post-merge encore ouverts.
+> Date de revue : 2026-11-05. Etat : TECHNICAL DESIGN REVIEW COMPLETED; owner sign-off recu le 2026-11-05; CI post-merge encore ouverte.
 > Repository : tawounfouet/pyllmkit. PR de conception : #38.
 
 ## Baseline et preuves consultees
@@ -47,3 +47,7 @@
 ## Avis de revue
 
 Les huit arbitrages sont **coherents et recommandables pour adoption**. L'absence de signature sur leurs versions finales et de preuve sur main interdit a cette etape de qualifier G0 comme GO effectivement realise. Aucune release n'est autorisee.
+
+## Addendum d'adoption owner du 2026-11-05
+
+Le proprietaire a approuve les ADR-022..029 et autorise l'integration du dossier P4-G0 ainsi que le demarrage L4.1 apres qualification. Voir [P4_G0_OWNER_ARCHITECTURE_APPROVAL.md](P4_G0_OWNER_ARCHITECTURE_APPROVAL.md). La preuve CI du commit main qualifiant reste a inscrire dans le PV de gate apres merge. Aucune review tierce n'est revendiquee.
