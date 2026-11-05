@@ -1,4 +1,4 @@
-"""Registry domain contracts, queries and pure effective resolution (P6 L6.2-L6.4)."""
+"""Registry domain, queries, pure resolutions and selection evidence (P6)."""
 
 from .capability_resolution import (
     CapabilityEvidence,
@@ -17,6 +17,16 @@ from .errors import (
 )
 from .limit_resolution import EffectiveLimit, EffectiveLimits, LimitEvidence, LimitResolver
 from .queries import CapabilityMatchMode, DeploymentQuery, ModelQuery
+from .selection import (
+    AmbiguousDeploymentError,
+    CandidateRejection,
+    DeploymentNotFoundError,
+    DeploymentRequirement,
+    DeploymentResolutionError,
+    DeploymentResolutionReport,
+    ModelNotFoundError,
+    NoCompatibleDeploymentError,
+)
 
 __all__ = [
     "RegistryError",
@@ -39,4 +49,12 @@ __all__ = [
     "EffectiveLimit",
     "EffectiveLimits",
     "LimitResolver",
+    "DeploymentRequirement",
+    "DeploymentResolutionReport",
+    "CandidateRejection",
+    "DeploymentResolutionError",
+    "ModelNotFoundError",
+    "DeploymentNotFoundError",
+    "NoCompatibleDeploymentError",
+    "AmbiguousDeploymentError",
 ]
