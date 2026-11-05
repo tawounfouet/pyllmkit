@@ -1,6 +1,6 @@
 # Phase 2 - Requirement and evidence traceability
 
-**Status:** P2-BOOT **G0 = GO** (2026-11-05), ADR-008..013 accepted by project owner and integrated in main. G0 archive CI on SHA `0eb2d54b93eaa9375237674916504d5ab45ab373`: https://github.com/tawounfouet/pyllmkit/actions/runs/42006193308 (SUCCESS). L2.1 and L2.2 are now implemented and **G1 = GO** on `main` SHA `1fd7a476f0aa0b0040c0749ae36236fa24d6f8e6` (CI #42008750610 SUCCESS, 204 tests, 90% combined coverage). L2.3/L2.4 and M2 are pending.
+**Status:** P2-BOOT **G0 = GO** (2026-11-05), ADR-008..013 accepted by project owner and integrated in main. G0 archive CI on SHA `0eb2d54b93eaa9375237674916504d5ab45ab373`: https://github.com/tawounfouet/pyllmkit/actions/runs/42006193308 (SUCCESS). L2.1 and L2.2 are now implemented and **G1 = GO** on `main` SHA `1fd7a476f0aa0b0040c0749ae36236fa24d6f8e6` (CI #42008750610 SUCCESS, 204 tests, 90% combined coverage). L2.3 **implemented / G2 = GO** on `main` SHA `8e4d8c1df998d17e20e50a79b5c6904fe5de0616`, [CI #42011868937](https://github.com/tawounfouet/pyllmkit/actions/runs/42011868937) SUCCESS (252 tests, 90% coverage). L2.4 and M2 are pending.
 **Baseline evidence:** `main` d7f06072d246819fb976c6a456949995ae33562d, M1 CI https://github.com/tawounfouet/pyllmkit/actions/runs/40638604245 (success), 137 tests and 89% branch-inclusive combined coverage (Phase 1 evidence, not Phase 2 results).
 
 ## Source of truth and location
@@ -23,15 +23,15 @@ Do not fabricate GitHub links for draft source files absent from the repository.
 | Source invariant / AC | Decision | Work item | Test target / current state |
 |---|---|---|---|
 | AC-006, INT-004/005/008 | ADR-008/009/010 | L2.1 + L2.2 | `tests/acceptance/test_ac_006_text_message.py` (PASS at G1) |
-| AC-007, INT-003/009 | ADR-010/011/012 | L2.3 + L2.4 | `test_ac_007_multimodal_message.py` (NOT STARTED) |
+| AC-007, INT-003/009 | ADR-010/011/012 | L2.3 + L2.4 | `tests/acceptance/test_ac_007_multimodal_message.py` (PASS G2 for representation; JSON round-trip pending L2.4) |
 | INT-001/002 | ADR-009 | L2.1 | `tests/unit/domain/interactions/test_message.py` (PASS; Conversation deferred) |
 | INT-006/007 | ADR-008 | L2.1 | `test_role.py` + `test_message.py` (PASS; provider adapters deferred) |
 | INT-008 | ADR-010 | L2.2 | `test_text_content.py` (PASS) |
-| INT-009 | ADR-011 | L2.3 | URI/asset validation and no-I/O (NOT STARTED) |
+| INT-009 | ADR-011 | L2.3 | `tests/unit/domain/interactions/test_media_source_ref.py` + `test_image_content.py` (PASS G2; JSON round-trip pending) |
 | INT-010/011 | ADR-013 | Future increments | Documented deferred, no API promises |
-| MOD-003/005 | ADR-010/011/013 | L2.2 + L2.3 | `test_text_content.py` (text PASS), mixed image still pending G2 |
+| MOD-003/005 | ADR-010/011/013 | L2.2 + L2.3 | `test_text_content.py` (G1) + `test_image_content.py` / AC-007 (G2 PASS) |
 | SER strict Interaction v1 | ADR-012 | L2.4 | `test_interaction_codec.py` (NOT STARTED) |
-| M1 non-regression | ADR-004/005/006 | L2.4 | Existing tests preserved, integrated main CI G1 SUCCESS (204 tests) |
+| M1 non-regression | ADR-004/005/006 | L2.4 | Existing tests preserved, integrated main CI G2 SUCCESS (252 tests) |
 
 ## Release and merge discipline
 
@@ -39,4 +39,4 @@ Do not fabricate GitHub links for draft source files absent from the repository.
 - P2-BOOT docs and architecture test are not the implementation of Message or Content.
 - Review branches and CI; no direct push to main, tag, GitHub Release or PyPI upload.
 - G0 depends on explicit ADR acceptance (recorded 2026-11-05), a reviewed PR and qualifying CI on the integrated main SHA, not ADR presence alone.
-- G1 = GO on integrated main SHA `1fd7a476f0aa0b0040c0749ae36236fa24d6f8e6`; next implement L2.3 / L2.4, qualify G2/G3/G4, then M2.
+- G1 = GO on `main` SHA `1fd7a476f0aa0b0040c0749ae36236fa24d6f8e6`; G2 = GO on `main` SHA `8e4d8c1df998d17e20e50a79b5c6904fe5de0616`. Next implement L2.4, qualify G3/G4, then M2. No publication authorized.

@@ -1,6 +1,6 @@
 # Interaction Domain - MediaSourceRef & ImageContent (L2.3)
 
-**Status:** L2.3 implementation candidate, pending PR CI and integration into main.
+**Status:** L2.3 implemented and **G2 GO** on 2026-11-05. PR #14 merged into `main`; CI #42011868937 SUCCESS (252 tests, 90% coverage).
 **Scope:** `0.1.0a2` candidate, not published.
 **Decisions:** [ADR-010](../adr/ADR-010-content-polymorphism-and-order.md), [ADR-011](../adr/ADR-011-media-source-safety.md) and [ADR-013](../adr/ADR-013-multimodal-extension-policy.md).
 **Acceptance:** AC-007 (ordered text-image-text Message).

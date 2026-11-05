@@ -8,11 +8,11 @@
 |---|---|
 | Projet | PyLLMKit |
 | Document | `ROADMAP.md` |
-| Statut | **Roadmap active ; M1 = GO ; P2-BOOT G0 = GO ; L2.1/L2.2 G1 = GO (2026-11-05)** |
+| Statut | **Roadmap active ; M1 = GO ; P2-BOOT G0 = GO ; G1 = GO ; L2.3 G2 = GO (2026-11-05)** |
 | Date de référence | 2026-11-05 |
 | Portée | Consolidation des spécifications, architecture, implémentation, qualification et releases |
 | Sources vérifiées | `00_PYLLMKIT_*.md` à `09_PYLLMKIT_*.md` fournis dans la conversation |
-| État du code | **Vérifié jusqu'à G1 (Phase 2 texte)** : `main` SHA `1fd7a476f0aa0b0040c0749ae36236fa24d6f8e6`, 204 tests, 90 % couverture, CI Python 3.11-3.13 verte ; aucune release publiée |
+| État du code | **Vérifié jusqu'à G2 (Phase 2 texte/image)** : `main` SHA `8e4d8c1df998d17e20e50a79b5c6904fe5de0616`, 252 tests, 90 % couverture, CI Python 3.11-3.13 verte ; aucune release publiée |
 | Roadmap spécialisée | `22_PYLLMKIT_IMPLEMENTATION_ROADMAP.md` (document mentionné dans les spécifications ; existence et contenu non vérifiés) |
 
 ---
@@ -26,6 +26,10 @@
 ---
 
 > **Phase 2 G1 - Content & Message Ready: GO (2026-11-05).** [PR #11](https://github.com/tawounfouet/pyllmkit/pull/11) (ContentPart, TextContent, Content) et [PR #12](https://github.com/tawounfouet/pyllmkit/pull/12) (Role, Message, AC-006) intégrées. CI de `main` sur SHA `1fd7a476f0aa0b0040c0749ae36236fa24d6f8e6`: [SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42008750610), 204 tests et couverture 90 %. [Procès-verbal G1](docs/quality/P2_G1_GATE_REVIEW.md). G2/G3/G4 et M2 restent à qualifier ; la version reste `0.1.0a1`, non publiée.
+
+---
+
+> **Phase 2 G2 - Multimodal Content Ready: GO (2026-11-05).** [PR #14](https://github.com/tawounfouet/pyllmkit/pull/14) intégrée : `MediaSourceRef`, `ImageContent`, contenu ordonné texte/image, AC-007. CI de `main` sur SHA `8e4d8c1df998d17e20e50a79b5c6904fe5de0616` : [SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42011868937), 252 tests, 90 % de couverture, 3 versions Python. [Procès-verbal G2](docs/quality/P2_G2_GATE_REVIEW.md). Codec JSON L2.4, G3/G4 et M2 restant à qualifier ; package non publié.
 
 ---
 
