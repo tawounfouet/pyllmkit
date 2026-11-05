@@ -72,7 +72,7 @@ def _exact_object(value: object, fields: frozenset[str], label: str) -> dict[str
 def _string(value: object, label: str) -> str:
     if type(value) is not str:
         raise DomainValidationError(f"{label} must be string")
-    return cast(str, value)
+    return value
 
 
 def _nullable_string(value: object, label: str) -> str | None:
@@ -82,7 +82,7 @@ def _nullable_string(value: object, label: str) -> str | None:
 def _exact_int(value: object, label: str) -> int:
     if type(value) is not int:
         raise DomainValidationError(f"{label} must be exact integer")
-    return cast(int, value)
+    return value
 
 
 def _version(data: dict[str, object], object_type: str) -> None:
@@ -109,7 +109,7 @@ def _usage_from_dict(value: object) -> Usage:
         raw = data[key]
         if raw is not None and (type(raw) is not int or raw < 0):
             raise DomainValidationError(f"usage.{key} must be nonnegative int or null")
-        counts[key] = cast(int | None, raw)
+        counts[key] = raw
     return Usage(**counts)
 
 
@@ -197,7 +197,7 @@ def event_from_dict(payload: Mapping[str, object]) -> StreamEvent:
         return UsageUpdated(
             run_id=run_id, sequence=sequence,
             usage=_usage_from_dict(values["usage"]),
-            is_final=cast(bool, is_final),
+            is_final=is_final,
         )
     if kind == "response_completed":
         return ResponseCompleted(
