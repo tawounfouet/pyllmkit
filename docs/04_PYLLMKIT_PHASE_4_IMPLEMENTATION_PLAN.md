@@ -2,7 +2,7 @@
 
 ## P4 - Tooling & Structured Output / M4 - Tooling & Structured Output Qualified
 
-> **Statut : PROPOSITION DE PLAN. NON APPROUVÉE. AUCUN CODE P4 IMPLÉMENTÉ PAR CE DOCUMENT.**
+> **Statut : PLAN ET ADR-022..029 APPROUVÉS PAR LE PROPRIÉTAIRE EN P4-G0. QUALIFICATION DU GATE SUR CI MAIN À CONSIGNER SÉPARÉMENT. AUCUN CODE P4 IMPLÉMENTÉ PAR CE DOCUMENT.**
 >
 > **Date de référence :** 5 novembre 2026.
 >
@@ -14,7 +14,7 @@
 >
 > **Réserves ouvertes :** [#22 - protection de main](https://github.com/tawounfouet/pyllmkit/issues/22), [#35 - stratégie de release](https://github.com/tawounfouet/pyllmkit/issues/35), [#36 - frontière des futurs providers](https://github.com/tawounfouet/pyllmkit/issues/36).
 >
-> **Autorité de décision :** propriétaire du projet. Les signatures, politiques de schéma, ADR et critères de gate ci-dessous sont **proposés** jusqu'à leur adoption documentée en P4-G0.
+> **Autorité de décision :** propriétaire du projet. L'adoption des huit ADR par le propriétaire est documentée dans [P4_G0_OWNER_ARCHITECTURE_APPROVAL.md](quality/P4_G0_OWNER_ARCHITECTURE_APPROVAL.md). Les critères d'acceptation et gates restent à vérifier par des preuves GitHub.
 
 ---
 
@@ -205,7 +205,7 @@ Le `?` exprime une **question de design**, pas un champ déjà implémenté. La 
 
 ## 4. P4-BOOT : registre des ADR à arbitrer avant code
 
-La numérotation **ADR-022 à ADR-029 est proposée**, car le dépôt dispose aujourd'hui d'ADR-001 à ADR-021. Il faut vérifier les collisions au moment de la création. **Aucune de ces ADR n'est encore ACCEPTED.**
+La numérotation **ADR-022 à ADR-029 est proposée**, car le dépôt dispose aujourd'hui d'ADR-001 à ADR-021. Il faut vérifier les collisions au moment de la création. **Les huit ADR-022 à ADR-029 sont ACCEPTED par décision du propriétaire le 5 novembre 2026; voir le registre P4-G0.**
 
 | ADR candidate | Question à trancher en G0 | Options à comparer | Décision attendue |
 |---|---|---|---|
