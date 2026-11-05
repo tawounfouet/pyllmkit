@@ -48,6 +48,7 @@ jobs:
           python examples/13_define_tools.py
           python examples/14_define_tool_call_and_result.py
           python examples/15_validate_structured_output.py
+          python examples/16_tooling_json_round_trip.py
       - name: Build wheel and sdist
         run: python -m build
       - name: Wheel clean environment smoke
@@ -65,6 +66,9 @@ jobs:
       - name: P4 L4.3 wheel smoke
         run: |
           .venv-wheel/bin/python examples/15_validate_structured_output.py
+      - name: P4 L4.4 wheel codec and composition smoke
+        run: |
+          .venv-wheel/bin/python examples/16_tooling_json_round_trip.py
       - name: L3.1 clean wheel smoke
         run: |
           .venv-wheel/bin/python -c "from pyllmkit.domain import Content, InferenceRequest, Message, ModelId, ModelTarget, Role, TextContent; r=InferenceRequest(ModelTarget(ModelId('smoke')), (Message(Role.USER, Content((TextContent('x'),))),)); assert r.target.kind == 'model'"
@@ -94,3 +98,4 @@ jobs:
           .venv-sdist/bin/python examples/13_define_tools.py
           .venv-sdist/bin/python examples/14_define_tool_call_and_result.py
           .venv-sdist/bin/python examples/15_validate_structured_output.py
+          .venv-sdist/bin/python examples/16_tooling_json_round_trip.py
