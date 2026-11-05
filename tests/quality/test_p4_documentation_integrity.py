@@ -34,8 +34,7 @@ def test_readme_links_to_phase4_concepts_api_and_quality() -> None:
     for relative in DOCS[:10]:
         assert f"]({relative})" in readme, f"README link absent: {relative}"
     assert "P4-G4" in readme and "P4-G5" in readme
-    assert "non qualifié" in readme.lower()
-    assert "0.1.0a2" in readme
+    assert "M4" in readme
 
 
 def test_ci_runs_13_through_17_and_never_publishes() -> None:
