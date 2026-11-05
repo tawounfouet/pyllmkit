@@ -1,5 +1,8 @@
 # PyLLMKit - Roadmap
 
+**2026-11-05 - Phase 3 P3-G0 = GO (architecture with reservations).** ADR-014..021 owner-approved and integrated on [PR #19](https://github.com/tawounfouet/pyllmkit/pull/19), `main` SHA [`965311db`](https://github.com/tawounfouet/pyllmkit/commit/965311dbef527ad59222b7586f9c801bb713bead), [CI SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42029448967). [P3-G0 gate review](docs/quality/P3_G0_GATE_REVIEW.md). Next L3.1 Request Domain, P3-G1 pending. P3-AC-007 REQUIRED (ADR-021 option A). Debt [#20](https://github.com/tawounfouet/pyllmkit/issues/20) open; no a3 implementation or publication.
+
+
 > **Mission** : construire une ontologie exécutable, explicite, typée et provider-agnostic des primitives du domaine LLM et de leur cycle d'inférence.
 >
 > **Principe directeur** : *Domain First · Ports & Adapters · Capability-Driven · Explicit over Implicit*.
