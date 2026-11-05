@@ -8,14 +8,23 @@ import pytest
 from pyllmkit.adapters.registry import InMemoryCatalog
 from pyllmkit.application.registry import CatalogSearchService
 from pyllmkit.domain.capabilities import (
-    Capability, CapabilityId, CapabilitySet, CapabilitySupport, SupportLevel,
+    Capability,
+    CapabilityId,
+    CapabilitySet,
+    CapabilitySupport,
+    SupportLevel,
 )
 from pyllmkit.domain.deployments import Deployment, DeploymentStatus
 from pyllmkit.domain.errors import DomainValidationError
 from pyllmkit.domain.inference import DeploymentId
 from pyllmkit.domain.modalities import Modality, ModalitySet
 from pyllmkit.domain.models import (
-    Model, ModelFamily, ModelId, ModelIdentity, ModelLimits, ModelVariant,
+    Model,
+    ModelFamily,
+    ModelId,
+    ModelIdentity,
+    ModelLimits,
+    ModelVariant,
     ProviderModelRef,
 )
 from pyllmkit.domain.providers import InferenceProvider, ProviderId
