@@ -1,5 +1,17 @@
 # Changelog
 
+## [Unreleased development] - L3.5 Integration & Packaging (G5 candidate, not released)
+
+### Integrated documentation and regression quality (pending G5 qualification)
+- Harmonized README current gate status and runnable offline Inference Request/Response/Run JSON v1 walkthrough, P3-AC-030.
+- Added consolidated `docs/api/inference.md`, Request/Response/Run conceptual guides, actual architecture contract diagram and JSON v1 schema guide.
+- Added `PHASE_3_TRACEABILITY.md` linking all 30 P3 acceptance cases to tests, ADRs, PRs and qualified main CI.
+- Added public root/subpackage import tests, release-metadata/license/typing tests, docs integrity checks and `examples/12_full_inference_walkthrough.py` smoke-tested from installed wheel/sdist.
+- Resolved M2 PIR2-01/02/03 separately via [PR #31](https://github.com/tawounfouet/pyllmkit/pull/31), [main 2ec317de](https://github.com/tawounfouet/pyllmkit/commit/2ec317de98bd9d0897fe1e48801a9727e4f7ced6) and [CI #42057132634](https://github.com/tawounfouet/pyllmkit/actions/runs/42057132634) (789 tests, 95% coverage). Issue #20 completed.
+
+**G5 and M3 NOT YET QUALIFIED at this changelog revision.** Main protection issue #22 remains open. The repository still declares `0.1.0a2` and nothing has been tagged or published.
+
+
 ## [Unreleased development] - 0.1.0a3 Inference Primitives (G4 only, not released)
 
 ### Added (L3.4 - Inference JSON Codec & Quality)
