@@ -249,3 +249,35 @@ Applications -> Facade -> Application Services -> Ports/Protocols
 No provider invocation, serving Deployment/Endpoint, registry, streaming, RAG, agent orchestration or tool-execution engine in Phase 1. The Python package is not a released, stable LLM client.
 
 **License: MIT** (see `LICENSE` and ADR-007). Publication remains a separate decision after a successful M1 gate.
+
+
+## Phase 5 - Streaming (M5 domain primitives, offline)
+
+Phase 5 introduces typed, immutable streaming events and deterministic reconstruction. It does **not** call an LLM, execute a tool, parse an SSE frame or provide network/backpressure guarantees.
+
+```python
+from pyllmkit.domain.inference import InferenceRunId
+from pyllmkit.domain.streaming import (
+    MemoryInferenceStream, ResponseCompleted, ResponseStarted, TextDelta, consume_stream,
+)
+
+run_id = InferenceRunId("offline-example")
+events = (
+    ResponseStarted(run_id=run_id, sequence=0),
+    TextDelta(run_id=run_id, sequence=1, delta="Bon"),
+    TextDelta(run_id=run_id, sequence=2, delta="jour"),
+    ResponseCompleted(run_id=run_id, sequence=3),
+)
+state = consume_stream(MemoryInferenceStream(run_id, events))
+assert state.is_complete and state.text == "Bonjour"
+```
+
+- [Streaming API](docs/api/streaming.md): events, lifecycle, sync/async, raw tool deltas, cancellation.
+- [Streaming JSON v1](docs/architecture/STREAMING_JSON_SCHEMA_V1.md): strict versioned dictionary round-trips and validated trace replay.
+- [Architecture P5](docs/architecture/PHASE_5_STREAMING_ARCHITECTURE.md): ADR-030..038, limits and separation from providers.
+- [Acceptance matrix P5-AC-001..048](docs/quality/PHASE_5_TRACEABILITY.md).
+- [Offline examples](examples/) 18 to 22: event types, interleaved tool fragments, sync/async, JSON v1 and end-to-end walkthrough.
+
+The domain uses the same event semantics for synchronous and asynchronous consumption. An incomplete stream is not silently marked as a finished response. ToolCall values from streamed raw arguments are descriptions with parsed absent, never ToolResults. No API keys or provider SDKs are needed.
+
+**Release governance:** The package still declares 0.1.0a2. The proposed 0.1.0b1 target is not a published version. M5 qualification and a separate release approval are required; branch protection and provider boundary governance remain separate.

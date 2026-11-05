@@ -646,3 +646,17 @@ Cette roadmap est une **synthèse opérationnelle** des fichiers suivants, compl
 - `09_PYLLMKIT_DOMAIN_EVENTS_CATALOG.md` - distinction des catégories d'événements.
 
 **Gouvernance** : en cas de conflit entre cette roadmap et une spécification de domaine, créer une ADR et mettre à jour les documents concernés avant de modifier silencieusement le code.
+
+---
+
+## Etat verifie Phase 5 - Streaming (2026-11-05)
+
+Architecture G0: PR #51, main 47538ce (CI #42100071595 SUCCESS).
+L5.1 Event Model: PR #52, main 5157425 (CI #42100651109 SUCCESS).
+L5.2 Ordering & Lifecycle: PR #53, main 9039a1b (CI #42101437194 SUCCESS).
+L5.3 ToolCall Delta: PR #54, main 53a965c (CI #42102029484 SUCCESS).
+L5.4 Streaming Sync/Async: PR #55, main 6388711 (CI #42102577288 SUCCESS).
+L5.5 Independent Streaming JSON v1: PR #56, main 6070ca4 (CI #42103272574 SUCCESS).
+L5.6 Integration & Quality: PR d'implementation et CI main encore a qualifier au moment de la redaction.
+
+Les neuf ADR-030..038 sont le contrat de conception du domaine. Le noyau n'appelle aucun provider, ne parse pas de flux HTTP, ne reconstitue pas automatiquement un resultat d'outil et conserve UNKNOWN / sortie partielle. Chaque gate reste specifique a son SHA. Objectif indicatif 0.1.0b1, version actuelle 0.1.0a2, publication NO-GO et pas de tag.

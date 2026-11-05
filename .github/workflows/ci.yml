@@ -50,6 +50,11 @@ jobs:
           python examples/15_validate_structured_output.py
           python examples/16_tooling_json_round_trip.py
           python examples/17_full_tooling_walkthrough.py
+          python examples/18_stream_text_events.py
+          python examples/19_stream_tool_call_events.py
+          python examples/20_stream_sync_async.py
+          python examples/21_streaming_json_round_trip.py
+          python examples/22_full_streaming_walkthrough.py
       - name: Build wheel and sdist
         run: python -m build
       - name: Wheel clean environment smoke
@@ -73,6 +78,13 @@ jobs:
       - name: P4 L4.5 installed wheel full tooling walkthrough
         run: |
           .venv-wheel/bin/python examples/17_full_tooling_walkthrough.py
+      - name: P5 installed wheel streaming smoke
+        run: |
+          .venv-wheel/bin/python examples/18_stream_text_events.py
+          .venv-wheel/bin/python examples/19_stream_tool_call_events.py
+          .venv-wheel/bin/python examples/20_stream_sync_async.py
+          .venv-wheel/bin/python examples/21_streaming_json_round_trip.py
+          .venv-wheel/bin/python examples/22_full_streaming_walkthrough.py
       - name: L3.1 clean wheel smoke
         run: |
           .venv-wheel/bin/python -c "from pyllmkit.domain import Content, InferenceRequest, Message, ModelId, ModelTarget, Role, TextContent; r=InferenceRequest(ModelTarget(ModelId('smoke')), (Message(Role.USER, Content((TextContent('x'),))),)); assert r.target.kind == 'model'"
@@ -104,3 +116,8 @@ jobs:
           .venv-sdist/bin/python examples/15_validate_structured_output.py
           .venv-sdist/bin/python examples/16_tooling_json_round_trip.py
           .venv-sdist/bin/python examples/17_full_tooling_walkthrough.py
+          .venv-sdist/bin/python examples/18_stream_text_events.py
+          .venv-sdist/bin/python examples/19_stream_tool_call_events.py
+          .venv-sdist/bin/python examples/20_stream_sync_async.py
+          .venv-sdist/bin/python examples/21_streaming_json_round_trip.py
+          .venv-sdist/bin/python examples/22_full_streaming_walkthrough.py
