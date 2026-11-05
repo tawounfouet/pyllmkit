@@ -37,6 +37,7 @@ jobs:
           python examples/02_define_artifacts.py
           python examples/03_define_capabilities.py
           python examples/04_define_text_content.py
+          python examples/05_define_text_message.py
       - name: Build wheel and sdist
         run: python -m build
       - name: Wheel clean environment smoke
