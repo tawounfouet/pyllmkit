@@ -9,8 +9,6 @@ from typing import cast
 
 from pyllmkit.domain.errors import DomainValidationError
 from pyllmkit.domain.inference import InferenceRunId, request_from_dict, request_to_dict
-from pyllmkit.domain.structured_output import StructuredOutput
-from pyllmkit.domain.tooling import ToolCall, ToolResult
 from pyllmkit.domain.tooling.serialization import (
     TOOLING_SCHEMA_VERSION,
     response_format_from_dict,
