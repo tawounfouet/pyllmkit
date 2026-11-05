@@ -1,6 +1,9 @@
 # ADR-014 - Frontieres Request / Run / Response
+> **Decision owner P3-G0 (2026-11-05)** : `ACCEPTED`, sous autorite du proprietaire dans la conversation du projet. Cette autorisation concerne les contrats et leur integration, **pas** une GitHub review externe ni la publication d'un package. 
+> **Arbitrage retenu :** Request/Response = Value Objects; Run = Entity/Aggregate Root; Request chat P0 with 1..* Message, no implicit ID, SDK or I/O.
 
-- Statut : **PROPOSED** (P3-BOOT, 2026-11-05). Non approuvee, non implementee.
+
+- **Statut : ACCEPTED** - adoption explicite par le proprietaire pour P3-G0 le 2026-11-05. Contrat de conception adopte, implementation Python non commencee.
 - Decisionnaire requis : proprietaire du projet.
 - Sources : plan Phase 3 sections 3-5, vision Domain First, DDD (05), INV-007, INF-006/013/022.
 - Dependance : ADR-015, ADR-017, ADR-019.
