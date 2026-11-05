@@ -10,12 +10,12 @@
 
 GenerationConfig exprime des intentions de generation, sans copier les options ou defaults d'un provider. Le constructeur ne dispose pas des capabilities effectives de la cible.
 
-## Decision proposee
+## Decision adoptee
 
 1. Value Object frozen, slots, compare par valeur, et sans dependances provider. Les 8 champs optionnels valent **None** lorsqu'ils ne sont pas specifies.
 2. **float exact et fini** pour temperature, top_p, presence_penalty, frequency_penalty (donc **temperature=0.0 valide, temperature=0 int invalide**, tout comme True, NaN et Infinity). Ce choix strict et pedagogique est **approuve explicitement en G0**; alternative possible : accepter int et float hors bool avec une representation canonique.
 3. **int exact** hors bool pour top_k, max_output_tokens et seed. Aucun cast implicite de float, str ou bool en int.
-4. Valeurs initiales proposees : temperature >= 0.0, 0.0 < top_p <= 1.0, top_k >= 1, max_output_tokens >= 1. seed est tout entier, y compris 0 et negatif, tant qu'aucune borne commune n'est justifiee. Les deux penalties doivent etre finis, sans imposer un intervalle fournisseur.
+4. Valeurs acceptees : temperature >= 0.0, 0.0 < top_p <= 1.0, top_k >= 1, max_output_tokens >= 1. seed est tout entier, y compris 0 et negatif, tant qu'aucune borne commune n'est justifiee. Les deux penalties doivent etre finis, sans imposer un intervalle fournisseur.
 5. **stop_sequences** vaut None, ou un **tuple exact** de strings exactes non vides; () explicite est autorise et distinct de None. Ordre et repetitions preserves. Pas de coercition depuis list ou iterateur; le JSON utilise un tableau uniquement lorsqu'une valeur est presente.
 6. La presence d'un parametre valide **structurellement** n'est pas une preuve de support effectif. Un resolver futur pourra fournir un report de compatibilite sur capacites/limites connues. En cas de support inconnu : UNKNOWN/non evalue, jamais NATIVE implicitement. En cas de refus explicite du parametre par une cible resolue : diagnostic explicite, aucune suppression silencieuse.
 7. Aucun field provider_options, native_payload, tools ou response_format dans GenerationConfig P0. Ne pas introduire de dictionnaire mutable d'escape hatch dans le core.
