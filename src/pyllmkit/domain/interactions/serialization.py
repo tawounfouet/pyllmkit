@@ -47,19 +47,17 @@ def _string(data: Mapping[str, object], field: str, label: str) -> str:
     value = data[field]
     if type(value) is not str:
         raise DomainValidationError(f"{label}.{field} must be a string")
-    return cast(str, value)
+    return value
 
 
 def _part_to_dict(part: ContentPart) -> dict[str, object]:
     """Encode only concrete types approved for schema version 1."""
     if type(part) is TextContent:
-        text = cast(TextContent, part)
-        return {"kind": "text", "text": text.text}
+        return {"kind": "text", "text": part.text}
     if type(part) is ImageContent:
-        image = cast(ImageContent, part)
         return {
             "kind": "image",
-            "source": {"kind": image.source.kind, "value": image.source.value},
+            "source": {"kind": part.source.kind, "value": part.source.value},
         }
     raise DomainValidationError("unsupported Interaction content part type")
 
