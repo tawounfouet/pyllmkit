@@ -1,4 +1,4 @@
-"""Phase 3 L3.1 provider-free inference request domain (ADR-014/015/016/021)."""
+"""Provider-free inference domain: L3.1 requests and L3.2 responses."""
 
 from .compatibility import (
     GENERATION_PARAMETER_NAMES,
@@ -10,7 +10,11 @@ from .compatibility import (
     validate_request_support,
 )
 from .config import GenerationConfig
+from .finish import FinishReason, FinishReasonCode
+from .identifiers import InferenceRunId
+from .output import InferenceOutput, TextOutput
 from .request import InferenceRequest
+from .response import InferenceResponse
 from .targets import (
     DeploymentId,
     DeploymentTarget,
@@ -19,6 +23,7 @@ from .targets import (
     InferenceTarget,
     ModelTarget,
 )
+from .usage import Usage
 
 __all__ = [
     "CompatibilityReport",
@@ -31,6 +36,13 @@ __all__ = [
     "GenerationSupportSnapshot",
     "InferenceRequest",
     "InferenceTarget",
+    "FinishReason",
+    "FinishReasonCode",
+    "InferenceOutput",
+    "InferenceResponse",
+    "InferenceRunId",
+    "TextOutput",
+    "Usage",
     "ModelTarget",
     "ParameterAssessment",
     "ParameterSupport",

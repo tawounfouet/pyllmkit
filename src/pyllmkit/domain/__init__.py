@@ -1,4 +1,4 @@
-"""Public provider-agnostic Domain API (M1 and Phase 2 interactions).
+"""Public provider-agnostic Domain API (M1, M2, and P3 Inference).
 
 Subpackages remain valid canonical import paths; explicit root reexports
 are ergonomic alpha aliases, not a provider-specific SDK facade.
@@ -20,13 +20,20 @@ from .inference import (
     DeploymentTarget,
     EndpointId,
     EndpointTarget,
+    FinishReason,
+    FinishReasonCode,
     GenerationConfig,
     GenerationSupportSnapshot,
+    InferenceOutput,
     InferenceRequest,
+    InferenceResponse,
+    InferenceRunId,
     InferenceTarget,
     ModelTarget,
     ParameterAssessment,
     ParameterSupport,
+    TextOutput,
+    Usage,
     evaluate_request_support,
     validate_request_support,
 )
@@ -77,6 +84,12 @@ __all__ = [
     "GenerationConfig",
     "GenerationSupportSnapshot",
     "InferenceRequest",
+    "Usage",
+    "InferenceRunId",
+    "InferenceResponse",
+    "InferenceOutput",
+    "FinishReasonCode",
+    "FinishReason",
     "InferenceTarget",
     "Content",
     "ContentPart",
@@ -106,6 +119,7 @@ __all__ = [
     "Role",
     "SupportLevel",
     "TextContent",
+    "TextOutput",
     "artifact_from_dict",
     "evaluate_request_support",
     "artifact_to_dict",
