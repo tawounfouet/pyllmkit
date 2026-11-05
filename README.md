@@ -2,7 +2,43 @@
 
 PyLLMKit est un framework Python de **primitives de domaine LLM agnostiques des fournisseurs**. Les modèles, capacités, contenus, demandes d'inférence, réponses et états d'exécution sont représentés par des objets Python validés, indépendamment de tout SDK ou service distant.
 
-**État du dépôt (5 novembre 2026) :** les gates techniques **P3-G0 à P3-G5 sont qualifiés avec réserves**. Le lot L3.5 - Integration & Packaging est intégré, [PV G5](docs/quality/P3_G5_GATE_REVIEW.md), [CI main #42059417894](https://github.com/tawounfouet/pyllmkit/actions/runs/42059417894) (798 tests / 95 %, 3 versions Python). **M3 a reçu un GO TECHNIQUE AVEC RÉSERVES**, limité au domaine hors ligne, [PV M3](docs/quality/M3_GATE_REVIEW.md), [CI main #42069101048](https://github.com/tawounfouet/pyllmkit/actions/runs/42069101048) (802 tests / 95 %, Python 3.11-3.13). **La publication 0.1.0a3 demeure NO-GO et non autorisée.** La version déclarée du package demeure `0.1.0a2`, candidat source non publié. Ni tag `0.1.0a3`, ni GitHub Release, ni PyPI.
+**État du dépôt (5 novembre 2026) :** M1 et M2 sont qualifiés, M3 a reçu un GO technique avec réserves. En Phase 4, les gates **P4-G0 à P4-G4** sont qualifiés avec réserves, y compris [P4-G4](docs/quality/P4_G4_GATE_REVIEW.md) sur le commit [main@ab0257a0](https://github.com/tawounfouet/pyllmkit/commit/ab0257a0a9a08f2320b580340ba84c92609bbfc0), [CI #42089506022](https://github.com/tawounfouet/pyllmkit/actions/runs/42089506022) (954 tests cumulatifs, couverture de branches 96 %, Python 3.11-3.13). Le lot **L4.5 - Integration & Quality est en préparation** et **P4-G5 reste non qualifié** jusqu'à une CI verte sur le SHA fusionné de main. La qualification M4 et la décision de publication demeurent distinctes. Le paquet source reste en version **0.1.0a2**, sans tag ni publication de version suivante. Les réserves [#22](https://github.com/tawounfouet/pyllmkit/issues/22), [#35](https://github.com/tawounfouet/pyllmkit/issues/35) et [#36](https://github.com/tawounfouet/pyllmkit/issues/36) restent ouvertes.
+
+## Phase 4 : exemple complet hors ligne (P4-AC-036)
+
+Les primitives de P4 représentent des déclarations, des appels d'outils **non exécutés**, leurs résultats observés et des formats structurés. Aucun SDK de fournisseur ni credential n'est requis. Cet exemple Python est vérifié par la CI et compose explicitement une requête M3 intacte avec un catalogue P4 :
+
+```python
+from pyllmkit.domain import (
+    Content, InferenceRequest, Message, ModelId, ModelTarget, Role, TextContent,
+)
+from pyllmkit.domain.tooling import Tool, ToolChoice, ToolSchema
+from pyllmkit.domain.tooling_inference import (
+    ToolingInferenceIntent, intent_from_dict, intent_to_dict,
+)
+
+m3 = InferenceRequest(
+    ModelTarget(ModelId("offline-example")),
+    (Message(Role.USER, Content((TextContent("Weather in Paris?"),))),),
+)
+weather = Tool("get_weather", "Description only", ToolSchema({
+    "type": "object",
+    "properties": {"city": {"type": "string"}},
+    "required": ["city"],
+    "additionalProperties": False,
+}))
+p4_intent = ToolingInferenceIntent(
+    m3, (weather,), ToolChoice.specific("get_weather"),
+)
+p4_wire = intent_to_dict(p4_intent)
+p4_decoded = intent_from_dict(p4_wire)
+assert p4_decoded.tools[0].name == "get_weather"
+assert p4_wire["object_type"] == "tooling_inference_intent"
+```
+
+Pour le parcours complet tool -> call -> résultat illustratif -> sortie structurée -> JSON v1, exécuter `python examples/17_full_tooling_walkthrough.py`. Les résultats de cet exemple sont des **données de démonstration fournies localement**, pas une réponse réelle d'un modèle ou d'un outil.
+
+Documentation Phase 4 : [Architecture](docs/architecture/PHASE_4_TOOLING_AND_STRUCTURED_OUTPUT_CONTRACTS.md), [Schéma Tooling JSON v1](docs/architecture/TOOLING_JSON_SCHEMA_V1.md), [Tool Definition](docs/concepts/tool-definition.md), [Tool Call](docs/concepts/tool-call.md), [Structured Output](docs/concepts/structured-output.md), [API Tooling](docs/api/tooling.md), [API Tool Calling](docs/api/tool-calling.md), [API Structured Output](docs/api/structured-output.md), [API Serialization](docs/api/tooling-serialization.md), [Traçabilité P4](docs/quality/PHASE_4_TRACEABILITY.md), [Précheck M4](docs/quality/M4_READINESS_PRECHECK.md).
 
 ## État de qualification
 
