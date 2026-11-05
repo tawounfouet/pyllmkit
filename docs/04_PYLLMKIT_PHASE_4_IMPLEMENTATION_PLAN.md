@@ -1,5 +1,7 @@
 # PyLLMKit - Plan d'implémentation de la Phase 4
 
+> **État d'implémentation réel au 2026-11-05 :** L4.1 à L4.5 sont intégrés. P4-G0 à P4-G5 ont un GO technique avec réserves; voir [PV G5](quality/P4_G5_GATE_REVIEW.md), [main@aad2656c](https://github.com/tawounfouet/pyllmkit/commit/aad2656cbe1753dac709bb28b228ba22ecca44a2), [CI #42092202193](https://github.com/tawounfouet/pyllmkit/actions/runs/42092202193). **M4 reste une revue finale séparée**. Les passages ci-dessous sont le plan historique de référence, non le statut temps réel du dépôt. Version source `0.1.0a2`, sans publication.
+
 ## P4 - Tooling & Structured Output / M4 - Tooling & Structured Output Qualified
 
 > **Statut : PLAN ET ADR-022..029 APPROUVÉS PAR LE PROPRIÉTAIRE EN P4-G0. QUALIFICATION DU GATE SUR CI MAIN À CONSIGNER SÉPARÉMENT. AUCUN CODE P4 IMPLÉMENTÉ PAR CE DOCUMENT.**
