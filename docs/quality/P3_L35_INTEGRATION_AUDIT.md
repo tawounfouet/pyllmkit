@@ -1,5 +1,8 @@
 # PyLLMKit - L3.5 Integration & Packaging - Audit transversal pre-G5
 
+**POST-INTEGRATION (2026-11-05): P3-G5 GO TECHNIQUE AVEC RESERVES.** [PR #32](https://github.com/tawounfouet/pyllmkit/pull/32) fusionnee sur [main 49cf26e](https://github.com/tawounfouet/pyllmkit/commit/49cf26e830819675a1c4cad9dfd2860fc977f0b6), [CI main #42059417894 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42059417894) : 798 tests et 95 % de couverture, trois versions Python vertes. Voir [P3_G5_GATE_REVIEW.md](P3_G5_GATE_REVIEW.md). Le texte PENDING ci-dessous est la photographie de l'audit **pre-gate**, non le verdict actuel. M3 reste a qualifier.
+
+
 > Date : 2026-11-05
 > Perimetre : M1 Model, M2 Interaction, P3 Request/Response/Run/Codec v1.
 > Etat : **AUDIT CANDIDAT**, ne vaut **pas** verdict GO P3-G5 avant CI sur SHA final de `main`.

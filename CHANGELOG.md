@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased development] - L3.5 Integration & Packaging (G5 candidate, not released)
+## [Unreleased development] - L3.5 Integration & Packaging (G5 technical GO, not released)
 
 ### Integrated documentation and regression quality (pending G5 qualification)
 - Harmonized README current gate status and runnable offline Inference Request/Response/Run JSON v1 walkthrough, P3-AC-030.
@@ -9,7 +9,7 @@
 - Added public root/subpackage import tests, release-metadata/license/typing tests, docs integrity checks and `examples/12_full_inference_walkthrough.py` smoke-tested from installed wheel/sdist.
 - Resolved M2 PIR2-01/02/03 separately via [PR #31](https://github.com/tawounfouet/pyllmkit/pull/31), [main 2ec317de](https://github.com/tawounfouet/pyllmkit/commit/2ec317de98bd9d0897fe1e48801a9727e4f7ced6) and [CI #42057132634](https://github.com/tawounfouet/pyllmkit/actions/runs/42057132634) (789 tests, 95% coverage). Issue #20 completed.
 
-**G5 and M3 NOT YET QUALIFIED at this changelog revision.** Main protection issue #22 remains open. The repository still declares `0.1.0a2` and nothing has been tagged or published.
+**P3-G5 = GO technique avec reserves** sur [main 49cf26e](https://github.com/tawounfouet/pyllmkit/commit/49cf26e830819675a1c4cad9dfd2860fc977f0b6), [CI #42059417894 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42059417894), 798 tests / 95 % coverage, Python 3.11/12/13, [PV G5](docs/quality/P3_G5_GATE_REVIEW.md). **M3 et release restent NON QUALIFIES.** Main protection issue #22 remains open. The repository still declares `0.1.0a2` and nothing has been tagged or published.
 
 
 ## [Unreleased development] - 0.1.0a3 Inference Primitives (G4 only, not released)

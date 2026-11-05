@@ -1,7 +1,7 @@
 # Phase 3 - Inference Domain Contracts & Boundaries
 
 > Statut : architecture P3-G0 approuvee, primitives P3-G1..G4 integrees et qualifiees.
-> Chantier L3.5 : documentation et integration, **G5/M3 non qualifies a la redaction**.
+> Chantier L3.5 : documentation et integration **G5 GO technique avec reserves** sur [main 49cf26e](https://github.com/tawounfouet/pyllmkit/commit/49cf26e830819675a1c4cad9dfd2860fc977f0b6), [PV G5](../quality/P3_G5_GATE_REVIEW.md); M3 et release non qualifies.
 > References : ADR-014..021, [Plan Phase 3](../03_PYLLMKIT_PHASE_3_IMPLEMENTATION_PLAN.md), [PV G4](../quality/P3_G4_GATE_REVIEW.md).
 
 ## Vue d'ensemble
@@ -84,4 +84,4 @@ Le JSON est un **format de mapping de domaine**. Le parseur de texte JSON, les l
 - [Schema Inference JSON v1](INFERENCE_JSON_SCHEMA_V1.md)
 - [Tracabilite P3](../quality/PHASE_3_TRACEABILITY.md)
 
-**Cette architecture de domaine est integree, mais P3-G5, M3 et la publication restent des decisions distinctes.**
+**Cette architecture de domaine est integree et P3-G5 est qualifie techniquement; M3 et la publication restent des decisions distinctes.**
