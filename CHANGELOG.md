@@ -17,7 +17,7 @@ All notable changes to PyLLMKit are tracked here. The metadata version does not 
 - JSON input is a mapping; duplicate-key checks on raw JSON text are a caller/parser responsibility.
 - URI validation is syntactic, not a security policy for fetching media.
 - No provider adapters, Conversation aggregate, audio/video/document or tool execution.
-- This is a **repository candidate only**: no Git tag, GitHub Release or PyPI publication. L2.4 is G3 qualified on main; G4/M2 are separate pending integration gates.
+- This is a **repository candidate only**: no Git tag, GitHub Release or PyPI publication. L2.4 G3 and integrated G4/M2 technical GO are qualified on `main` SHA `560d3a46c74cecebdf6a55301b2b8ca4e34331d4`. Publication remains a distinct, unapproved action.
 
 ## [Unreleased] - 0.1.0a1 candidate
 

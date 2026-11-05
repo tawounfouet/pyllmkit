@@ -1,10 +1,10 @@
 # PyLLMKit
 
-**Status:** M1/G0/G1/G2/G3 qualified on `main`. L2.4 strict Interaction JSON v1 is integrated, [CI SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42015194077): 342 tests, 91% coverage. G4 documentation finalization and M2 review remain pending. Metadata `0.1.0a2` is a **repository alpha candidate**, not published. No Git tag, GitHub Release or PyPI upload.
+**Status:** M1/G0/G1/G2/G3/G4 qualified on `main`. M2 = GO for source candidate on 2026-11-05. L2.4 strict Interaction JSON v1 is integrated, [CI SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42015194077): 342 tests, 91% coverage. M2 source candidate [qualification](https://github.com/tawounfouet/pyllmkit/actions/runs/42015825424) is complete, with [M2 report](docs/quality/M2_GATE_REVIEW.md) pending archival PR qualification. Metadata `0.1.0a2` is a **repository alpha candidate**, not published. No Git tag, GitHub Release or PyPI upload.
 
 PyLLMKit models provider-agnostic LLM primitives as typed Python domain objects, separate from model-serving providers, deployments and inference APIs.
 
-**Phase 2 architecture (2026-11-05):** **P2-BOOT G0 = GO**. ADR-008..013 were accepted by the project owner and integrated in [PR #8](https://github.com/tawounfouet/pyllmkit/pull/8); the [G0 review](docs/quality/P2_BOOT_GATE_REVIEW.md) and [decision register](docs/quality/PHASE_2_ARCHITECTURE_DECISION_REGISTER.md) were archived via PR #9, and the integrated `main` CI passed. **L2.1/L2.2 and AC-006 are now implemented and G1 = GO on integrated main** ([CI #42008750610](https://github.com/tawounfouet/pyllmkit/actions/runs/42008750610): 204 tests, 90% coverage). **L2.3 and AC-007 now implemented, G2 = GO** ([CI #42011868937](https://github.com/tawounfouet/pyllmkit/actions/runs/42011868937): 252 tests, 90% coverage). L2.4 codec integrated and G3 GO ([CI #42015194077](https://github.com/tawounfouet/pyllmkit/actions/runs/42015194077), 342 tests, 91% coverage). G4 and M2 remain pending until documentation integration and final main CI. No release has been published.
+**Phase 2 architecture (2026-11-05):** **P2-BOOT G0 = GO**. ADR-008..013 were accepted by the project owner and integrated in [PR #8](https://github.com/tawounfouet/pyllmkit/pull/8); the [G0 review](docs/quality/P2_BOOT_GATE_REVIEW.md) and [decision register](docs/quality/PHASE_2_ARCHITECTURE_DECISION_REGISTER.md) were archived via PR #9, and the integrated `main` CI passed. **L2.1/L2.2 and AC-006 are now implemented and G1 = GO on integrated main** ([CI #42008750610](https://github.com/tawounfouet/pyllmkit/actions/runs/42008750610): 204 tests, 90% coverage). **L2.3 and AC-007 now implemented, G2 = GO** ([CI #42011868937](https://github.com/tawounfouet/pyllmkit/actions/runs/42011868937): 252 tests, 90% coverage). L2.4 codec integrated and G3 GO ([CI #42015194077](https://github.com/tawounfouet/pyllmkit/actions/runs/42015194077), 342 tests, 91% coverage). G4 and technical M2 GO on `main` SHA `560d3a46c74cecebdf6a55301b2b8ca4e34331d4` ([CI #42015825424](https://github.com/tawounfouet/pyllmkit/actions/runs/42015825424)). No publication was performed. No release has been published.
 
 ## Phase 2 text/image interaction API (G2 GO)
 
@@ -20,7 +20,7 @@ assert message.content.parts[0].text == "Bonjour PyLLMKit"
 - [G1 Gate Review](docs/quality/P2_G1_GATE_REVIEW.md), [Interaction API](docs/api/interaction.md).
 - L2.3: immutable `MediaSourceRef` and `ImageContent`, ordered mixed text/image Content, AC-007.
 - [G2 Gate Review](docs/quality/P2_G2_GATE_REVIEW.md), [Media and Images](docs/concepts/media-and-images.md).
-- L2.4 integrated: strict Interaction JSON mapping codec v1; [schema](docs/architecture/INTERACTION_JSON_SCHEMA_V1.md) and [G3 Gate Review](docs/quality/P2_G3_GATE_REVIEW.md). G3 GO, no alpha publication.
+- L2.4 integrated: strict Interaction JSON mapping codec v1; [schema](docs/architecture/INTERACTION_JSON_SCHEMA_V1.md) and [G3 Gate Review](docs/quality/P2_G3_GATE_REVIEW.md). G3/G4 GO; [M2 GO report](docs/quality/M2_GATE_REVIEW.md). No alpha publication.
 
 ### AC-007 multimodal Message
 
