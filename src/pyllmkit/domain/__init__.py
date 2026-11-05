@@ -13,6 +13,7 @@ from .capabilities import (
     SupportLevel,
 )
 from .errors import DomainValidationError, PyLLMKitError
+from .interactions import Content, ContentPart, TextContent
 from .modalities import Modality, ModalitySet
 from .models import (
     Model,
@@ -39,6 +40,8 @@ __all__ = [
     "CapabilityId",
     "CapabilitySet",
     "CapabilitySupport",
+    "Content",
+    "ContentPart",
     "DomainValidationError",
     "Model",
     "ModelArchitecture",
@@ -56,6 +59,7 @@ __all__ = [
     "ProviderModelRef",
     "PyLLMKitError",
     "SupportLevel",
+    "TextContent",
     "artifact_from_dict",
     "artifact_to_dict",
     "model_from_dict",
