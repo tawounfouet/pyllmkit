@@ -1,27 +1,25 @@
-# ADR-020 - Schema JSON Inference v1 independant
+# ADR-020 - Inference JSON v1, objets et snapshots
 
-- Statut : **PROPOSED** (P3-BOOT, 2026-11-05).
-- Sources : plan Phase 3 section 8, ADR-004/012, SER-001..006, PIR2-03/04/06.
-
-## Contexte
-
-Model v1 et Interaction v1 sont deja des contrats distincts. Les primitives Inference necessitent une persistance et inspection deterministes, sans se transformer en wire format d'un fournisseur.
+- **Statut : REVISED / PROPOSED** - revue P3-G0 du 2026-11-05. Non approuvee.
+- **Sources :** plan Phase 3 section 8; ADR-004, ADR-012, ADR-014..019, SER-001..006, PIR2-03/04/06.
+- **Portee :** mapping JSON de domaine, pas payload provider ni parser HTTP.
 
 ## Decision proposee
 
-1. Introduire **INFERENCE_SCHEMA_VERSION = 1** dans le namespace Inference; ne pas modifier le schema Model v1 ni Interaction v1.
-2. Les enveloppes P0 publiees sont **inference_request**, **inference_response** et un **inference_run** snapshot. Chacune contient schema_version entier exact 1, object_type exact et champs obligatoires explicites.
-3. JSON request : target discriminant kind + value, messages comme sous-objets **Interaction JSON v1 entiers**, generation_config optionnelle mais champ present avec null ou objet canonique.
-4. JSON response : run_id, TextOutput discrimine, finish_reason nullable (code + native_reason), usage nullable. Output vide conserve.
-5. JSON run snapshot : run_id, request, attempt, state, timestamps aware en ISO 8601 explicites ou null, response/failure exclusifs selon etat. Revalider les invariants lors du decodage.
-6. Les champs optionnels autorises dans un objet ont une politique **presente et null** canonique pour v1; les champs absents non prevus et les cles surnumeraires sont refuses. Ne pas rendre l'absence de champ equivalente a une valeur fabriquee.
-7. Utiliser des fonctions explicites request_to_dict/from_dict, response_to_dict/from_dict, run_to_dict/from_dict. Text-to-JSON est une frontiere separee; json.dumps(..., allow_nan=False) est compatible.
-8. Refuser object_type, schema_version, variantes et champs inconnus, mauvaise cardinalite, bool pour int, NaN/Inf et types invalides, sans echo des prompts ou URL sensibles dans les erreurs.
-9. Maintenir ordre/duplications des messages et ContentParts; conserver le contenu exact des MediaSourceRef dans le mapping, mais ne jamais faire de fetch.
-10. La politique de **cles JSON dupliquees** appartient au parseur de texte; json.loads standard ne garantit pas leur detection. Documenter ce risque, ne pas revendiquer une garantie inexistante.
-11. Tout nouveau ContentPart ou Output incompatible impose ADR et versionnement/migration; aucune conversion provider implicite.
+1. **INFERENCE_SCHEMA_VERSION = 1** est propre au namespace Inference. Model v1 et Interaction v1 restent inchanges.
+2. Trois enveloppes canoniques : **inference_request**, **inference_response**, **inference_run**. Chacune contient schema_version entier exact 1 (bool exclu) et object_type exact.
+3. Request : target (kind: model/deployment/endpoint, value: id), liste non vide de messages **Interaction JSON v1 complets**, generation_config (objet P0 avec les 8 champs ou null).
+4. Response : run_id non vide, output = discriminant **text** et texte exact (vide autorise), finish_reason et usage nullable. FinishReason contient code normalise et native_reason nullable; UNKNOWN ne signifie pas STOP.
+5. Run : run_id, request emboitee, attempt, state, started_at, streaming_started_at, finished_at, response, failure et cancellation_reason_code. Les six etats et toutes leurs contraintes de dates et payload terminal sont revalides a la lecture (ADR-019).
+6. **InferenceFailure** P0 = objet avec **code** non vide. Le failure n'est pas une exception ni un raw provider error; l'absence de details doit rester absente.
+7. **Presence obligatoire de toutes les cles canoniques**, y compris les champs nullable qui valent null, dans chaque enveloppe v1. Dans GenerationConfig non-nulle et Usage non-nul, tous les champs P0 sont explicitement presents et nullable. Aucune valeur par defaut n'est produite silencieusement.
+8. Rejeter a toutes les profondeurs les cles inconnues/manquantes, les variantes inconnues, les types incorrects, booleens utilises comme entiers et NaN/Inf. Echec par DomainValidationError ou sous-type valide, sans echo de prompt, URI, token ou raw data.
+9. Les timestamps sont des strings ISO 8601 timezone-aware canoniques, normalises en UTC a l'ecriture. Le decodage restitue un datetime aware de la meme valeur temporelle; le fuseau d'origine n'est **pas** un champ du contrat. Aucun now() en cours de parsing.
+10. Les appels request_to_dict/from_dict, response_to_dict/from_dict et run_to_dict/from_dict sont des fonctions pures. json.dumps/json.loads restent a la frontiere caller. La validation des cles dupliquees dans le **texte JSON** n'est pas garantie par json.loads standard.
+11. Conserver ordre et doublons des messages/ContentParts, ainsi que les references media (sans fetch); aucun cast provider, aucun Message v2, pas de migration automatique.
+12. Pour tout schema non valide : refus deterministe, **jamais** un best effort qui perd des informations.
 
-## Exemple non normatif, soumis a G0
+## Exemple Request complet (illustration a approuver)
 
 ~~~json
 {
@@ -29,21 +27,95 @@ Model v1 et Interaction v1 sont deja des contrats distincts. Les primitives Infe
   "object_type": "inference_request",
   "target": {"kind": "model", "value": "example/model"},
   "messages": [
-    {"schema_version": 1, "object_type": "message",
-     "role": "user", "content": {"parts": [{"kind": "text", "text": "Bonjour"}]}}
+    {
+      "schema_version": 1,
+      "object_type": "message",
+      "role": "user",
+      "content": {"parts": [{"kind": "text", "text": "Bonjour"}]}
+    }
   ],
   "generation_config": null
 }
 ~~~
 
-## Alternatives
+Si generation_config est un objet, ses 8 cles sont : temperature, top_p, top_k, max_output_tokens, seed, stop_sequences, presence_penalty et frequency_penalty. stop_sequences vaut null ou un tableau JSON (vide autorise).
 
-- Reutiliser le namespace Interaction pour Inference : rejete.
-- Dupliquer une version compacte du Message : rejete en v1, risque de divergence.
-- Decoder laxiste ou drop d'extension : rejete.
+## Exemple Response complet (illustration a approuver)
 
-## Verification
+~~~json
+{
+  "schema_version": 1,
+  "object_type": "inference_response",
+  "run_id": "run-001",
+  "output": {"kind": "text", "text": ""},
+  "finish_reason": {"code": "unknown", "native_reason": "some_provider_reason"},
+  "usage": {
+    "input_tokens": 8,
+    "output_tokens": null,
+    "total_tokens": null,
+    "reasoning_tokens": null,
+    "cached_input_tokens": 0
+  }
+}
+~~~
 
-- Round-trip Request/Response/Run snapshot, null, Unicode, ordre, ids et horodatages.
-- Tests de refus unknown/missing/invalid, de redaction, et de non-regression M1/M2.
-- Tests P3-AC-021..028. Format final a confirmer par fixtures avant G0.
+Le reason code et le compteur cached_input_tokens sont illustratifs, non inventes lors d'un decodage de production.
+
+## Exemple Run COMPLETED complet (illustration a approuver)
+
+~~~json
+{
+  "schema_version": 1,
+  "object_type": "inference_run",
+  "run_id": "run-001",
+  "request": {
+    "schema_version": 1,
+    "object_type": "inference_request",
+    "target": {"kind": "model", "value": "example/model"},
+    "messages": [
+      {
+        "schema_version": 1,
+        "object_type": "message",
+        "role": "user",
+        "content": {"parts": [{"kind": "text", "text": "Bonjour"}]}
+      }
+    ],
+    "generation_config": null
+  },
+  "attempt": 1,
+  "state": "completed",
+  "started_at": "2026-11-05T10:00:00+00:00",
+  "streaming_started_at": null,
+  "finished_at": "2026-11-05T10:00:02+00:00",
+  "response": {
+    "schema_version": 1,
+    "object_type": "inference_response",
+    "run_id": "run-001",
+    "output": {"kind": "text", "text": "Bonjour !"},
+    "finish_reason": {"code": "stop", "native_reason": null},
+    "usage": null
+  },
+  "failure": null,
+  "cancellation_reason_code": null
+}
+~~~
+
+Pour FAILED, response=null et failure={"code":"inference_failed"} ; pour CANCELLED, response=null et failure=null, cancellation_reason_code=null ou code non vide. CREATED et RUNNING respectent les combinaisons de dates de l'ADR-019. Aucun timestamp terminal n'est invente.
+
+## Alternatives et compromis
+
+- Reutiliser Model/Interaction codec pour une enveloppe Inference : rejete.
+- Mapper directement un wire format OpenAI/Anthropic : rejete.
+- Ommettre les nullable ou leur donner des defaults silencieux : rejete dans v1.
+- Conserver le fuseau source d'un datetime : reporte, inutile pour le suivi d'instant.
+- Decoder un objet incoherent en contournant le constructeur : rejete.
+
+## Verification avant G4
+
+- Payloads canoniques revus et fixtures testees.
+- Round-trip pour Request, Response et chacun des **six** etats Run.
+- Tests de negative schema, dates incoherentes, run_id differents, failure illegal, null/zero, ordre, doublons, Unicode, NaN/Inf.
+- Non-regression M1/M2 et controle de fuite d'informations dans les exceptions.
+- Policy future de parseur strict a la frontiere HTTP (PIR2-04), sans le revendiquer comme disponible aujourd'hui.
+
+**Statut : PROPOSED.** L'implementation et les noms des symboles sont soumis a P3-G0.
