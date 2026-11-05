@@ -109,7 +109,13 @@ def test_p5_ac044_old_m1_m2_m3_m4_codecs_round_trip() -> None:
         request_from_dict,
         request_to_dict,
     )
-    from pyllmkit.domain.models import Model, ModelFamily, ModelIdentity, model_from_dict, model_to_dict
+    from pyllmkit.domain.models import (
+        Model,
+        ModelFamily,
+        ModelIdentity,
+        model_from_dict,
+        model_to_dict,
+    )
     from pyllmkit.domain.tooling import Tool, ToolSchema
     from pyllmkit.domain.tooling.serialization import tooling_from_dict, tooling_to_dict
 
