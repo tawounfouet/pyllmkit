@@ -1,6 +1,9 @@
 # ADR-019 - InferenceRun : Aggregate Root, machine a etats et horloge
+> **Decision owner P3-G0 (2026-11-05)** : `ACCEPTED`, sous autorite du proprietaire dans la conversation du projet. Cette autorisation concerne les contrats et leur integration, **pas** une GitHub review externe ni la publication d'un package. 
+> **Arbitrage retenu :** Immutable run snapshots with identity equality RunId, explicit timezone-aware clock, finished_at for all terminal states, minimal InferenceFailure and optional cancellation code, six states.
 
-- **Statut : REVISED / PROPOSED** - revue contradictoire du 2026-11-05, non approuvee.
+
+- **Statut : ACCEPTED** - adoption explicite par le proprietaire pour P3-G0 le 2026-11-05. Contrat de conception adopte, implementation Python non commencee.
 - **Decisionnaire :** proprietaire du projet.
 - **Sources :** Phase 3 sections 4 et 7; specification 07 INF-013..021, INF-030..039; catalogue 09; ADR-014/017/020.
 - **Portee :** domaine pur. Aucun appel provider ou streaming operationnel.
@@ -53,4 +56,4 @@ Une execution concrete possede identite, etat, horloge, reponse ou echec. Elle e
 - Round-trip et rejet JSON pour **les six etats** selon ADR-020.
 - Scenarios P3-AC-014..020, P3-AC-029, regression M1/M2.
 
-**Statut : PROPOSED.** Ce texte ne constitue ni approbation G0 ni API deja implementee.
+**Statut : ACCEPTED pour la conception P3.** L'API Python n'est pas encore implementee; la qualification G0 exige toujours l'integration et la CI.
