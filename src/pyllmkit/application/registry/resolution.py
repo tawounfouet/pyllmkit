@@ -116,11 +116,11 @@ class DeploymentResolver:
                     reasons.append("CAPABILITY_NOT_NATIVE")
             elif not item.confirmed_usable:
                 reasons.append("CAPABILITY_NOT_CONFIRMED")
-        for item in requirement.required_input_modalities:
-            if not self._modality_confirmed(item, "input", model, deployment, provider):
+        for modality in requirement.required_input_modalities:
+            if not self._modality_confirmed(modality, "input", model, deployment, provider):
                 reasons.append("INPUT_MODALITY_NOT_CONFIRMED")
-        for item in requirement.required_output_modalities:
-            if not self._modality_confirmed(item, "output", model, deployment, provider):
+        for modality in requirement.required_output_modalities:
+            if not self._modality_confirmed(modality, "output", model, deployment, provider):
                 reasons.append("OUTPUT_MODALITY_NOT_CONFIRMED")
         if requirement.min_context_window is not None:
             context = limits.get("context_window")
