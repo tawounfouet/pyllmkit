@@ -7,6 +7,8 @@ from datetime import UTC, datetime, timedelta
 import pytest
 
 from pyllmkit.domain import (
+    INFERENCE_SCHEMA_VERSION,
+    INTERACTION_SCHEMA_VERSION,
     Content,
     DomainValidationError,
     FinishReason,
@@ -18,8 +20,6 @@ from pyllmkit.domain import (
     InferenceResponse,
     InferenceRun,
     InferenceRunId,
-    INTERACTION_SCHEMA_VERSION,
-    INFERENCE_SCHEMA_VERSION,
     MediaSourceRef,
     Message,
     ModelId,
