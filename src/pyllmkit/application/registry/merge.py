@@ -5,7 +5,11 @@ applied before the entire batch passes conflict and referential validation.
 """
 
 from dataclasses import fields as dataclass_fields
+from dataclasses import is_dataclass
 from datetime import datetime, timedelta
+from enum import Enum
+from hashlib import sha256
+import json
 from typing import TypeVar
 
 from pyllmkit.domain.deployments import Deployment
@@ -29,6 +33,50 @@ from pyllmkit.domain.registry import (
 from pyllmkit.protocols import AtomicCatalogPort
 
 _Entity = TypeVar("_Entity", Model, InferenceProvider, Deployment)
+
+
+def _canonical(value: object) -> object:
+    """Full structural signature, bypassing entity identity-based __eq__.
+
+    Only validated domain values are accepted. Sort unordered collections so
+    the digest is deterministic across discovery order and registry replay.
+    """
+    if is_dataclass(value) and not isinstance(value, type):
+        return [
+            "dataclass", type(value).__module__, type(value).__qualname__,
+            [[item.name, _canonical(getattr(value, item.name))]
+             for item in dataclass_fields(value)],
+        ]
+    if isinstance(value, Enum):
+        return ["enum", type(value).__qualname__, value.name]
+    if isinstance(value, (tuple, list)):
+        return [type(value).__name__, [_canonical(item) for item in value]]
+    if isinstance(value, (frozenset, set)):
+        items = [_canonical(item) for item in value]
+        return ["set", sorted(items, key=lambda item: json.dumps(item, sort_keys=True))]
+    if isinstance(value, dict):
+        pairs = [[_canonical(k), _canonical(v)] for k, v in value.items()]
+        return ["mapping", sorted(
+            pairs, key=lambda pair: json.dumps(pair[0], sort_keys=True)
+        )]
+    if value is None or type(value) in (bool, str, int, float):
+        return [type(value).__name__, value]
+    raise DomainValidationError("Unsupported catalog metadata value in preview")
+
+
+def _candidate_digest(incoming: DiscoveryResult) -> str:
+    """Private SHA-256 digest binds a preview to every candidate metadata field."""
+    records = [
+        [kind, item.id.value, _canonical(item)]
+        for kind, values in (
+            ("provider", incoming.providers),
+            ("model", incoming.models),
+            ("deployment", incoming.deployments),
+        )
+        for item in sorted(values, key=lambda entity: entity.id.value)
+    ]
+    wire = json.dumps(records, ensure_ascii=False, separators=(",", ":"), allow_nan=False)
+    return sha256(wire.encode("utf-8")).hexdigest()
 
 
 def _field_differences(
@@ -117,6 +165,7 @@ def _build_plan(
             )
     preview = MergePreview(
         revision=snapshot.revision,
+        candidate_digest=_candidate_digest(incoming),
         policy=policy,
         source=incoming.source,
         observed_at=incoming.observed_at,
