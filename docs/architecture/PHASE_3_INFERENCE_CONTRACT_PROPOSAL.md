@@ -74,18 +74,28 @@ class InferenceResponse:
     finish_reason: FinishReason | None = None
     usage: Usage | None = None
 
-# InferenceRun = Entity a identite RunId,
-# transitions controllees produisant de nouveaux snapshots immuables.
+@dataclass(frozen=True, slots=True)
+class InferenceFailure:
+    code: str  # code canonique non vide, sans erreur provider native
+
+# InferenceRun = Entity a identite RunId.
+# Snapshot immuable: run_id, request, attempt, state,
+# started_at, streaming_started_at, finished_at,
+# response | None, failure | None, cancellation_reason_code | None.
+# Deux snapshots d'une meme Entity sont egaux par identite RunId,
+# mais leur state, timestamps et payload se comparent distinctement.
+# Transitions pures avec datetime timezone-aware injecte.
+# Aucun moteur d'execution, stockage ou emission d'evenement.
 ~~~
 
-Les variantes ModelTarget, DeploymentTarget et EndpointTarget, la forme exacte des erreurs et le schema Run sont a faire valider par ADR avant tout code public. Les dataclasses ci-dessus ne specifient pas les constructeurs finaux.
+Les variantes ModelTarget, DeploymentTarget et EndpointTarget, la forme exacte des erreurs et le schema Run sont a faire valider par ADR avant tout code public. Les champs decimaux GenerationConfig sont proposes en **float exact** (0.0 valide, int 0 refuse) : arbitrage ADR-016. Les signatures ci-dessus ne specifient pas les constructeurs finaux. Les dataclasses ci-dessus ne specifient pas les constructeurs finaux.
 
 ## 3. Validation a trois frontieres
 
 | Frontiere | Responsabilite | Autorisee a3 |
 |---|---|---|
 | Domain | Structure, types, invariants, transitions, codec | Oui, sans reseau |
-| Application future | Resolution et evaluation effective de compatibilite | Pas de resolver operationnel P0 |
+| Application future | Resolution et evaluation effective de compatibilite | Pas de resolver operationnel P0; evaluateur pur sur snapshot seulement si ADR-021 option A adoptee |
 | Adapter futur | Provider mapping, HTTP, auth, retries, SSRF, normalisation | Non |
 
 Un ImageContent est une modalite d'entree et non une preuve de VISION effective. Un target est une reference, pas une session de connexion.
@@ -99,12 +109,12 @@ STREAMING -> COMPLETED | FAILED | CANCELLED
 COMPLETED, FAILED, CANCELLED -> aucun etat
 ~~~
 
-STREAMING ne fournit pas de flux ni de StreamEvent en a3. L'horloge est fournie au moment de transition, timestamps aware. RunId reste stable; un retry cree un nouvel identifiant.
+STREAMING ne fournit pas de flux ni de StreamEvent en a3. L'horloge est fournie au moment de transition, timestamps aware. RunId reste stable; un retry cree un nouvel identifiant. Les etats terminaux utilisent **finished_at** : COMPLETED -> response; FAILED -> InferenceFailure; CANCELLED -> code de raison facultatif. Voir ADR-019 pour les six combinaisons legales.
 
 ## 5. Seuils qualifiants
 
 - G0 : ADR adoptees et contrat revu, sans preuve implicite.
-- G1 : Target/Config/Request, tests offline et non-regression.
+- G1 : Target/Config/Request, tests offline et non-regression; AC-007 conditionnel a ADR-021 option A (sinon DEFERRED, jamais PASS fictif).
 - G2 : Output/FinishReason/Usage/Response.
 - G3 : Run, transitions, mauvais run_id et horloge.
 - G4 : Codec JSON v1, tests stricts, securite, non-regression M1/M2.
