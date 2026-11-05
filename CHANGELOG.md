@@ -1,5 +1,17 @@
 # Changelog
 
+## [Unreleased development] - 0.1.0a3 Inference Primitives (G1 only, not released)
+
+### Added (L3.1 - Request Ready)
+- Provider-free typed ModelTarget, DeploymentTarget, EndpointTarget and opaque Serving IDs.
+- Immutable InferenceRequest for ordered Phase 2 Message values; strict GenerationConfig without provider-specific defaults.
+- Explicit pure support evaluation from caller-supplied GenerationSupportSnapshot. Unknown remains unknown, known UNSUPPORTED is rejected (ADR-021 option A, P3-AC-007).
+- Domain/root imports, offline acceptance tests P3-AC-001..007, Python 3.11-3.13 CI examples and clean wheel/sdist API smoke tests.
+- G1 technical qualification based on main SHA f1ef04b8ff1bb52a1ee17defa0ec8b20f84ac9d3 and CI #42036557565: 432 tests, 93% coverage (Python 3.11). [G1 gate](docs/quality/P3_G1_GATE_REVIEW.md).
+
+**Not implemented yet:** Response, Run, Inference JSON v1, tools, structured output, streaming, provider adapters and external invocation. Metadata stays 0.1.0a2 and no release is authorized.
+
+
 All notable changes to PyLLMKit are tracked here. The metadata version does not imply external publication.
 
 ## [Unreleased] - 0.1.0a2 candidate
