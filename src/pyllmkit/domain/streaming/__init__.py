@@ -1,5 +1,11 @@
 """Provider-agnostic streaming core: events, ordering and pure reduction."""
 
+from .consumption import (
+    MemoryAsyncInferenceStream,
+    MemoryInferenceStream,
+    consume_async_stream,
+    consume_stream,
+)
 from .errors import (
     StreamDuplicateSequence,
     StreamLifecycleError,
@@ -22,7 +28,12 @@ from .events import (
     ToolCallStarted,
     UsageUpdated,
 )
-from .protocols import InferenceStream
+from .protocols import (
+    AsyncInferenceStream,
+    AsyncStreamingPort,
+    InferenceStream,
+    StreamingPort,
+)
 from .reconstruction import (
     StreamState,
     StreamStatus,
@@ -34,6 +45,13 @@ from .reconstruction import (
 
 __all__ = [
     "InferenceStream",
+    "AsyncInferenceStream",
+    "AsyncStreamingPort",
+    "StreamingPort",
+    "MemoryInferenceStream",
+    "MemoryAsyncInferenceStream",
+    "consume_stream",
+    "consume_async_stream",
     "ResponseCancelled",
     "ResponseCompleted",
     "ResponseFailed",
