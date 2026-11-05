@@ -17,10 +17,13 @@ from .interactions import (
     Content,
     ContentPart,
     ImageContent,
+    INTERACTION_SCHEMA_VERSION,
     MediaSourceRef,
     Message,
     Role,
     TextContent,
+    message_from_dict,
+    message_to_dict,
 )
 from .modalities import Modality, ModalitySet
 from .models import (
@@ -52,6 +55,7 @@ __all__ = [
     "ContentPart",
     "DomainValidationError",
     "ImageContent",
+    "INTERACTION_SCHEMA_VERSION",
     "MediaSourceRef",
     "Message",
     "Model",
@@ -76,4 +80,6 @@ __all__ = [
     "artifact_to_dict",
     "model_from_dict",
     "model_to_dict",
+    "message_from_dict",
+    "message_to_dict",
 ]
