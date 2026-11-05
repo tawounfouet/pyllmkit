@@ -1,6 +1,6 @@
 # Phase 2 - Interaction contracts (P2-BOOT)
 
-**Status:** DESIGN APPROVED; text Interaction primitives (`Role`, `Message`, `ContentPart`, `TextContent`, `Content`) now **IMPLEMENTED / G1 GO** on 2026-11-05. ADR-008..ADR-013 accepted. Image/media and independent Interaction JSON codec in the example below remain future APIs for `0.1.0a2`, not functionality already present on main.
+**Status:** DESIGN APPROVED; text and image Interaction primitives (`Role`, `Message`, `ContentPart`, `TextContent`, `Content`, `MediaSourceRef`, `ImageContent`) **IMPLEMENTED / G2 GO** on 2026-11-05. ADR-008..ADR-013 accepted. The independent Interaction JSON codec in the example below remains a future L2.4 API, not functionality already present on main.
 **Baseline:** `main` at `d7f06072d246819fb976c6a456949995ae33562d` (M1-qualified, CI run 40638604245).
 **Decision set:** ADR-008..ADR-013. Phase 2 execution plan: `docs/02_PYLLMKIT_PHASE_2_IMPLEMENTATION_PLAN.md`.
 
@@ -22,7 +22,7 @@ Conversation (aggregate, optional) -> NOT implemented in a2
 InferenceRequest / ToolCall / streaming -> later versions
 ```
 
-## Target full multimodal signatures (illustrative; only text API currently available)
+## Target text/image signatures (constructors available, JSON codec still illustrative)
 
 ```python
 from pyllmkit.domain.interactions import (
@@ -45,7 +45,7 @@ assert message.content.parts[1].modality.value == "image"
 assert message_from_dict(message_to_dict(message)) == message
 ```
 
-`Role` is a small canonical string enum. `Message`, `Content`, `TextContent`, `ImageContent` and `MediaSourceRef` are immutable value representations. Enforce strict runtime type checks at construction, rather than relying only on type hints. Use `DomainValidationError` from M1 for invalid structure and codec payloads. The final exact factory/API design will be frozen with implementation tests and reviewed ADRs.
+`Role` is a small canonical string enum. `Message`, `Content`, `TextContent`, `ImageContent` and `MediaSourceRef` are now immutable value representations in the G2 implementation. Enforce strict runtime type checks at construction, rather than relying only on type hints. Use `DomainValidationError` from M1 for invalid structure and codec payloads. The text/image constructors and their behavior are backed by G2 unit and acceptance tests. Interaction JSON remains a separately approved design contract for L2.4.
 
 ## Content and media rules
 

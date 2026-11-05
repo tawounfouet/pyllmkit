@@ -4,9 +4,9 @@
 
 PyLLMKit models provider-agnostic LLM primitives as typed Python domain objects, separate from model-serving providers, deployments and inference APIs.
 
-**Phase 2 architecture (2026-11-05):** **P2-BOOT G0 = GO**. ADR-008..013 were accepted by the project owner and integrated in [PR #8](https://github.com/tawounfouet/pyllmkit/pull/8); the [G0 review](docs/quality/P2_BOOT_GATE_REVIEW.md) and [decision register](docs/quality/PHASE_2_ARCHITECTURE_DECISION_REGISTER.md) were archived via PR #9, and the integrated `main` CI passed. **L2.1/L2.2 and AC-006 are now implemented and G1 = GO on integrated main** ([CI #42008750610](https://github.com/tawounfouet/pyllmkit/actions/runs/42008750610): 204 tests, 90% coverage). AC-007, image content, codec and M2 remain pending. No release was published.
+**Phase 2 architecture (2026-11-05):** **P2-BOOT G0 = GO**. ADR-008..013 were accepted by the project owner and integrated in [PR #8](https://github.com/tawounfouet/pyllmkit/pull/8); the [G0 review](docs/quality/P2_BOOT_GATE_REVIEW.md) and [decision register](docs/quality/PHASE_2_ARCHITECTURE_DECISION_REGISTER.md) were archived via PR #9, and the integrated `main` CI passed. **L2.1/L2.2 and AC-006 are now implemented and G1 = GO on integrated main** ([CI #42008750610](https://github.com/tawounfouet/pyllmkit/actions/runs/42008750610): 204 tests, 90% coverage). **L2.3 and AC-007 now implemented, G2 = GO** ([CI #42011868937](https://github.com/tawounfouet/pyllmkit/actions/runs/42011868937): 252 tests, 90% coverage). Only the Interaction JSON codec (L2.4), subsequent gates and M2 remain pending. No release was published.
 
-## Phase 2 text interaction API (G1 GO)
+## Phase 2 text/image interaction API (G2 GO)
 
 ```python
 from pyllmkit.domain import Content, Message, Role, TextContent
@@ -18,7 +18,27 @@ assert message.content.parts[0].text == "Bonjour PyLLMKit"
 - L2.2: `ContentPart`, `TextContent`, `Content` (immutable, ordered, strict).
 - L2.1: `Role`, `Message` (five canonical roles; provider-agnostic, no required Conversation).
 - [G1 Gate Review](docs/quality/P2_G1_GATE_REVIEW.md), [Interaction API](docs/api/interaction.md).
-- No `ImageContent`, `MediaSourceRef` or Interaction JSON codec yet. No alpha publication.
+- L2.3: immutable `MediaSourceRef` and `ImageContent`, ordered mixed text/image Content, AC-007.
+- [G2 Gate Review](docs/quality/P2_G2_GATE_REVIEW.md), [Media and Images](docs/concepts/media-and-images.md).
+- No Interaction JSON codec yet (L2.4). No alpha publication.
+
+### AC-007 multimodal Message
+
+```python
+from pyllmkit.domain import Content, ImageContent, MediaSourceRef, Message, Role, TextContent
+
+message = Message(
+    Role.USER,
+    Content((
+        TextContent("Regarde : "),
+        ImageContent(MediaSourceRef("asset", "image-123")),
+        TextContent(" Que vois-tu ?"),
+    )),
+)
+assert tuple(part.kind for part in message.content.parts) == ("text", "image", "text")
+```
+
+The domain does **not** resolve or download URLs. Accepted HTTP(S) URL syntax is not proof of SSRF safety; actual media access requires a future adapter's independent security controls.
 
 ## What is implemented in Phase 1
 
