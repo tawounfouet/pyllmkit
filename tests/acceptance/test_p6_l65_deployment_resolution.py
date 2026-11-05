@@ -38,6 +38,9 @@ from pyllmkit.domain.registry import (
 TOOLS = CapabilityId("tool_calling")
 TEXT = Modality("text")
 IMAGE = Modality("image")
+DEFAULT_MODEL_LIMITS = ModelLimits(context_window=128_000)
+DEFAULT_PROVIDER_LIMITS = ModelLimits(context_window=128_000)
+DEFAULT_DEPLOYMENT_LIMITS = ModelLimits(context_window=64_000)
 
 
 def _caps(level: SupportLevel | None) -> CapabilitySet:
@@ -61,9 +64,9 @@ def _catalog(
     model_support: SupportLevel | None = SupportLevel.NATIVE,
     provider_support: SupportLevel | None = SupportLevel.NATIVE,
     deployment_support: SupportLevel | None = SupportLevel.NATIVE,
-    model_limits: ModelLimits | None = ModelLimits(context_window=128_000),
-    provider_limits: ModelLimits | None = ModelLimits(context_window=128_000),
-    deployment_limits: ModelLimits | None = ModelLimits(context_window=64_000),
+    model_limits: ModelLimits | None = DEFAULT_MODEL_LIMITS,
+    provider_limits: ModelLimits | None = DEFAULT_PROVIDER_LIMITS,
+    deployment_limits: ModelLimits | None = DEFAULT_DEPLOYMENT_LIMITS,
     statuses: tuple[DeploymentStatus, ...] | None = None,
 ) -> InMemoryCatalog:
     catalog = InMemoryCatalog()
