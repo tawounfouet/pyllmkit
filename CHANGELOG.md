@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased development] - 0.1.0a3 Inference Primitives (G2 only, not released)
+
+### Added (L3.2 - Response Ready)
+- Immutable InferenceRunId, TextOutput with explicit empty text, InferenceOutput conceptual alias, normalized FinishReasonCode and FinishReason with optional native provenance.
+- Usage with five optional exact nonnegative counters, no inferred total or pricing, plus immutable InferenceResponse correlated by explicit RunId.
+- Unit/negative and acceptance tests P3-AC-008..013, offline example 09, public API docs, updated architecture fitness checks and wheel/sdist smoke tests.
+- G2 qualification based on [PR #25](https://github.com/tawounfouet/pyllmkit/pull/25), integrated main SHA 783aa4381dc05a4b9bc431faab282f2bbe37d38d, [CI #42039312011 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42039312011): 545 tests, 94% coverage, three Python versions. [G2 gate report](docs/quality/P3_G2_GATE_REVIEW.md).
+
+**Not yet in a3:** Run lifecycle, Inference JSON codec v1, tool execution, provider adapters, real streaming, HTTP, release or PyPI. Metadata stays 0.1.0a2.
+
+
 ## [Unreleased development] - 0.1.0a3 Inference Primitives (G1 only, not released)
 
 ### Added (L3.1 - Request Ready)
