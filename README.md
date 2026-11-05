@@ -1,25 +1,70 @@
 # PyLLMKit
 
-**Phase 3 / P3-G4 (2026-11-05): INFERENCE JSON v1 - GO technique avec reserves.** [PR #29](https://github.com/tawounfouet/pyllmkit/pull/29) integree sur [main d72b1ce](https://github.com/tawounfouet/pyllmkit/commit/d72b1ce82a4a34c62888ad48b50bcf07537f83d1), [CI #42053906726 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42053906726): **779 tests, 95 % coverage, Python 3.11/3.12/3.13**. [Gate G4](docs/quality/P3_G4_GATE_REVIEW.md), [API JSON v1](docs/api/inference-json-v1.md). Les 3 enveloppes Request/Response/Run sont versionnees et testees, y compris les six etats Run. **Prochain L3.5 - Integration & Packaging. G5/M3/release non qualifies, metadata 0.1.0a2 non publiee.**
+PyLLMKit est un framework Python de **primitives de domaine LLM agnostiques des fournisseurs**. Les modèles, capacités, contenus, demandes d'inférence, réponses et états d'exécution sont représentés par des objets Python validés, indépendamment de tout SDK ou service distant.
 
+**État du dépôt (5 novembre 2026) :** les gates techniques P3-G0 à P3-G4 sont qualifiés avec réserves. **L3.5 - Integration & Packaging est en cours et P3-G5/M3 ne sont pas encore qualifiés.** La version déclarée du package demeure `0.1.0a2`, candidat source non publié. Ni tag `0.1.0a3`, ni GitHub Release, ni PyPI.
 
-**Phase 3 / P3-G3 (2026-11-05): RUN LIFECYCLE READY - GO technique avec reserves.** [PR #27](https://github.com/tawounfouet/pyllmkit/pull/27) integree sur [main 361791ff](https://github.com/tawounfouet/pyllmkit/commit/361791ff546612e10b407874c54014b1c0e1ce86), [CI #42044787119 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42044787119) : **679 tests, 94 % couverture, Python 3.11/3.12/3.13**. [PV G3](docs/quality/P3_G3_GATE_REVIEW.md), [API Run](docs/api/inference-run.md). InferenceRun, six etats, transitions pures et temps injecte qualifies. **Prochain lot L3.4 JSON Codec & Quality; G4/G5/M3 non qualifies et metadata 0.1.0a2 non publiee.**
+## État de qualification
 
+| Jalon | État | Preuve |
+|---|---|---|
+| M1 - Model Domain | GO technique | [PV M1](docs/quality/M1_GATE_REVIEW.md) |
+| M2 - Interaction Domain | GO technique | [PV M2](docs/quality/M2_GATE_REVIEW.md) |
+| P3-G0 - Architecture | GO avec réserves | [PV G0](docs/quality/P3_G0_GATE_REVIEW.md) |
+| P3-G1 - Request | GO technique avec réserves | [PV G1](docs/quality/P3_G1_GATE_REVIEW.md) |
+| P3-G2 - Response | GO technique avec réserves | [PV G2](docs/quality/P3_G2_GATE_REVIEW.md) |
+| P3-G3 - Run | GO technique avec réserves | [PV G3](docs/quality/P3_G3_GATE_REVIEW.md) |
+| P3-G4 - Inference JSON v1 | GO technique avec réserves | [PV G4](docs/quality/P3_G4_GATE_REVIEW.md), [CI main #42053906726](https://github.com/tawounfouet/pyllmkit/actions/runs/42053906726) |
+| **P3-G5 - Integration & Packaging** | **EN COURS** | [Plan Phase 3](docs/03_PYLLMKIT_PHASE_3_IMPLEMENTATION_PLAN.md) |
+| M3 - Inference Foundations | NON QUALIFIÉ | Décision indépendante à produire |
 
-**Phase 3 / P3-G2 (2026-11-05): RESPONSE READY - GO technique avec reserves.** [PR #25](https://github.com/tawounfouet/pyllmkit/pull/25) integree sur [main SHA 783aa438](https://github.com/tawounfouet/pyllmkit/commit/783aa4381dc05a4b9bc431faab282f2bbe37d38d), [CI #42039312011 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42039312011): **545 tests / 94 %**, Python 3.11/3.12/3.13. [PV P3-G2](docs/quality/P3_G2_GATE_REVIEW.md), [API Response](docs/api/inference-response.md). L3.2 TextOutput/FinishReason/Usage/InferenceResponse qualifies, G3 Run a venir. **G3..M3 et publication 0.1.0a3 non qualifies; metadata 0.1.0a2 non publiee.**
+Les preuves historiques ont été conservées dans les procès-verbaux, sans présenter les anciens statuts comme actuels. La dette M2 [#20](https://github.com/tawounfouet/pyllmkit/issues/20) est **résolue** par [PR #31](https://github.com/tawounfouet/pyllmkit/pull/31) ([CI main #42057132634](https://github.com/tawounfouet/pyllmkit/actions/runs/42057132634)). Les protections de `main` [#22](https://github.com/tawounfouet/pyllmkit/issues/22) restent **ouvertes**.
 
+## Phase 3 : exemple complet hors ligne (P3-AC-030)
 
-**Phase 3 / P3-G1 (2026-11-05): REQUEST READY - TECHNICAL GO WITH RESERVATIONS.** L3.1 integrated by [PR #23](https://github.com/tawounfouet/pyllmkit/pull/23), [main SHA f1ef04b8](https://github.com/tawounfouet/pyllmkit/commit/f1ef04b8ff1bb52a1ee17defa0ec8b20f84ac9d3), [CI #42036557565 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42036557565): 432 tests, 93% coverage, Python 3.11/3.12/3.13. [P3-G1 gate](docs/quality/P3_G1_GATE_REVIEW.md) and [Request API](docs/api/inference-request.md). ADR-021 option A and P3-AC-001..007 qualified. **Next: L3.2 Response Domain. G2..M3 not qualified. Source metadata 0.1.0a2, unpublished.**
+Le script suivant **construit une réponse fictive en mémoire** : il ne contacte aucun modèle ni fournisseur. Il démontre les frontières Request, Run, Response et le round-trip JSON v1.
 
+```python
+import json
+from datetime import UTC, datetime
 
-**Phase 3 / P3-G0 (2026-11-05): ARCHITECTURE GO WITH RESERVATIONS.** ADR-014..021 owner-accepted and merged via [PR #19](https://github.com/tawounfouet/pyllmkit/pull/19); exact integrated `main` SHA [`965311db`](https://github.com/tawounfouet/pyllmkit/commit/965311dbef527ad59222b7586f9c801bb713bead), [CI SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42029448967) on Python 3.11/3.12/3.13. [Gate record](docs/quality/P3_G0_GATE_REVIEW.md). **Only architecture is qualified; L3.1..L3.5 and M3 are not implemented or qualified. Metadata remains `0.1.0a2`, unpublished; no `0.1.0a3` tag or release.**
+from pyllmkit.domain import (
+    Content, FinishReason, FinishReasonCode, GenerationConfig,
+    InferenceRequest, InferenceResponse, InferenceRun, InferenceRunId,
+    InferenceRunState, Message, ModelId, ModelTarget, Role, TextContent,
+    TextOutput, Usage, run_from_dict, run_to_dict,
+)
 
+request = InferenceRequest(
+    target=ModelTarget(ModelId("example/model")),
+    messages=(Message(Role.USER, Content((TextContent("Bonjour"),))),),
+    generation_config=GenerationConfig(temperature=0.0),
+)
+run = InferenceRun(InferenceRunId("offline-run-001"), request)
+at = datetime(2026, 11, 5, 10, 0, tzinfo=UTC)
+started = run.start(at)
+synthetic_response = InferenceResponse(
+    run_id=run.run_id,
+    output=TextOutput("Bonjour, ceci est une démonstration hors ligne."),
+    finish_reason=FinishReason(FinishReasonCode.STOP),
+    usage=Usage(input_tokens=0, output_tokens=None),
+)
+completed = started.complete(synthetic_response, at)
+wire = json.loads(json.dumps(run_to_dict(completed), allow_nan=False))
+restored = run_from_dict(wire)
+assert restored.state is InferenceRunState.COMPLETED
+assert restored.response == synthetic_response
+assert restored.started_at == at and restored.finished_at == at
+```
 
-**Status:** M1/G0/G1/G2/G3/G4 qualified on `main`. M2 = GO for source candidate on 2026-11-05. L2.4 strict Interaction JSON v1 is integrated, [CI SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42015194077): 342 tests, 91% coverage. M2 source candidate [qualification](https://github.com/tawounfouet/pyllmkit/actions/runs/42015825424) is complete, with [M2 report](docs/quality/M2_GATE_REVIEW.md) pending archival PR qualification. Metadata `0.1.0a2` is a **repository alpha candidate**, not published. No Git tag, GitHub Release or PyPI upload.
+- [API Request](docs/api/inference-request.md) : Target, GenerationConfig, support explicite.
+- [API Response](docs/api/inference-response.md) : TextOutput, FinishReason et Usage observé.
+- [API Run](docs/api/inference-run.md) : agrégat, horloge injectée, six états.
+- [API JSON v1](docs/api/inference-json-v1.md) : formats stricts, sérialisation, absence de données inventées.
+- [API consolidée](docs/api/inference.md) et [traçabilité P3](docs/quality/PHASE_3_TRACEABILITY.md).
+- [Exemples hors ligne](examples/) : exemples 01 à 11 ; tous exécutés par la CI.
 
-PyLLMKit models provider-agnostic LLM primitives as typed Python domain objects, separate from model-serving providers, deployments and inference APIs.
-
-**Phase 2 architecture (2026-11-05):** **P2-BOOT G0 = GO**. ADR-008..013 were accepted by the project owner and integrated in [PR #8](https://github.com/tawounfouet/pyllmkit/pull/8); the [G0 review](docs/quality/P2_BOOT_GATE_REVIEW.md) and [decision register](docs/quality/PHASE_2_ARCHITECTURE_DECISION_REGISTER.md) were archived via PR #9, and the integrated `main` CI passed. **L2.1/L2.2 and AC-006 are now implemented and G1 = GO on integrated main** ([CI #42008750610](https://github.com/tawounfouet/pyllmkit/actions/runs/42008750610): 204 tests, 90% coverage). **L2.3 and AC-007 now implemented, G2 = GO** ([CI #42011868937](https://github.com/tawounfouet/pyllmkit/actions/runs/42011868937): 252 tests, 90% coverage). L2.4 codec integrated and G3 GO ([CI #42015194077](https://github.com/tawounfouet/pyllmkit/actions/runs/42015194077), 342 tests, 91% coverage). G4 and technical M2 GO on `main` SHA `560d3a46c74cecebdf6a55301b2b8ca4e34331d4` ([CI #42015825424](https://github.com/tawounfouet/pyllmkit/actions/runs/42015825424)). No publication was performed. No release has been published.
+La représentation `STREAMING` dans le domaine n'est pas du streaming réseau. Les objets `InferenceResponse` et `InferenceRun` ne constituent pas un client LLM exécutable, un ordonnanceur ou une API fournisseur.
 
 ## Phase 2 text/image interaction API (G2 GO)
 
@@ -86,6 +131,11 @@ python examples/01_define_model.py
 python examples/02_define_artifacts.py
 python examples/03_define_capabilities.py
 python examples/07_round_trip_interaction.py
+python examples/08_define_inference_request.py
+python examples/09_define_inference_response.py
+python examples/10_define_inference_run.py
+python examples/11_round_trip_inference_json.py
+python examples/12_full_inference_walkthrough.py
 python -m build
 ```
 
