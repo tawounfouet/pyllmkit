@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased] - M3 qualified domain source, not a release
+
+### Qualification and governance
+- Independent eleven-condition M3 GO/NO-GO review: **GO technique avec reserves for offline Inference Domain only** ([PV M3](docs/quality/M3_GATE_REVIEW.md)), baseline [main 4900523f](https://github.com/tawounfouet/pyllmkit/commit/4900523f8999b7c42fb184d44a9ccc090e56f26a), [CI #42069101048](https://github.com/tawounfouet/pyllmkit/actions/runs/42069101048), 802 tests / 95 % coverage, Python 3.11/3.12/3.13.
+- Provider client/transport not shipped; main branch unprotected [#22](https://github.com/tawounfouet/pyllmkit/issues/22), independent human review still outstanding.
+- Release `0.1.0a3` explicitly **NO-GO** until separate authorization, gate #22 evidence and release issue [#35](https://github.com/tawounfouet/pyllmkit/issues/35).
+- Current metadata remains `0.1.0a2`; no version bump, tag, release, TestPyPI or PyPI upload.
+
+
 ### Post-Phase 3 operational closeout (documentation candidate, no release)
 - Documented technical M3 final-review inputs, branch-protection governance and issue #22 evidence requirements.
 - Defined separate version bump, build provenance, tag, GitHub Release and PyPI runbooks with explicit authorization and rollback.

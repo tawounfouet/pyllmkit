@@ -2,7 +2,7 @@
 
 PyLLMKit est un framework Python de **primitives de domaine LLM agnostiques des fournisseurs**. Les modèles, capacités, contenus, demandes d'inférence, réponses et états d'exécution sont représentés par des objets Python validés, indépendamment de tout SDK ou service distant.
 
-**État du dépôt (5 novembre 2026) :** les gates techniques **P3-G0 à P3-G5 sont qualifiés avec réserves**. Le lot L3.5 - Integration & Packaging est intégré, [PV G5](docs/quality/P3_G5_GATE_REVIEW.md), [CI main #42059417894](https://github.com/tawounfouet/pyllmkit/actions/runs/42059417894) (798 tests / 95 %, 3 versions Python). **M3 n'a pas encore reçu sa décision finale GO/NO-GO.** La version déclarée du package demeure `0.1.0a2`, candidat source non publié. Ni tag `0.1.0a3`, ni GitHub Release, ni PyPI.
+**État du dépôt (5 novembre 2026) :** les gates techniques **P3-G0 à P3-G5 sont qualifiés avec réserves**. Le lot L3.5 - Integration & Packaging est intégré, [PV G5](docs/quality/P3_G5_GATE_REVIEW.md), [CI main #42059417894](https://github.com/tawounfouet/pyllmkit/actions/runs/42059417894) (798 tests / 95 %, 3 versions Python). **M3 a reçu un GO TECHNIQUE AVEC RÉSERVES**, limité au domaine hors ligne, [PV M3](docs/quality/M3_GATE_REVIEW.md), [CI main #42069101048](https://github.com/tawounfouet/pyllmkit/actions/runs/42069101048) (802 tests / 95 %, Python 3.11-3.13). **La publication 0.1.0a3 demeure NO-GO et non autorisée.** La version déclarée du package demeure `0.1.0a2`, candidat source non publié. Ni tag `0.1.0a3`, ni GitHub Release, ni PyPI.
 
 ## État de qualification
 
@@ -16,13 +16,13 @@ PyLLMKit est un framework Python de **primitives de domaine LLM agnostiques des 
 | P3-G3 - Run | GO technique avec réserves | [PV G3](docs/quality/P3_G3_GATE_REVIEW.md) |
 | P3-G4 - Inference JSON v1 | GO technique avec réserves | [PV G4](docs/quality/P3_G4_GATE_REVIEW.md), [CI main #42053906726](https://github.com/tawounfouet/pyllmkit/actions/runs/42053906726) |
 | **P3-G5 - Integration & Packaging** | **GO technique avec réserves** | [PV G5](docs/quality/P3_G5_GATE_REVIEW.md), [CI #42059417894](https://github.com/tawounfouet/pyllmkit/actions/runs/42059417894) |
-| M3 - Inference Foundations | NON QUALIFIÉ | Décision indépendante à produire |
+| **M3 - Inference Foundations (domaine hors ligne)** | **GO technique avec réserves** | [PV M3](docs/quality/M3_GATE_REVIEW.md), [CI #42069101048](https://github.com/tawounfouet/pyllmkit/actions/runs/42069101048) |
 
 Les preuves historiques ont été conservées dans les procès-verbaux, sans présenter les anciens statuts comme actuels. La dette M2 [#20](https://github.com/tawounfouet/pyllmkit/issues/20) est **résolue** par [PR #31](https://github.com/tawounfouet/pyllmkit/pull/31) ([CI main #42057132634](https://github.com/tawounfouet/pyllmkit/actions/runs/42057132634)). Les protections de `main` [#22](https://github.com/tawounfouet/pyllmkit/issues/22) restent **ouvertes**.
 
 ## Cloture Phase 3 et prochaines decisions
 
-La Phase 3 est **techniquement integree et qualifiee sur P3-G0..G5**; [bilan post-implementation](docs/quality/P3_POST_IMPLEMENTATION_REVIEW.md). **M3 attend encore une revue GO/NO-GO independante**, sans confondre qualite du domaine et publication.
+La Phase 3 est **techniquement integree et qualifiee sur P3-G0..G5**; [bilan post-implementation](docs/quality/P3_POST_IMPLEMENTATION_REVIEW.md). **M3 GO technique avec réserves**, [PV finale](docs/quality/M3_GATE_REVIEW.md), sans confondre qualite du domaine et publication.
 
 Les cinq suites operationnelles sont documentees et auditablement separees :
 - [Runbook de protection GitHub main](docs/governance/MAIN_BRANCH_PROTECTION_RUNBOOK.md) : issue [#22](https://github.com/tawounfouet/pyllmkit/issues/22) OPEN, aucune protection effective revendiquee.

@@ -1,5 +1,8 @@
 # PyLLMKit - Phase 3 : bilan post-implementation et plan de cloture
 
+**Mise a jour apres revue M3 (2026-11-05) :** [PV M3](M3_GATE_REVIEW.md) rend **GO TECHNIQUE AVEC RESERVES** sur [main 4900523f](https://github.com/tawounfouet/pyllmkit/commit/4900523f8999b7c42fb184d44a9ccc090e56f26a), [CI #42069101048 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42069101048), 802 tests / 95 % couverture, trois Python versions. Le present document est le bilan historique de la Phase 3; la nouvelle decision technique et la publication NO-GO sont tracees dans le PV M3. La release 0.1.0a3 demeure non autorisee.
+
+
 > Date de reference : 2026-11-05
 > Scope : Phase 3, L3.1..L3.5, P3-G0..P3-G5.
 > Base de preuve : `main@fc93200d17ea66324bb7ed6a0be82728ad27eb22`, [CI #42060508466](https://github.com/tawounfouet/pyllmkit/actions/runs/42060508466), completed/success sur Python 3.11, 3.12 et 3.13.

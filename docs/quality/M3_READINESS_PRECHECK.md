@@ -1,5 +1,8 @@
 # M3 - Inference Foundations - Precheck avant decision finale
 
+**POST-REVIEW (2026-11-05) : M3 GO TECHNIQUE AVEC RESERVES pour le domaine hors ligne**, [PV M3](M3_GATE_REVIEW.md), [main 4900523f](https://github.com/tawounfouet/pyllmkit/commit/4900523f8999b7c42fb184d44a9ccc090e56f26a), [CI #42069101048 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42069101048) (802 tests / 95 %). **Release 0.1.0a3 NO-GO.** Le texte ci-dessous est conserve comme precheck historique, pas comme statut actuel.
+
+
 > Etat : **PRECHECK DOCUMENTAIRE**, pas `M3_GATE_REVIEW.md` ni decision M3 GO.
 > Date : 2026-11-05.
 > Portee : source candidate a3, sans publication; metadata reste `0.1.0a2`.

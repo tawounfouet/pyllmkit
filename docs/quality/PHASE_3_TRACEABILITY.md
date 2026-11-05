@@ -58,7 +58,7 @@ Pour les chemins courts `test_compatibility.py`, `test_serialization_strict.py`,
 | P3-G4 | #29, #30 | `d72b1ce82a4a34c62888ad48b50bcf07537f83d1` | [#42053906726](https://github.com/tawounfouet/pyllmkit/actions/runs/42053906726) SUCCESS | GO technique avec reserves |
 | PIR2 correctifs | #31 | `2ec317de98bd9d0897fe1e48801a9727e4f7ced6` | [#42057132634](https://github.com/tawounfouet/pyllmkit/actions/runs/42057132634) SUCCESS (789 tests, 95 %) | #20 CLOSED |
 | **P3-G5** | #32 et PV d'archivage | `49cf26e830819675a1c4cad9dfd2860fc977f0b6` | [#42059417894](https://github.com/tawounfouet/pyllmkit/actions/runs/42059417894) SUCCESS (798 tests, 95 %) | **GO technique avec reserves** |
-| **M3** | Revue et decision separee | **PENDING** | **PENDING** | **NON QUALIFIE** |
+| **M3** | [PV M3](M3_GATE_REVIEW.md), PR documentaire finale | `4900523f8999b7c42fb184d44a9ccc090e56f26a` | [#42069101048](https://github.com/tawounfouet/pyllmkit/actions/runs/42069101048) SUCCESS (802 tests, 95 %) | **GO TECHNIQUE AVEC RESERVES, release NO-GO** |
 
 Les SHA ci-dessus sont les **SHAs applicatifs** de qualification. Les archives documentaires ont des SHAs differents, chacun avec sa propre CI mentionnee dans la PR d'archivage. Aucun chiffre de CI futur n'est pre-annonce.
 
@@ -79,4 +79,4 @@ Les SHA ci-dessus sont les **SHAs applicatifs** de qualification. Les archives d
 - **Parser JSON texte :** duplicate keys non garanties par `json.loads` standard; la politique appartient au futur boundary d'application (ADR-020).
 - **Release :** metadata `0.1.0a2`, aucune publication ni tag prevu par G5. Revue M3 et release sont deux decisions distinctes.
 
-**Etat courant : P3-G0..G5 GO techniques avec reserves, PV G5 et main CI #42059417894. M3 demeure NON QUALIFIE jusqu'a sa revue distincte.**
+**Etat courant : P3-G0..G5 GO techniques avec reserves, M3 GO TECHNIQUE AVEC RESERVES pour domaine offline, [PV M3](M3_GATE_REVIEW.md) et CI main #42069101048. Publication 0.1.0a3 NO-GO; issue #22 ouverte.**

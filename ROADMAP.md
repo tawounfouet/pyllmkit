@@ -1,5 +1,8 @@
 # PyLLMKit - Roadmap
 
+**2026-11-05 - M3 Inference Foundations : GO TECHNIQUE AVEC RESERVES pour le domaine hors ligne, publication NO-GO.** [PV M3](docs/quality/M3_GATE_REVIEW.md), [main 4900523f](https://github.com/tawounfouet/pyllmkit/commit/4900523f8999b7c42fb184d44a9ccc090e56f26a), [CI #42069101048 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42069101048), 802 tests / 95 % couverture, Python 3.11-3.13. Les 11 causes de NO-GO obligatoires sont evaluees individuellement. Governance [#22](https://github.com/tawounfouet/pyllmkit/issues/22) ouverte, release [#35](https://github.com/tawounfouet/pyllmkit/issues/35) ouverte, frontiere provider [#36](https://github.com/tawounfouet/pyllmkit/issues/36) spec future. Aucune action de publication.
+
+
 **Preparation M3 et closeout (2026-11-05) :** [bilan P3](docs/quality/P3_POST_IMPLEMENTATION_REVIEW.md), [runbook protection main #22](docs/governance/MAIN_BRANCH_PROTECTION_RUNBOOK.md), [procedure release 0.1.0a3](docs/governance/RELEASE_0_1_0a3_POLICY_AND_RUNBOOK.md), [frontiere provider future](docs/architecture/FUTURE_PROVIDER_BOUNDARY_CONTRACT.md), [convention de livraison](docs/governance/PYKIT_DELIVERY_AND_LEARNING_LOOP.md). **M3 GO/NO-GO a prononcer sur SHA exact apres qualification des nouvelles docs.** Publication NO-GO, main non protegee.
 
 
