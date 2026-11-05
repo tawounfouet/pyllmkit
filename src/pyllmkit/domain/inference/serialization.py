@@ -130,7 +130,7 @@ def _optional_float(value: object, label: str) -> float | None:
         return None
     if type(value) is not float:
         raise DomainValidationError(f"{label} must be an exact float or null")
-    return value  # type: ignore[return-value]
+    return value
 
 
 def _target_to_dict(target: InferenceTarget) -> dict[str, object]:
