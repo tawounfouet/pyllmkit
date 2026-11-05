@@ -1,7 +1,7 @@
 # ADR-029 - Tooling JSON v1, versioning and no silent loss
 
 - Date : 2026-11-05
-- Statut : ACCEPTED (owner, 2026-11-05; P4-G0 CI main a verifier)
+- Statut : ACCEPTED (owner, 2026-11-05; P4-G0 qualifié main@b66e94e3, CI #42079191595 SUCCESS)
 - Phase : L4.4 et L4.5
 - Sources : ADR-004/012/020/025/028, Model/Interaction/Inference JSON v1.
 
