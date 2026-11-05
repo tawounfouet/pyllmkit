@@ -1,5 +1,14 @@
 """Dependency-inversion contracts for provider-independent application services."""
 
-from .registry import DeploymentRegistryPort, ModelRegistryPort, ProviderCatalogPort
+from .registry import (
+    AtomicCatalogPort,
+    DeploymentRegistryPort,
+    DiscoverySourcePort,
+    ModelRegistryPort,
+    ProviderCatalogPort,
+)
 
-__all__ = ["ModelRegistryPort", "DeploymentRegistryPort", "ProviderCatalogPort"]
+__all__ = [
+    "ModelRegistryPort", "DeploymentRegistryPort", "ProviderCatalogPort",
+    "DiscoverySourcePort", "AtomicCatalogPort",
+]

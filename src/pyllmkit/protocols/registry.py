@@ -1,9 +1,4 @@
-"""Ports for offline canonical catalog storage (ADR-041, P6 L6.2).
-
-Predicate-based find is a narrow, typed extension seam: P6 L6.3 will add
-immutable ModelQuery / DeploymentQuery callable values without breaking ports.
-These are structural Protocols, not executable provider-adapter registries.
-"""
+"""Ports for offline canonical catalog storage and discovery (ADR-041/046/047)."""
 
 from collections.abc import Callable
 from typing import Protocol, runtime_checkable
@@ -12,6 +7,8 @@ from pyllmkit.domain.deployments import Deployment
 from pyllmkit.domain.inference import DeploymentId
 from pyllmkit.domain.models import Model, ModelId
 from pyllmkit.domain.providers import InferenceProvider, ProviderId
+from pyllmkit.domain.registry.discovery import DiscoveryResult
+from pyllmkit.domain.registry.merge import RegistrySnapshot
 
 
 @runtime_checkable
@@ -61,3 +58,19 @@ class ProviderCatalogPort(Protocol):
     ) -> tuple[InferenceProvider, ...]: ...
 
     def remove(self, provider_id: ProviderId) -> bool: ...
+
+
+@runtime_checkable
+class DiscoverySourcePort(Protocol):
+    """Pull already supplied offline candidates without writing a catalog."""
+
+    def discover(self) -> DiscoveryResult: ...
+
+
+@runtime_checkable
+class AtomicCatalogPort(Protocol):
+    """Snapshot/CAS contract for one in-process catalog's coordinated merge."""
+
+    def snapshot(self) -> RegistrySnapshot: ...
+
+    def commit_snapshot(self, snapshot: RegistrySnapshot, *, expected_revision: int) -> None: ...
