@@ -1,7 +1,7 @@
 # PyLLMKit P5 - Traçabilité des 48 cas d'acceptation
 
 > Date de référence : 2026-11-05.
-> P5-G0..P5-G5 GO techniques avec réserves sur SHAs main vérifiés. P5-G6 et M5 sont distincts, en qualification à la création de ce registre.
+> P5-G0..P5-G6 GO techniques avec réserves sur SHAs main vérifiés. La revue M5 est distincte et documentée dans M5_GATE_REVIEW.md.
 > Ne pas interpréter la matrice comme une autorisation de publication 0.1.0b1.
 
 | AC | Scénario | ADR | Test source | Lot/Gate |
@@ -66,11 +66,11 @@
 | P5-G3 | #54 | 53a965c | #42102029484 | GO avec réserves |
 | P5-G4 | #55 | 6388711 | #42102577288 | GO avec réserves |
 | P5-G5 | #56 | 6070ca4 | #42103272574 | GO avec réserves |
-| P5-G6 | #57 (prévue) | TBD après intégration | TBD | NON QUALIFIÉ |
-| M5 | revue finale distincte | TBD | TBD | NON QUALIFIÉ |
+| P5-G6 | [#57](https://github.com/tawounfouet/pyllmkit/pull/57) | [`e733264cf914d1ada33dbd76df932102139533a4`](https://github.com/tawounfouet/pyllmkit/commit/e733264cf914d1ada33dbd76df932102139533a4) | [#42104049873](https://github.com/tawounfouet/pyllmkit/actions/runs/42104049873) | GO avec réserves |
+| M5 | [Revue technique M5](M5_GATE_REVIEW.md) | Baseline [`e733264cf914d1ada33dbd76df932102139533a4`](https://github.com/tawounfouet/pyllmkit/commit/e733264cf914d1ada33dbd76df932102139533a4) | [#42104049873](https://github.com/tawounfouet/pyllmkit/actions/runs/42104049873) | GO technique avec réserves ; archivage à vérifier séparément |
 
-La suite CI globale comporte des tests hérités M1-M4. Les nombres de tests et la couverture calculée ne peuvent être déduits de ce document et doivent être reportés depuis les logs CI du SHA exact. Tests d'acceptation ne signifient pas test externe provider. Chaque case est tracée par son identifiant dans les tests du lot. Les limites charge sont contrôlées hors réseau; aucun SLA réel de transport n'est impliqué.
+La suite CI globale comporte des tests hérités M1-M4. Les logs CI du SHA exact qualifiant P5-G6 attestent 1048 tests cumulatifs et 96,08 % de couverture avec branches, pour Python 3.11, 3.12 et 3.13. Les chiffres ne se déduisent pas d'une matrice déclarative. Tests d'acceptation ne signifient pas test externe provider. Chaque case est tracée par son identifiant dans les tests du lot. Les limites charge sont contrôlées hors réseau; aucun SLA réel de transport n'est impliqué.
 
 ## Réserves transverses
 
-Issue #22 : protection main non effective lors de M4, à revalider. Issue #35 : release NO-GO. Issue #36 : future frontière provider. Pas de validation de pairs indépendante revendiquée. Le paquet reste en 0.1.0a2; la cible 0.1.0b1 est indicative.
+Issue #22 : protection main revérifiée après M5, protected=false et rulesets=[]. Issue #35 : release NO-GO. Issue #36 : future frontière provider. Pas de validation de pairs indépendante revendiquée. Le paquet reste en 0.1.0a2; la cible 0.1.0b1 est indicative.
