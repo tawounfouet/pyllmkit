@@ -28,7 +28,7 @@ from .events import (
     ToolCallStarted,
     UsageUpdated,
 )
-from .reconstruction import reduce_stream
+from .reconstruction import MAX_EVENTS, reduce_stream
 
 STREAMING_SCHEMA_VERSION = 1
 
@@ -241,6 +241,8 @@ def stream_from_dict(payload: Mapping[str, object]) -> tuple[InferenceRunId, tup
     values = data["events"]
     if type(values) is not list:
         raise DomainValidationError("stream_trace.events must be an array")
+    if len(values) > MAX_EVENTS:
+        raise DomainValidationError("stream_trace event count exceeded")
     events = tuple(event_from_dict(cast(Mapping[str, object], item)) for item in values)
     state = reduce_stream(events, run_id)
     claimed = _string(data["observed_status"], "observed_status")

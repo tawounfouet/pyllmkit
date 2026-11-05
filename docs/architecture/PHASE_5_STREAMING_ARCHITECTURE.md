@@ -1,6 +1,6 @@
 # PyLLMKit P5 - Streaming architecture contract
 
-> Status: architecture proposal, P5-G0 awaiting main CI evidence.
+> Status: ADR-030..038 accepted at P5-G0. L5.1..L5.5 qualified on main; L5.6 and M5 require distinct evidence.
 > Baseline: c896cbf22bf7893f8a0eb722c9fc3db641ed624b. Installed package stays at 0.1.0a2; 0.1.0b1 is a target only.
 
 ## Architecture
@@ -40,3 +40,7 @@ Streaming JSON v1: exact schema_version 1, object_type stream_event, kind, run_i
 ## Delivery gates
 
 P5-G0 design then L5.1 events, L5.2 ordering, L5.3 tool deltas, L5.4 sync/async, L5.5 serialization, L5.6 quality. Each has a distinct branch/PR and passing CI on merged main SHA before being labelled GO. M5 review and publication are separate. Existing reservations: issue #22 branch protection, #35 release authorization, #36 provider boundary.
+
+## Qualification provenance
+
+P5-G0 through P5-G5 have qualifying main SHAs and successful Python 3.11/3.12/3.13 runs recorded in docs/quality. L5.6 integrates the offline end-to-end example, documentation, 48 acceptance cases and wheel/sdist smoke, while M5 release remains separate and unauthorized.
