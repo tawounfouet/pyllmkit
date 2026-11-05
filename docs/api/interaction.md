@@ -1,6 +1,6 @@
 # PyLLMKit Interaction API - text and image content
 
-**Scope:** L2.1 + L2.2 + L2.3 (G2 GO on 2026-11-05). Candidate `0.1.0a2` API, not a published stable release.
+**Scope:** L2.1/L2.2/L2.3 G2 qualified. L2.4 Interaction codec implemented on its PR candidate, with G3/G4 qualification still pending. Not published.
 
 ## Public imports
 
@@ -46,6 +46,16 @@ message = Message(
 assert tuple(part.kind for part in message.content.parts) == ("text", "image", "text")
 ```
 
-The API contains no provider SDK, tool execution, inference network call, or persisted conversation. A syntactically valid HTTP(S) URI is **not** a safe-to-fetch URI: adapters must enforce SSRF and content policies before dereferencing. `message_to_dict`/`message_from_dict` are L2.4 (not offered by these implementations). Role mapping and loss/emulation policy belong to adapters.
+The API contains no provider SDK, tool execution, inference network call, or persisted conversation. A syntactically valid HTTP(S) URI is **not** a safe-to-fetch URI: adapters must enforce SSRF and content policies before dereferencing. L2.4 adds a strict independent JSON-compatible mapping codec. Role mapping and loss/emulation policy belong to adapters.
 
-**Important:** This is a source-code text/image API, not the versioned Interaction JSON wire contract. JSON round-trips remain pending L2.4.
+## Interaction mapping codec v1 (L2.4)
+
+```python
+import json
+from pyllmkit.domain import message_to_dict, message_from_dict
+
+raw = json.loads(json.dumps(message_to_dict(message), ensure_ascii=False))
+assert message_from_dict(raw) == message
+```
+
+See [Interaction JSON Schema v1](../architecture/INTERACTION_JSON_SCHEMA_V1.md). The JSON mapping is a Domain serialization contract, not a provider API payload. It does not fetch media or imply that any URI is trusted.

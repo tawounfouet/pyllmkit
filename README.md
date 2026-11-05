@@ -1,10 +1,10 @@
 # PyLLMKit
 
-**Status:** **M1 - Domain Foundations Qualified: GO (2026-10-28).** Phase 1 is integrated and CI-qualified on `main`. The metadata version `0.1.0a1` is an **unpublished alpha candidate**; there is no git tag/GitHub Release/PyPI publication.
+**Status:** M1/G0/G1/G2 qualified on `main`; L2.4 Interaction JSON v1 is an implementation candidate pending integration and G3/G4/M2 review. The metadata version `0.1.0a2` is a **repository alpha candidate**, not published. No Git tag, GitHub Release or PyPI upload.
 
 PyLLMKit models provider-agnostic LLM primitives as typed Python domain objects, separate from model-serving providers, deployments and inference APIs.
 
-**Phase 2 architecture (2026-11-05):** **P2-BOOT G0 = GO**. ADR-008..013 were accepted by the project owner and integrated in [PR #8](https://github.com/tawounfouet/pyllmkit/pull/8); the [G0 review](docs/quality/P2_BOOT_GATE_REVIEW.md) and [decision register](docs/quality/PHASE_2_ARCHITECTURE_DECISION_REGISTER.md) were archived via PR #9, and the integrated `main` CI passed. **L2.1/L2.2 and AC-006 are now implemented and G1 = GO on integrated main** ([CI #42008750610](https://github.com/tawounfouet/pyllmkit/actions/runs/42008750610): 204 tests, 90% coverage). **L2.3 and AC-007 now implemented, G2 = GO** ([CI #42011868937](https://github.com/tawounfouet/pyllmkit/actions/runs/42011868937): 252 tests, 90% coverage). Only the Interaction JSON codec (L2.4), subsequent gates and M2 remain pending. No release was published.
+**Phase 2 architecture (2026-11-05):** **P2-BOOT G0 = GO**. ADR-008..013 were accepted by the project owner and integrated in [PR #8](https://github.com/tawounfouet/pyllmkit/pull/8); the [G0 review](docs/quality/P2_BOOT_GATE_REVIEW.md) and [decision register](docs/quality/PHASE_2_ARCHITECTURE_DECISION_REGISTER.md) were archived via PR #9, and the integrated `main` CI passed. **L2.1/L2.2 and AC-006 are now implemented and G1 = GO on integrated main** ([CI #42008750610](https://github.com/tawounfouet/pyllmkit/actions/runs/42008750610): 204 tests, 90% coverage). **L2.3 and AC-007 now implemented, G2 = GO** ([CI #42011868937](https://github.com/tawounfouet/pyllmkit/actions/runs/42011868937): 252 tests, 90% coverage). Interaction JSON codec v1 is proposed in L2.4 and requires integrated CI before qualification. G3/G4 and M2 remain pending. No release has been published.
 
 ## Phase 2 text/image interaction API (G2 GO)
 
@@ -20,7 +20,7 @@ assert message.content.parts[0].text == "Bonjour PyLLMKit"
 - [G1 Gate Review](docs/quality/P2_G1_GATE_REVIEW.md), [Interaction API](docs/api/interaction.md).
 - L2.3: immutable `MediaSourceRef` and `ImageContent`, ordered mixed text/image Content, AC-007.
 - [G2 Gate Review](docs/quality/P2_G2_GATE_REVIEW.md), [Media and Images](docs/concepts/media-and-images.md).
-- No Interaction JSON codec yet (L2.4). No alpha publication.
+- L2.4 implementation candidate: strict Interaction JSON mapping codec v1; [schema](docs/architecture/INTERACTION_JSON_SCHEMA_V1.md). Await CI and G3/G4 qualification. No alpha publication.
 
 ### AC-007 multimodal Message
 
@@ -39,6 +39,18 @@ assert tuple(part.kind for part in message.content.parts) == ("text", "image", "
 ```
 
 The domain does **not** resolve or download URLs. Accepted HTTP(S) URL syntax is not proof of SSRF safety; actual media access requires a future adapter's independent security controls.
+
+### Interaction JSON v1 (L2.4 candidate)
+
+```python
+import json
+from pyllmkit.domain import message_to_dict, message_from_dict
+
+payload = json.loads(json.dumps(message_to_dict(message), ensure_ascii=False))
+assert message_from_dict(payload) == message
+```
+
+This is a domain mapping schema, not a provider wire format. URL values are preserved verbatim as data; never log untrusted media URI payloads without redaction.
 
 ## What is implemented in Phase 1
 
