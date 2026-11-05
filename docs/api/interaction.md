@@ -2,6 +2,8 @@
 
 **Scope:** L2.1/L2.2/L2.3 G2 GO; L2.4 strict Interaction codec integrated and **G3 GO** on `main` SHA `fb4760aa890dceb8c08b16738500b5b28574e60b`, [CI SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42015194077). G4 and technical M2 GO on SHA `560d3a46c74cecebdf6a55301b2b8ca4e34331d4`, [CI SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42015825424); no package publication.
 
+**PIR2-03 compatibility clarification (L3.5):** `message_from_dict(payload: Mapping[str, object])` accepts mappings including `MappingProxyType` recursively. The decoder remains strict about schema v1 keys, array shapes and supported parts. This extends runtime acceptance without changing the Interaction JSON v1 format.
+
 ## Public imports
 
 `from pyllmkit.domain.interactions import Role, ContentPart, TextContent, ImageContent, MediaSourceRef, Content, Message`
