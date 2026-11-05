@@ -1,6 +1,6 @@
 # Phase 2 - Requirement and evidence traceability
 
-**Status:** P2-BOOT ADR-008..013 ACCEPTED by project owner (2026-11-05), integration validation pending. Nothing in L2.x or M2 is marked implemented by this document.
+**Status:** P2-BOOT **G0 = GO** (2026-11-05), ADR-008..013 accepted by project owner and integrated in main. G0 archive CI on SHA `0eb2d54b93eaa9375237674916504d5ab45ab373`: https://github.com/tawounfouet/pyllmkit/actions/runs/42006193308 (SUCCESS). L2.x and M2 are not yet implemented or qualified.
 **Baseline evidence:** `main` d7f06072d246819fb976c6a456949995ae33562d, M1 CI https://github.com/tawounfouet/pyllmkit/actions/runs/40638604245 (success), 137 tests and 89% branch-inclusive combined coverage (Phase 1 evidence, not Phase 2 results).
 
 ## Source of truth and location
@@ -13,8 +13,8 @@
 | docs/adr/ADR-001 .. ADR-007 | GitHub main | Accepted for Phase 1 alpha |
 | 00..09_PYLLMKIT_*.md | Supplied as project source files | Foundational drafts; **NOT tracked in GitHub main** |
 | PYLLMKIT_PHASE_1_POST_IMPLEMENTATION_REVIEW.md | Supplied source document | Not tracked in GitHub main |
-| docs/02_PYLLMKIT_PHASE_2_IMPLEMENTATION_PLAN.md | This P2-BOOT branch | Copied plan, proposal pending review |
-| docs/adr/ADR-008 .. ADR-013 | This P2-BOOT branch | ACCEPTED for Phase 2 design by owner on 2026-11-05 |
+| docs/02_PYLLMKIT_PHASE_2_IMPLEMENTATION_PLAN.md | GitHub main | Plan tracked, architecture G0 qualified |
+| docs/adr/ADR-008 .. ADR-013 | GitHub main | ACCEPTED for Phase 2 design by owner on 2026-11-05 |
 
 Do not fabricate GitHub links for draft source files absent from the repository. The user-provided documents are project references even where the GitHub repository stores only an index.
 
@@ -35,8 +35,8 @@ Do not fabricate GitHub links for draft source files absent from the repository.
 
 ## Release and merge discipline
 
-- P2-BOOT branch base is recorded as the M1 commit; do not infer this is a new qualified M2 SHA.
+- P2-BOOT branch base is the M1 commit; the design G0 qualification is integrated via PR #8 and archived in PR #9. The G0 GO is **not** M2 GO.
 - P2-BOOT docs and architecture test are not the implementation of Message or Content.
 - Review branches and CI; no direct push to main, tag, GitHub Release or PyPI upload.
 - G0 depends on explicit ADR acceptance (recorded 2026-11-05), a reviewed PR and qualifying CI on the integrated main SHA, not ADR presence alone.
-- After P2-BOOT, implement L2.1/L2.2/L2.3/L2.4, then assess G0..G4 and M2 on integrated main.
+- After G0, implement L2.1/L2.2/L2.3/L2.4, then assess G1..G4 and M2 on integrated main.

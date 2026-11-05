@@ -4,6 +4,8 @@
 
 PyLLMKit models provider-agnostic LLM primitives as typed Python domain objects, separate from model-serving providers, deployments and inference APIs.
 
+**Phase 2 architecture (2026-11-05):** **P2-BOOT G0 = GO**. ADR-008..013 were accepted by the project owner and integrated in [PR #8](https://github.com/tawounfouet/pyllmkit/pull/8); the [G0 review](docs/quality/P2_BOOT_GATE_REVIEW.md) and [decision register](docs/quality/PHASE_2_ARCHITECTURE_DECISION_REGISTER.md) were archived via PR #9, and the integrated `main` CI passed. **Interaction primitives, AC-006/007 and M2 are not yet implemented or qualified.** No release was published.
+
 ## What is implemented in Phase 1
 
 - **L1.1:** Model, ModelId, ModelIdentity, ModelFamily, ModelVersion, ModelVariant, ModelRevision, ModelArchitecture, ModelLimits, ModelArtifact, typed provider alias, JSON codec.

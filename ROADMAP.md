@@ -8,8 +8,8 @@
 |---|---|
 | Projet | PyLLMKit |
 | Document | `ROADMAP.md` |
-| Statut | **Roadmap active ; M1 Phase 1 = GO (2026-10-28)** |
-| Date de référence | 2026-10-28 |
+| Statut | **Roadmap active ; M1 = GO (2026-10-28) ; P2-BOOT G0 = GO (2026-11-05)** |
+| Date de référence | 2026-11-05 |
 | Portée | Consolidation des spécifications, architecture, implémentation, qualification et releases |
 | Sources vérifiées | `00_PYLLMKIT_*.md` à `09_PYLLMKIT_*.md` fournis dans la conversation |
 | État du code | **Vérifié jusqu'à M1** : source intégré sur `main`, 137 tests, CI Python 3.11–3.13 verte, licence MIT ; aucune release publiée |
@@ -18,6 +18,10 @@
 ---
 
 > **Actualisation de qualification - 28/10/2026** : **M1 - Domain Foundations Qualified : GO**, sur `main` SHA `4aaf4c91e97ff7dfc3d0f2c6164c3cd88fe2923a`, [CI #40638326259](https://github.com/tawounfouet/pyllmkit/actions/runs/40638326259) ; 137 tests, 89 % de couverture combinée, 3 versions Python. Le plan initial ci-dessous conserve certaines formulations historiques *non vérifiées* datées du 27/10. Voir `docs/quality/M1_GATE_REVIEW.md` pour l'état réel. **`0.1.0a1` n'est pas publiée.**
+
+---
+
+> **P2-BOOT G0 - Architecture Ready: GO (2026-11-05).** Six ADR d'interaction (`008` à `013`) acceptées par le propriétaire et intégrées via [PR #8](https://github.com/tawounfouet/pyllmkit/pull/8). CI de `main` sur le SHA de qualification `93e9467e2bef819201507aa2c4f06fdf4a4b04da`: [SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42005569202). Procès-verbal et registre archivés via [PR #9](https://github.com/tawounfouet/pyllmkit/pull/9), CI de l'archive sur SHA `0eb2d54b93eaa9375237674916504d5ab45ab373`: [SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42006193308). La Phase 2 n'est pas encore implémentée ; M2 reste à qualifier ; aucune publication réalisée. Voir [G0 gate](docs/quality/P2_BOOT_GATE_REVIEW.md).
 
 ---
 
