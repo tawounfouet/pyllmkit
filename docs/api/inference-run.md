@@ -1,6 +1,6 @@
 # PyLLMKit - Inference Run Domain API (L3.3)
 
-> Scope: implementation candidate in Phase 3 before P3-G3 qualification.
+> Scope (2026-11-05): **P3-G3 GO technique avec reserves**, [PR #27](https://github.com/tawounfouet/pyllmkit/pull/27) integrated on [main 361791ff](https://github.com/tawounfouet/pyllmkit/commit/361791ff546612e10b407874c54014b1c0e1ce86), [CI #42044787119 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42044787119): 679 tests/94% coverage, 3 Python versions. [Gate report](../quality/P3_G3_GATE_REVIEW.md).
 > Architecture authority: ADR-014, ADR-019 (ACCEPTED at P3-G0).
 > Runtime status: domain-only state machine, **not** an executor or an LLM client.
 > Source package version: `0.1.0a2` until a separate 0.1.0a3 qualification and release decision.

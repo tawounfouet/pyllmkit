@@ -1,5 +1,8 @@
 # PyLLMKit - P3 / L3.3 Implementation Summary
 
+**POST-INTEGRATION (2026-11-05) : P3-G3 GO TECHNIQUE AVEC RESERVES.** [PR #27](https://github.com/tawounfouet/pyllmkit/pull/27) merged, [main 361791ff](https://github.com/tawounfouet/pyllmkit/commit/361791ff546612e10b407874c54014b1c0e1ce86), [CI #42044787119 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42044787119): 679 tests / 94 % coverage, trois jobs Python SUCCESS. Voir [P3_G3_GATE_REVIEW.md](P3_G3_GATE_REVIEW.md). Les statuts PENDING ci-dessous retracent la preparation initiale, et ne sont pas le verdict courant.
+
+
 > Date : 2026-11-05
 > Phase : 0.1.0a3 - Inference Primitives
 > Lot : L3.3 - Inference Run Domain

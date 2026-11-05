@@ -1,5 +1,8 @@
 # PyLLMKit
 
+**Phase 3 / P3-G3 (2026-11-05): RUN LIFECYCLE READY - GO technique avec reserves.** [PR #27](https://github.com/tawounfouet/pyllmkit/pull/27) integree sur [main 361791ff](https://github.com/tawounfouet/pyllmkit/commit/361791ff546612e10b407874c54014b1c0e1ce86), [CI #42044787119 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42044787119) : **679 tests, 94 % couverture, Python 3.11/3.12/3.13**. [PV G3](docs/quality/P3_G3_GATE_REVIEW.md), [API Run](docs/api/inference-run.md). InferenceRun, six etats, transitions pures et temps injecte qualifies. **Prochain lot L3.4 JSON Codec & Quality; G4/G5/M3 non qualifies et metadata 0.1.0a2 non publiee.**
+
+
 **Phase 3 / P3-G2 (2026-11-05): RESPONSE READY - GO technique avec reserves.** [PR #25](https://github.com/tawounfouet/pyllmkit/pull/25) integree sur [main SHA 783aa438](https://github.com/tawounfouet/pyllmkit/commit/783aa4381dc05a4b9bc431faab282f2bbe37d38d), [CI #42039312011 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42039312011): **545 tests / 94 %**, Python 3.11/3.12/3.13. [PV P3-G2](docs/quality/P3_G2_GATE_REVIEW.md), [API Response](docs/api/inference-response.md). L3.2 TextOutput/FinishReason/Usage/InferenceResponse qualifies, G3 Run a venir. **G3..M3 et publication 0.1.0a3 non qualifies; metadata 0.1.0a2 non publiee.**
 
 
