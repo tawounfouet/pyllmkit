@@ -88,6 +88,7 @@ class MergePreview:
     policy: MergePolicy
     source: MetadataSource = field(repr=False)
     observed_at: datetime = field(repr=False)
+    candidate_digest: str = field(repr=False)
     additions: tuple[CatalogChange, ...] = ()
     unchanged: tuple[CatalogChange, ...] = ()
     conflicts: tuple[RegistryConflict, ...] = ()
