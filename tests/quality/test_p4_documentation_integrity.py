@@ -52,6 +52,7 @@ def test_ci_runs_13_through_17_and_never_publishes() -> None:
         assert f".venv-sdist/bin/python examples/{name}" in ci
         assert (ROOT / "examples" / name).is_file()
     assert "python -m build" in ci
+    assert "--cov-fail-under=95" in ci
     assert "pypa/gh-action-pypi-publish" not in ci
     assert "twine upload" not in ci
     assert "gh release create" not in ci
