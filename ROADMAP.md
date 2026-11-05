@@ -8,11 +8,11 @@
 |---|---|
 | Projet | PyLLMKit |
 | Document | `ROADMAP.md` |
-| Statut | **Roadmap active ; M1 = GO (2026-10-28) ; P2-BOOT G0 = GO (2026-11-05)** |
+| Statut | **Roadmap active ; M1 = GO ; P2-BOOT G0 = GO ; L2.1/L2.2 G1 = GO (2026-11-05)** |
 | Date de référence | 2026-11-05 |
 | Portée | Consolidation des spécifications, architecture, implémentation, qualification et releases |
 | Sources vérifiées | `00_PYLLMKIT_*.md` à `09_PYLLMKIT_*.md` fournis dans la conversation |
-| État du code | **Vérifié jusqu'à M1** : source intégré sur `main`, 137 tests, CI Python 3.11–3.13 verte, licence MIT ; aucune release publiée |
+| État du code | **Vérifié jusqu'à G1 (Phase 2 texte)** : `main` SHA `1fd7a476f0aa0b0040c0749ae36236fa24d6f8e6`, 204 tests, 90 % couverture, CI Python 3.11-3.13 verte ; aucune release publiée |
 | Roadmap spécialisée | `22_PYLLMKIT_IMPLEMENTATION_ROADMAP.md` (document mentionné dans les spécifications ; existence et contenu non vérifiés) |
 
 ---
@@ -22,6 +22,10 @@
 ---
 
 > **P2-BOOT G0 - Architecture Ready: GO (2026-11-05).** Six ADR d'interaction (`008` à `013`) acceptées par le propriétaire et intégrées via [PR #8](https://github.com/tawounfouet/pyllmkit/pull/8). CI de `main` sur le SHA de qualification `93e9467e2bef819201507aa2c4f06fdf4a4b04da`: [SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42005569202). Procès-verbal et registre archivés via [PR #9](https://github.com/tawounfouet/pyllmkit/pull/9), CI de l'archive sur SHA `0eb2d54b93eaa9375237674916504d5ab45ab373`: [SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42006193308). La Phase 2 n'est pas encore implémentée ; M2 reste à qualifier ; aucune publication réalisée. Voir [G0 gate](docs/quality/P2_BOOT_GATE_REVIEW.md).
+
+---
+
+> **Phase 2 G1 - Content & Message Ready: GO (2026-11-05).** [PR #11](https://github.com/tawounfouet/pyllmkit/pull/11) (ContentPart, TextContent, Content) et [PR #12](https://github.com/tawounfouet/pyllmkit/pull/12) (Role, Message, AC-006) intégrées. CI de `main` sur SHA `1fd7a476f0aa0b0040c0749ae36236fa24d6f8e6`: [SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42008750610), 204 tests et couverture 90 %. [Procès-verbal G1](docs/quality/P2_G1_GATE_REVIEW.md). G2/G3/G4 et M2 restent à qualifier ; la version reste `0.1.0a1`, non publiée.
 
 ---
 

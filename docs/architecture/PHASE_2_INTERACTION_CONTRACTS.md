@@ -1,6 +1,6 @@
 # Phase 2 - Interaction contracts (P2-BOOT)
 
-**Status:** DESIGN APPROVED BY PROJECT OWNER (2026-11-05). ADR-008..ADR-013 accepted. This specifies **future APIs** for `0.1.0a2`, not functionality already present on main. G0 integration validation is tracked separately.
+**Status:** DESIGN APPROVED; text Interaction primitives (`Role`, `Message`, `ContentPart`, `TextContent`, `Content`) now **IMPLEMENTED / G1 GO** on 2026-11-05. ADR-008..ADR-013 accepted. Image/media and independent Interaction JSON codec in the example below remain future APIs for `0.1.0a2`, not functionality already present on main.
 **Baseline:** `main` at `d7f06072d246819fb976c6a456949995ae33562d` (M1-qualified, CI run 40638604245).
 **Decision set:** ADR-008..ADR-013. Phase 2 execution plan: `docs/02_PYLLMKIT_PHASE_2_IMPLEMENTATION_PLAN.md`.
 
@@ -22,7 +22,7 @@ Conversation (aggregate, optional) -> NOT implemented in a2
 InferenceRequest / ToolCall / streaming -> later versions
 ```
 
-## Proposed public signatures (illustrative, not yet available)
+## Target full multimodal signatures (illustrative; only text API currently available)
 
 ```python
 from pyllmkit.domain.interactions import (
@@ -83,7 +83,7 @@ Interaction does **not** import domain Model Entities, provider SDKs, HTTP clien
 }
 ```
 
-Only the Interaction codec uses this shape. Strictly reject unknown keys/kinds/schema versions; preserve exact ordered parts. The Model domain `schema_version=1` writer/reader are not modified. JSON examples in this file are **contract proposals**, not output from executable code.
+Only the Interaction codec uses this shape. Strictly reject unknown keys/kinds/schema versions; preserve exact ordered parts. The Model domain `schema_version=1` writer/reader are not modified. JSON examples in this file are **future L2.4 codec contract proposals**, not output from executable code.
 
 ## Traceable acceptance contract
 
