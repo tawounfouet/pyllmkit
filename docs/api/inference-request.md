@@ -1,6 +1,6 @@
 # PyLLMKit - Inference Request Domain API (L3.1)
 
-**Status:** Implementation candidate on L3.1 feature branch, **G1 not yet qualified**. Architecture ADR-014/015/016/021 approved at P3-G0. Package metadata still 0.1.0a2 (unpublished) until a3 qualification.
+**Status (2026-11-05): P3-G1 GO technique avec reserves.** L3.1 integrated in [PR #23](https://github.com/tawounfouet/pyllmkit/pull/23) on main [f1ef04b8](https://github.com/tawounfouet/pyllmkit/commit/f1ef04b8ff1bb52a1ee17defa0ec8b20f84ac9d3), [CI #42036557565 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42036557565), 432 tests/93% coverage (Python 3.11), 3 Python jobs PASS. [Gate record](../quality/P3_G1_GATE_REVIEW.md). Package metadata still 0.1.0a2 (unpublished), a3 release not authorized.
 
 ## Scope and boundaries
 
