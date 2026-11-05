@@ -267,7 +267,7 @@ def test_observation_codec_rejects_invalid_nested_shapes() -> None:
 def test_support_report_does_not_invent_capabilities() -> None:
     req = ToolingInferenceIntent(_request())
     assert evaluate_tooling_support(req).is_compatible is True
-    with pytest.raises(DomainValidationError, match="intent"):
+    with pytest.raises(DomainValidationError, match="ToolingInferenceIntent"):
         evaluate_tooling_support(cast(ToolingInferenceIntent, None))
     with pytest.raises(DomainValidationError, match="structured_support"):
         evaluate_tooling_support(req, structured_support=cast(CapabilitySupport, "native"))
