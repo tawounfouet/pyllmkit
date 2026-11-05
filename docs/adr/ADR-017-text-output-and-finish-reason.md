@@ -10,7 +10,7 @@
 
 Les resultats fournisseurs ne se reduisent pas toujours a du texte; leur raison de fin peut etre absente ou non reconnue. Le domaine doit conserver cette heterogeneite sans donner l'illusion que les tools et sorties structurees sont deja operationnels.
 
-## Decision proposee
+## Decision adoptee
 
 1. **InferenceOutput** est le contrat conceptuel extensible. Le seul type concret de a3 est **TextOutput(text: str)**, immuable et strict.
 2. Une string vide est un output textuel valide et reste distincte de l'absence d'un output. InferenceResponse exige toujours un output non nul en a3.
