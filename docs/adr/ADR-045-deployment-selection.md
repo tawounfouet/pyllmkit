@@ -1,7 +1,7 @@
 # ADR-045 - Deployment resolution is descriptive and unambiguous
 
 - Date: 2026-11-05
-- Status: PROPOSED (P6-G0 review; not yet qualified)
+- Status: ACCEPTED for P6 offline technical architecture by owner-delegated authorization, 2026-11-05 (independent GitHub review absent)
 - Phase: P6 Registry & Discovery / M6
 - Baseline: main@19cc1c9e1d5598711890ddc3e14f1da94c79ce70
 - References: 06_PYLLMKIT_PHASE_6_REGISTRY_AND_DISCOVERY_IMPLEMENTATION_PLAN.md; domain design 00-09; existing M1-M5 contracts.
