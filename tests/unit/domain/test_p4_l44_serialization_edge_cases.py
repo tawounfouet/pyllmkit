@@ -214,7 +214,7 @@ def test_partial_and_emulated_not_native() -> None:
 def test_schema_validation_state_not_invented_on_decode() -> None:
     output = StructuredOutput(JsonResponseFormat(), raw="opaque")
     data = structured_output_to_dict(output)
-    data["validation_code"] = "parsed_absent"
+    data["validation_code"] = "text_absent"
     assert output.validation.status is ValidationStatus.UNKNOWN
     with pytest.raises(DomainValidationError, match="evidence mismatch"):
         structured_output_from_dict(data)
