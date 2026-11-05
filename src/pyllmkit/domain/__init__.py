@@ -16,8 +16,8 @@ from .errors import DomainValidationError, PyLLMKitError
 from .interactions import (
     Content,
     ContentPart,
-    ImageContent,
     INTERACTION_SCHEMA_VERSION,
+    ImageContent,
     MediaSourceRef,
     Message,
     Role,
