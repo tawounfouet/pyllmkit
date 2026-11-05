@@ -10,7 +10,7 @@
 
 Les fournisseurs exposent des metriques variables, parfois incompletes et parfois non comparables. Usage doit decrire des observations techniques, sans deduction de prix ni fausses mesures.
 
-## Decision proposee
+## Decision adoptee
 
 1. **Usage** est un Value Object immuable optionnel dans InferenceResponse.
 2. Champs canoniques P0 optionnels : **input_tokens**, **output_tokens**, **total_tokens**, **reasoning_tokens**, **cached_input_tokens**. Chacun est un **int exact >= 0 ou None**. Le booleen est refuse.
