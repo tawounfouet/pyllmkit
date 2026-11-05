@@ -11,13 +11,13 @@
 
 La vision presente InferencePort (Protocol) et un evaluator de compatibilite effective. Mais les entites Serving et adapters operationnels ne sont pas dans a3. La seule presence d'une Request avec ImageContent ou top_p ne prouve ni support du provider ni faisabilite d'appel.
 
-## Decision proposee
+## Decision adoptee
 
 1. **Aucun InferencePort executable ou client provider en a3.** Garder un contrat conceptuel futur (invoke(Request) -> Response) dans l'architecture, mais ne pas exporter un Protocol public sans consommateur reel, sauf arbitrage contraire du proprietaire.
 2. **Validation structurelle** de GenerationConfig, Target, messages dans le domaine P0. La construction d'une Request valide ne demande aucune resolution de modele, deployment ou endpoint.
 3. **Validation effective** : un futur evaluator consomme un snapshot fourni explicitement par l'appelant, identifiant l'origine et les niveaux connus (SUPPORTED, PARTIAL, EMULATED, UNSUPPORTED, UNKNOWN), sans les reduire a un bool implicite. Un champ absent ou une cible non resolue donne UNKNOWN ou NOT_EVALUATED.
-4. **P3-AC-007 est conditionnel** : si une evaluation pure sur snapshot explicite est introduite a3, tester qu'un parametre explicitement UNSUPPORTED est diagnostique sans drop silencieux. Si l'evaluator est differe, **marquer P3-AC-007 DEFERRED avec ADR et justification**, et ne pas compter ce cas comme passe dans M3. La matrice d'acceptation doit alors expliciter le nouveau denominateur.
-5. **MVP de compatibilite optionnel** : petit evaluator pur sur snapshot statique de support de parametres fourni par le caller. Il ne fait ni discovery, ni capability intersection reelle, ni route, ni HTTP. Aucun statut de support n'est deduit d'une simple ModelId string.
+4. **P3-AC-007 est obligatoire via l'option A adoptee** : si une evaluation pure sur snapshot explicite est introduite a3, tester qu'un parametre explicitement UNSUPPORTED est diagnostique sans drop silencieux. Dans l'alternative non retenue ou l'evaluator serait differe, **marquer P3-AC-007 DEFERRED avec ADR et justification**, et ne pas compter ce cas comme passe dans M3. La matrice d'acceptation doit alors expliciter le nouveau denominateur.
+5. **MVP de compatibilite adopte** : petit evaluator pur sur snapshot statique de support de parametres fourni par le caller. Il ne fait ni discovery, ni capability intersection reelle, ni route, ni HTTP. Aucun statut de support n'est deduit d'une simple ModelId string.
 6. ImageContent exprime une modalite d'entree IMAGE; il ne valide pas automatiquement la capability effective VISION.
 7. Si une cible effective est connue comme UNSUPPORTED pour un parametre, report typed ou erreur explicite. Les strategies fallback/emulation sont separees et documentees.
 8. Les drivers application, adapters HTTP, keys, retry, SSRF, quotas, billing et streaming reel sont hors scope. Un fake offline ne prouve que le contrat de types et le comportement de validation choisi.
