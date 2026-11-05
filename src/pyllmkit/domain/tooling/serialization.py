@@ -75,7 +75,7 @@ def _optional_string(value: object, name: str) -> str | None:
 def _nullable_bool(value: object, label: str) -> bool | None:
     if value is not None and type(value) is not bool:
         raise DomainValidationError(f"{label} must be bool or null")
-    return cast(bool | None, value)
+    return value
 
 
 def _frozen_copy(value: object) -> object:
@@ -274,7 +274,7 @@ def tooling_to_dict(value: ToolingValue) -> dict[str, object]:
         return tool_call_to_dict(value)
     if type(value) is ToolResult:
         return tool_result_to_dict(value)
-    if type(value) in (TextResponseFormat, JsonResponseFormat, SchemaResponseFormat):
+    if isinstance(value, (TextResponseFormat, JsonResponseFormat, SchemaResponseFormat)):
         return response_format_to_dict(value)
     if type(value) is StructuredOutput:
         return structured_output_to_dict(value)
