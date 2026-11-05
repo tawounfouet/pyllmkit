@@ -44,6 +44,7 @@ jobs:
           python examples/09_define_inference_response.py
           python examples/10_define_inference_run.py
           python examples/11_round_trip_inference_json.py
+          python examples/12_full_inference_walkthrough.py
       - name: Build wheel and sdist
         run: python -m build
       - name: Wheel clean environment smoke
@@ -63,6 +64,10 @@ jobs:
       - name: L3.4 clean wheel codec smoke
         run: |
           .venv-wheel/bin/python -c "import json; from pyllmkit.domain import Content, Message, Role, TextContent, ModelId, ModelTarget, InferenceRequest, InferenceRun, InferenceRunId, request_to_dict, request_from_dict, run_to_dict, run_from_dict, INFERENCE_SCHEMA_VERSION; req=InferenceRequest(ModelTarget(ModelId('model')), (Message(Role.USER, Content((TextContent('hi'),))),)); run=InferenceRun(InferenceRunId('smoke'),req); assert INFERENCE_SCHEMA_VERSION == 1; assert request_from_dict(json.loads(json.dumps(request_to_dict(req)))) == req; assert run_to_dict(run_from_dict(json.loads(json.dumps(run_to_dict(run))))) == run_to_dict(run)"
+      - name: L3.5 installed wheel full domain smoke
+        run: |
+          .venv-wheel/bin/python examples/12_full_inference_walkthrough.py
+          .venv-wheel/bin/python -c "from pyllmkit import __version__; from pyllmkit.domain import INFERENCE_SCHEMA_VERSION, INTERACTION_SCHEMA_VERSION; from pyllmkit.domain.models.serialization import SCHEMA_VERSION; assert (__version__, INFERENCE_SCHEMA_VERSION, INTERACTION_SCHEMA_VERSION, SCHEMA_VERSION) == ('0.1.0a2', 1, 1, 1)"
       - name: Sdist clean environment smoke
         run: |
           python -m venv .venv-sdist
@@ -72,3 +77,4 @@ jobs:
           .venv-sdist/bin/python -c "from pyllmkit.domain import FinishReason, FinishReasonCode, InferenceResponse, InferenceRunId, TextOutput; x=InferenceResponse(InferenceRunId('smoke'), TextOutput(''), FinishReason(FinishReasonCode.UNKNOWN, 'vendor')); assert x.finish_reason.code is FinishReasonCode.UNKNOWN"
           .venv-sdist/bin/python -c "from datetime import datetime, timezone; from pyllmkit.domain import Content, Message, Role, TextContent, ModelId, ModelTarget, InferenceRequest, InferenceRun, InferenceRunId, InferenceFailure, InferenceRunState; r=InferenceRun(InferenceRunId('sdist'), InferenceRequest(ModelTarget(ModelId('model')), (Message(Role.USER, Content((TextContent('hi'),))),))); t=datetime(2026,11,5,tzinfo=timezone.utc); fail=r.start(t).fail(InferenceFailure('timeout'),t); assert fail.state is InferenceRunState.FAILED"
           .venv-sdist/bin/python -c "from datetime import UTC, datetime; from pyllmkit.domain import Content, Message, Role, TextContent, ModelId, ModelTarget, InferenceRequest, InferenceRun, InferenceRunId, InferenceFailure, InferenceRunState, run_from_dict, run_to_dict; r=InferenceRun(InferenceRunId('sdist-json'), InferenceRequest(ModelTarget(ModelId('model')), (Message(Role.USER, Content((TextContent('x'),))),))).start(datetime(2026,11,5,tzinfo=UTC)); failed=r.fail(InferenceFailure('timeout'),datetime(2026,11,5,tzinfo=UTC)); d=run_to_dict(failed); assert run_to_dict(run_from_dict(d)) == d"
+          .venv-sdist/bin/python examples/12_full_inference_walkthrough.py
