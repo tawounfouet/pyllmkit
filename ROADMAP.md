@@ -1,5 +1,8 @@
 # PyLLMKit - Roadmap
 
+**2026-11-05 - L3.5 Integration & Packaging : mise en oeuvre candidate, G5 toujours PENDING.** PR #31 de remediation PIR2-01/02/03 fusionnee, main `2ec317de`, [CI #42057132634 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42057132634): 789 tests et 95 % couverture. Issue #20 resolue. Les artefacts L3.5 (contrats architecture, schema JSON v1, concepts et API, traceabilite P3-AC-001..030, README executable, example 12, clean-install wheel/sdist) sont sur branche de travail. **G5 doit encore recevoir PR finale, CI exacte sur main et proces-verbal distinct.** M3 et publication restent non qualifies.
+
+
 **2026-11-05 - P3-G4 Inference JSON Codec & Quality : GO technique avec reserves.** [PR #29](https://github.com/tawounfouet/pyllmkit/pull/29) integree sur [main d72b1ce](https://github.com/tawounfouet/pyllmkit/commit/d72b1ce82a4a34c62888ad48b50bcf07537f83d1), [CI #42053906726 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42053906726), **779 tests / 95 %**, 3/3 Python versions. [PV G4](docs/quality/P3_G4_GATE_REVIEW.md). P3-AC-021..028 PASS; six etats Run round-trip verifies. Prochain lot L3.5, G5/M3 PENDING. Pas de version bump, tag ou publication.
 
 
