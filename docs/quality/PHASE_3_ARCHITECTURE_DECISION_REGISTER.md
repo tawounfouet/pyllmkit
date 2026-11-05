@@ -13,12 +13,12 @@
 |---|---|---|---|---|
 | [ADR-014](../adr/ADR-014-inference-request-run-response-boundaries.md) | Request / Run / Response | VO / Aggregate / VO, request chat 1..* messages | PROPOSED | Fondations M1/M2 |
 | [ADR-015](../adr/ADR-015-inference-target-model-deployment-endpoint.md) | Cibles | Model / Deployment / Endpoint discriminants, references opaques | PROPOSED | ADR-014 |
-| [ADR-016](../adr/ADR-016-generation-config-validation-and-support.md) | Config | None, types stricts, validation effective separee | PROPOSED | ADR-015 |
+| [ADR-016](../adr/ADR-016-generation-config-validation-and-support.md) | Config | None, types float exact a arbitrer | REVISED / PROPOSED | ADR-015 |
 | [ADR-017](../adr/ADR-017-text-output-and-finish-reason.md) | Output / fin | TextOutput, valeur vide valide, raison native preservee | PROPOSED | ADR-014 |
 | [ADR-018](../adr/ADR-018-usage-metrics-and-missing-values.md) | Usage | Compteurs optionnels, aucune valeur inventee | PROPOSED | ADR-017 |
-| [ADR-019](../adr/ADR-019-inference-run-state-machine.md) | Run lifecycle | Snapshots immuables, etats fermes, timestamps injectes | PROPOSED | ADR-014/017 |
-| [ADR-020](../adr/ADR-020-inference-json-v1-codec.md) | JSON v1 | Namespace Inference distinct et strict, snapshots Run inclus | PROPOSED | ADR-014..019 |
-| [ADR-021](../adr/ADR-021-inference-port-and-effective-compatibility.md) | Ports / compatibilite | Port public differe, contrat conceptuel documente | PROPOSED / OPTIONAL | ADR-015/016 |
+| [ADR-019](../adr/ADR-019-inference-run-state-machine.md) | Run lifecycle | Snapshots, Failure, finished_at et six etats | REVISED / PROPOSED | ADR-014/017 |
+| [ADR-020](../adr/ADR-020-inference-json-v1-codec.md) | JSON v1 | Enveloppes canoniques Request/Response/Run et six etats | REVISED / PROPOSED | ADR-014..019 |
+| [ADR-021](../adr/ADR-021-inference-port-and-effective-compatibility.md) | Ports / compatibilite | Port differe; arbitrer evaluator et AC-007 | REVISED / PROPOSED / OPTIONAL | ADR-015/016 |
 
 **Attention :** PROPOSED signifie "redige pour revue" et ne signifie ni ACCEPTED ni GO. Les ADR sont des propositions de conception, pas des signatures publiques existantes.
 
@@ -31,7 +31,9 @@
 5. Confirmer la distinction finish_reason absent (None) vs inconnu (UNKNOWN).
 6. Confirmer Usage.total_tokens observe et non calcule silencieusement.
 7. Approuver schema Inference JSON v1, presence des champs nullable et snapshot Run.
-8. Decider ADR-021 : DEFERRED ou port structurel en a3.
+8. Decider ADR-021 : evaluator pur sur snapshot (option A recommandee) ou report explicite d'AC-007 (option B). Port executable reporte.
+9. Fixer InferenceFailure, timestamps terminaux finished_at et egalite par RunId.
+10. Arbitre sur le choix strict float exact dans GenerationConfig.
 
 ## 3. Tracabilite des exigences
 
@@ -46,6 +48,8 @@
 | Date | Objet | Autorite | Decision | Preuve |
 |---|---|---|---|---|
 | 2026-11-05 | Ouverture des propositions P3-BOOT | Dossier documentaire | Preparation uniquement, pas de decision d'adoption | Cette branche |
+| 2026-11-05 | Revue contradictoire ADR-014..021 | Analyse technique | Revisions et recommandations, **pas une adoption** | [P3-G0 review](P3_G0_ARCHITECTURE_REVIEW.md) |
+| 2026-11-05 | Dette PIR2-01..03 | Suivi technique | [Issue #20](https://github.com/tawounfouet/pyllmkit/issues/20) ouverte, dette non resolue | [Issue #20](https://github.com/tawounfouet/pyllmkit/issues/20) |
 
 Aucune acceptation par le proprietaire n'est encore inscrite. Ajouter ici la decision et sa preuve, sans antidater. Aucune validation GitHub tierce n'est pretendue.
 
@@ -55,7 +59,7 @@ G0 sera eligible a une revue GO uniquement lorsque :
 - les ADR-014..020 auront ete explicitement arbitrees et ADR-021 decidee ou reportee ;
 - les contrats publics auront ete actualises apres arbitrage ;
 - le perimetre des lots et la matrice P3-AC auront ete approuves ;
-- les contradictions PIR2-01..03 auront ete levees ou isolees avec risque accepte ;
+- les contradictions PIR2-01..03 auront ete levees ou isolees avec risque accepte (suivi initial : issue #20, encore ouverte) ;
 - les changements documentaires auront ete integres dans main et la CI de **ce SHA exact** aura ete verifiee.
 
 Jusqu'alors : **P3-G0 PENDING / NO-GO administratif, M3 PENDING.**
