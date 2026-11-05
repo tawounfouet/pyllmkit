@@ -26,7 +26,6 @@ from pyllmkit.domain.registry import (
 )
 from pyllmkit.protocols import AtomicCatalogPort, DiscoverySourcePort
 
-
 NOW = datetime(2026, 11, 5, 20, 0, tzinfo=UTC)
 SRC = MetadataSource(MetadataSourceKind.FIXTURE, "reference-catalog", "internal")
 
