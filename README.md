@@ -1,5 +1,8 @@
 # PyLLMKit
 
+**Phase 3 / P3-G4 (2026-11-05): INFERENCE JSON v1 - GO technique avec reserves.** [PR #29](https://github.com/tawounfouet/pyllmkit/pull/29) integree sur [main d72b1ce](https://github.com/tawounfouet/pyllmkit/commit/d72b1ce82a4a34c62888ad48b50bcf07537f83d1), [CI #42053906726 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42053906726): **779 tests, 95 % coverage, Python 3.11/3.12/3.13**. [Gate G4](docs/quality/P3_G4_GATE_REVIEW.md), [API JSON v1](docs/api/inference-json-v1.md). Les 3 enveloppes Request/Response/Run sont versionnees et testees, y compris les six etats Run. **Prochain L3.5 - Integration & Packaging. G5/M3/release non qualifies, metadata 0.1.0a2 non publiee.**
+
+
 **Phase 3 / P3-G3 (2026-11-05): RUN LIFECYCLE READY - GO technique avec reserves.** [PR #27](https://github.com/tawounfouet/pyllmkit/pull/27) integree sur [main 361791ff](https://github.com/tawounfouet/pyllmkit/commit/361791ff546612e10b407874c54014b1c0e1ce86), [CI #42044787119 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42044787119) : **679 tests, 94 % couverture, Python 3.11/3.12/3.13**. [PV G3](docs/quality/P3_G3_GATE_REVIEW.md), [API Run](docs/api/inference-run.md). InferenceRun, six etats, transitions pures et temps injecte qualifies. **Prochain lot L3.4 JSON Codec & Quality; G4/G5/M3 non qualifies et metadata 0.1.0a2 non publiee.**
 
 
