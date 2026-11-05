@@ -27,8 +27,12 @@ _SOURCE_FIELDS = frozenset({"kind", "value"})
 
 
 def _object(value: object, label: str) -> Mapping[str, object]:
-    """Require a JSON-style object with string field names."""
-    if not isinstance(value, dict) or any(not isinstance(k, str) for k in value):
+    """Accept Mapping inputs while validating string-key JSON object semantics.
+
+    No conversion/copy of values is performed; a MappingProxyType is supported.
+    Lists and other non-mapping containers are never coerced to objects.
+    """
+    if not isinstance(value, Mapping) or any(type(k) is not str for k in value):
         raise DomainValidationError(f"{label} must be an object with string keys")
     return cast(Mapping[str, object], value)
 
@@ -98,9 +102,10 @@ def message_to_dict(message: Message) -> dict[str, object]:
 def message_from_dict(payload: Mapping[str, object]) -> Message:
     """Decode a strict v1 mapping into immutable Domain Core values.
 
-    Text-to-mapping conversion is the caller's responsibility. A JSON parser
-    may silently discard duplicate keys, so that boundary needs an explicit
-    duplicate-key policy when one is required.
+    Text-to-mapping conversion is the caller's responsibility. Any read-only
+    Mapping[str, object], including MappingProxyType, is supported recursively.
+    A JSON parser may silently discard duplicate keys, so that boundary needs
+    an explicit duplicate-key policy when one is required.
     """
     data = _object(payload, "message")
     _exact_fields(data, _MESSAGE_FIELDS, "message")
