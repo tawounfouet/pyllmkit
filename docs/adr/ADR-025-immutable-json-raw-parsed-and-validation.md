@@ -1,7 +1,7 @@
 # ADR-025 - Immutable JSON, raw/parsed and validation evidence
 
 - Date : 2026-11-05
-- Statut : RECOMMENDED FOR P4-G0 ADOPTION
+- Statut : ACCEPTED (owner, 2026-11-05; P4-G0 CI main a verifier)
 - Phase : L4.1 a L4.4
 - Sources : ADR-024, TOOL-008, TOOL-014, P4-AC-012/013/020/024/030/039.
 
