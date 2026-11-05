@@ -1,6 +1,9 @@
 # ADR-021 - Port d'inference, capacites et validation conditionnelle
+> **Decision owner P3-G0 (2026-11-05)** : `ACCEPTED`, sous autorite du proprietaire dans la conversation du projet. Cette autorisation concerne les contrats et leur integration, **pas** une GitHub review externe ni la publication d'un package. 
+> **Arbitrage retenu :** Option A ACCEPTED: minimal pure evaluator of parameter support from an explicit caller-supplied capability snapshot to fulfill P3-AC-007. No public executable InferencePort, adapter, provider SDK, network, routing or discovery.
 
-- **Statut : REVISED / PROPOSED / OPTIONAL** - revue P3-G0 2026-11-05. Non adoptee.
+
+- **Statut : ACCEPTED** - adoption explicite par le proprietaire pour P3-G0 le 2026-11-05. Contrat de conception adopte, implementation Python non commencee.
 - **Sources :** plan Phase 3 sections 2.2, 4, 5.3 et 10; UC-009, FR-017, MOD-002/004, CAP-004/009/011, INF-004.
 - **Objet du gate :** decider du report ou de la portee du controle P3-AC-007, sans simuler une invocation provider.
 
@@ -26,9 +29,9 @@ La vision presente InferencePort (Protocol) et un evaluator de compatibilite eff
 - Faire croire que des capabilities manquantes signifient NATIVE : refuse.
 - Declarer 30/30 cas d'acceptation reussis avec P3-AC-007 non implemente : refuse.
 
-## Decision requise en G0
+## Decision prise au P3-G0
 
-- **Option A conseillee** : accepter la specification d'un evaluator pur minimal sur snapshot connu pour satisfaire P3-AC-007, sans InferencePort.
-- **Option B** : differer l'evaluator et P3-AC-007, inscrire le report dans la matrice G0 et M3, sans invoquer un 30/30 fictif.
+- **Option A adoptee** : accepter la specification d'un evaluator pur minimal sur snapshot connu pour satisfaire P3-AC-007, sans InferencePort.
+- **Option B non retenue** : differer l'evaluator et P3-AC-007, inscrire le report dans la matrice G0 et M3, sans invoquer un 30/30 fictif.
 
-Aucune de ces options n'est adoptee dans ce fichier. L'autorite doit trancher avant code public.
+**Decision effective : option A adoptee.** L'evaluator pur sur snapshot explicite est dans le perimetre a3 et P3-AC-007 reste obligatoire. L'option B n'est pas retenue.
