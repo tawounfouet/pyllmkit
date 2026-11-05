@@ -1,5 +1,13 @@
 # Changelog
 
+### Post-Phase 3 operational closeout (documentation candidate, no release)
+- Documented technical M3 final-review inputs, branch-protection governance and issue #22 evidence requirements.
+- Defined separate version bump, build provenance, tag, GitHub Release and PyPI runbooks with explicit authorization and rollback.
+- Specified future provider/HTTP boundary policies outside domain Value Objects: strict JSON text parsing, request limits, redaction, retries, idempotency and SSRF defense.
+- Added repeatable PyKit learning/delivery workflow and PR review template.
+- **No provider implementation, ruleset enforcement, version bump, tag or publication in this PR.**
+
+
 ## [Unreleased development] - L3.5 Integration & Packaging (G5 technical GO, not released)
 
 ### Integrated documentation and regression quality (pending G5 qualification)
