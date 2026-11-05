@@ -1,5 +1,8 @@
 # P6-G2 - L6.2 Registry Ports & InMemory: implementation candidate
 
+> **Précheck historique de candidature.** La qualification actuelle est consignée dans [`P6_G2_GATE_REVIEW.md`](P6_G2_GATE_REVIEW.md) et dans la revue finale [`M6_GATE_REVIEW.md`](M6_GATE_REVIEW.md). Les cases « pending » ci-dessous représentent l'état à la création du document, pas l'état actuel.
+
+
 - Date: 2026-11-05
 - Status: DRAFT / NOT A QUALIFIED GO
 - Parent commit: `cd4f1f4675f5f78d071ca6abc78e42dc4139be01` (L6.1 candidate, PR #60)

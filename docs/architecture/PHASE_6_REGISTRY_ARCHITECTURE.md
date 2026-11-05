@@ -1,7 +1,7 @@
 # Phase 6 - Registry & Discovery architecture (P6-G0)
 
 - Date: 2026-11-05
-- Status: PROPOSED; pending owner/design review, merge and exact-main CI
+- Status: ACCEPTED under explicit owner-delegated authorization; P6-G0..G7 technically qualified on exact main SHAs, independent GitHub review absent
 - Baseline: `19cc1c9e1d5598711890ddc3e14f1da94c79ce70` (`0.1.0a2`)
 - Target milestone: M6; indicative distribution version `0.1.0b2`, **not authorized**
 

@@ -1,5 +1,8 @@
 # P6-G5 - L6.5 Deployment Resolution candidate
 
+> **Précheck historique de candidature.** La qualification actuelle est consignée dans [`P6_G5_GATE_REVIEW.md`](P6_G5_GATE_REVIEW.md) et dans la revue finale [`M6_GATE_REVIEW.md`](M6_GATE_REVIEW.md). Les cases « pending » ci-dessous représentent l'état à la création du document, pas l'état actuel.
+
+
 - Date: 2026-11-05
 - Status: DRAFT / NOT QUALIFIED
 - Stack: PR #59 -> #60 -> #61 -> #62 -> #63 -> L6.5 branch

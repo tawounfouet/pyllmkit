@@ -1,11 +1,19 @@
 # Changelog
 
-## [Unreleased] - P6 Registry & Discovery candidate (not merged or released)
+## [Unreleased] - M6 Registry & Discovery technically qualified (no release)
+
+- **GO technique avec réserves M6** pour Registry & Discovery hors réseau, PRs #59..#66 fusionnées, huit PV de gate G0..G7 archivés. Main code `6c58b052`, CI #42123870931 SUCCESS : 1189 tests, couverture branches 96,61 %, Python 3.11/3.12/3.13, Ruff, mypy et wheel/sdist avec exemples 23..28.
+- Preuves archivées sur main `670ccab9`, CI #42124522939 SUCCESS ; rapport final `docs/quality/M6_GATE_REVIEW.md`, point d'entrée P7-G0 `docs/roadmap/P7_PROVIDER_ADAPTERS_ENTRY_CRITERIA.md`.
+- Correctif de sûreté L6.6 : le digest SHA-256 lie les métadonnées complètes d'un batch à sa preview. Pas d'adapter live, de réseau ou de distribution.
+- **NO-GO publication `0.1.0b2`** : version source `0.1.0a2` inchangée ; protection main, reviewer indépendant, release et frontières provider non clos (#22/#35/#36).
+
+
+## [Unreleased] - Historique de la candidature P6 Registry & Discovery (désormais intégrée)
 
 - Architecture ADR-039..048, provider/deployment descriptifs, registries, recherches typées, capacités et limites effectives, résolution déterministe.
 - Offline Discovery & Merge : source statique, provenance UTC, conflit explicite, preview et commit atomique InMemory sous contrôle de version.
 - Integration & Quality : tests P6-AC-001..056, exemples 23..28, architecture fitness, compatibilité M1-M5, clean wheel/sdist.
-- PRs #59..#66 empilées ; aucun P6-G0..G7 ou M6 GO sur main à ce stade. Version 0.1.0a2 inchangée ; cible 0.1.0b2 non autorisée à publication. Issues #22, #35 et #36 en réserve.
+- Historique : les PRs #59..#66 étaient empilées avant qualification. Elles ont depuis été fusionnées et qualifiées sur main, sans changement de version ni publication. Réserves #22, #35 et #36 maintenues.
 
 ## [Unreleased] - M5 Streaming Domain technically qualified (no release)
 

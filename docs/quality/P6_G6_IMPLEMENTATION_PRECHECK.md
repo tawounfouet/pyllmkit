@@ -1,5 +1,8 @@
 # P6-G6 - L6.6 Offline Discovery & Merge implementation precheck
 
+> **Précheck historique de candidature.** La qualification actuelle est consignée dans [`P6_G6_GATE_REVIEW.md`](P6_G6_GATE_REVIEW.md) et dans la revue finale [`M6_GATE_REVIEW.md`](M6_GATE_REVIEW.md). Les cases « pending » ci-dessous représentent l'état à la création du document, pas l'état actuel.
+
+
 - Date: 2026-11-05
 - Status: CANDIDATE / NOT YET QUALIFIED
 - Stack: PR #59 -> #60 -> #61 -> #62 -> #63 -> #64 -> L6.6
