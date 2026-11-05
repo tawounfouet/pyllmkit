@@ -9,6 +9,7 @@ from pyllmkit.domain.deployments import Deployment, DeploymentStatus
 from pyllmkit.domain.errors import DomainValidationError
 from pyllmkit.domain.inference import DeploymentTarget, ModelTarget
 from pyllmkit.domain.modalities import Modality
+from pyllmkit.domain.providers import InferenceProvider
 from pyllmkit.domain.registry import (
     CapabilityMatchMode,
     CapabilityResolver,
@@ -25,7 +26,6 @@ from pyllmkit.domain.registry.selection import (
     ModelNotFoundError,
     NoCompatibleDeploymentError,
 )
-from pyllmkit.domain.providers import InferenceProvider
 from pyllmkit.protocols import DeploymentRegistryPort, ModelRegistryPort, ProviderCatalogPort
 
 
