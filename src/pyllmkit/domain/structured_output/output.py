@@ -4,8 +4,6 @@ Parsing JSON text, provider invocation and auto-repair remain out of scope.
 """
 
 from dataclasses import dataclass, field
-from typing import cast
-
 from pyllmkit.domain.errors import DomainValidationError
 from pyllmkit.domain.tooling.json_values import FrozenJSON, freeze_json, thaw_json
 from pyllmkit.domain.tooling.validation import ValidationStatus
@@ -109,7 +107,7 @@ class StructuredOutput:
         object.__setattr__(clone, "_parsed", self._parsed)
         object.__setattr__(clone, "_has_parsed", self._has_parsed)
         object.__setattr__(clone, "_validation", result)
-        return cast(StructuredOutput, clone)
+        return clone
 
 
 def validate_structured_output(output: StructuredOutput) -> StructuredOutput:
