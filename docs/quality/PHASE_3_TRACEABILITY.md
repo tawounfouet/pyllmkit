@@ -3,8 +3,8 @@
 > Date de reference : 2026-11-05
 > Baseline avant L3.5 : `main@1155a534bb8acb1873a59723258013914ac8437c` (G4 archive, CI #42054732561 SUCCESS).
 > Baseline PIR2 corrigee : `main@2ec317de98bd9d0897fe1e48801a9727e4f7ced6`, PR #31, CI #42057132634 SUCCESS.
-> **Statut :** P3-G0..G4 GO technique avec reserves; L3.5/G5 et M3 en qualification, publication non autorisee.
-> Sources : Phase 3 implementation plan, ADR-014..021 ACCEPTED et PV G0..G4.
+> **Statut actuel :** P3-G0..G5 GO techniques avec reserves, [PV G5](P3_G5_GATE_REVIEW.md), [CI main #42059417894](https://github.com/tawounfouet/pyllmkit/actions/runs/42059417894); M3 et publication non qualifies.
+> Sources : Phase 3 implementation plan, ADR-014..021 ACCEPTED et PV G0..G5.
 
 ## Sources et provenance
 
