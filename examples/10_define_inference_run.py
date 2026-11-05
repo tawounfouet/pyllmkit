@@ -1,6 +1,6 @@
 """P3-L3.3 offline run lifecycle, no model or provider is contacted."""
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from pyllmkit.domain import (
     Content,
@@ -22,7 +22,7 @@ request = InferenceRequest(
     ModelTarget(ModelId("offline/llm")),
     (Message(Role.USER, Content((TextContent("Bonjour"),))),),
 )
-at = datetime(2026, 11, 5, 12, 0, tzinfo=timezone.utc)
+at = datetime(2026, 11, 5, 12, 0, tzinfo=UTC)
 created = InferenceRun(InferenceRunId("example-run"), request)
 running = created.start(at)
 completed = running.complete(
