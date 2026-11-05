@@ -829,4 +829,3 @@ L'exemple exprime la **représentation et la sérialisation**. Il ne provoque au
 ---
 
 **Fin du bilan post-implémentation de la Phase 2 - PyLLMKit.**
-**Fin du bilan post-implémentation de la Phase 2 - PyLLMKit.**
