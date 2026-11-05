@@ -18,7 +18,7 @@ PyLLMKit est un framework Python de **primitives de domaine LLM agnostiques des 
 | **P3-G5 - Integration & Packaging** | **EN COURS** | [Plan Phase 3](docs/03_PYLLMKIT_PHASE_3_IMPLEMENTATION_PLAN.md) |
 | M3 - Inference Foundations | NON QUALIFIÉ | Décision indépendante à produire |
 
-Les preuves historiques ont été conservées dans les procès-verbaux, sans présenter les anciens statuts comme actuels. Les réserves de baseline M2 sont suivies dans [#20](https://github.com/tawounfouet/pyllmkit/issues/20), et les règles de protection de `main` dans [#22](https://github.com/tawounfouet/pyllmkit/issues/22).
+Les preuves historiques ont été conservées dans les procès-verbaux, sans présenter les anciens statuts comme actuels. La dette M2 [#20](https://github.com/tawounfouet/pyllmkit/issues/20) est **résolue** par [PR #31](https://github.com/tawounfouet/pyllmkit/pull/31) ([CI main #42057132634](https://github.com/tawounfouet/pyllmkit/actions/runs/42057132634)). Les protections de `main` [#22](https://github.com/tawounfouet/pyllmkit/issues/22) restent **ouvertes**.
 
 ## Phase 3 : exemple complet hors ligne (P3-AC-030)
 
