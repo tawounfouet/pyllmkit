@@ -1,5 +1,8 @@
 # PyLLMKit - Roadmap
 
+**2026-11-05 - P3-G2 Response Ready = GO technique avec reserves.** L3.2 integre via [PR #25](https://github.com/tawounfouet/pyllmkit/pull/25), main [783aa438](https://github.com/tawounfouet/pyllmkit/commit/783aa4381dc05a4b9bc431faab282f2bbe37d38d), [CI #42039312011 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42039312011), 545 tests / 94 % couverture, trois versions Python. [PV G2](docs/quality/P3_G2_GATE_REVIEW.md). P3-AC-008..013 PASS; prochain L3.3 Run Domain. L3.4/G4, L3.5/G5 et M3 restent a qualifier. Version metadata 0.1.0a2, aucune publication.
+
+
 **2026-11-05 - Phase 3 P3-G1 = GO technique (Request Ready, avec reserves).** PR [#23](https://github.com/tawounfouet/pyllmkit/pull/23) integree sur [main f1ef04b8](https://github.com/tawounfouet/pyllmkit/commit/f1ef04b8ff1bb52a1ee17defa0ec8b20f84ac9d3) ; [CI #42036557565 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42036557565) Python 3.11-3.13, **432 tests / 93 % coverage**. [P3-G1 PV](docs/quality/P3_G1_GATE_REVIEW.md). L3.1 InferenceTarget/GenerationConfig/InferenceRequest et compatibilite offline sont integres; P3-AC-001..007 PASS. Prochain lot L3.2, G2..M3 PENDING; version de depot 0.1.0a2 non publiee.
 
 
