@@ -1,9 +1,11 @@
 # ADR-022 - Tool definition and execution boundary
 
 - Date : 2026-11-05
-- Statut : RECOMMENDED FOR P4-G0 ADOPTION (non encore integree sur main)
+- Statut : ACCEPTED (owner, 2026-11-05; P4-G0 CI main a verifier)
 - Phase : P4-BOOT, L4.1 et L4.2
 - Sources : docs/04_PYLLMKIT_PHASE_4_IMPLEMENTATION_PLAN.md, domaine 00-09, principe TOOL-003.
+
+> Approbation du proprietaire : [P4_G0_OWNER_ARCHITECTURE_APPROVAL.md](../quality/P4_G0_OWNER_ARCHITECTURE_APPROVAL.md). Aucune revue tierce revendiquee.
 
 ## Contexte
 
