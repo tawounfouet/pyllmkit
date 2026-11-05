@@ -1,7 +1,7 @@
 # PyLLMKit - P4 L4.5 Integration & Quality - Implementation summary
 
 > Date : 2026-11-05.
-> Statut : LIVRABLE DE BRANCHE - P4-G5 PAS ENCORE QUALIFIÉ.
+> Statut : INTÉGRÉ SUR MAIN - P4-G5 GO TECHNIQUE AVEC RÉSERVES. PR #48, main@aad2656cbe1753dac709bb28b228ba22ecca44a2, CI #42092202193 SUCCESS.
 > P4-G4 : GO technique avec réserves sur [main@ab0257a0](https://github.com/tawounfouet/pyllmkit/commit/ab0257a0a9a08f2320b580340ba84c92609bbfc0), [CI #42089506022](https://github.com/tawounfouet/pyllmkit/actions/runs/42089506022).
 
 ## Périmètre
@@ -15,13 +15,13 @@
 - ROADMAP, CHANGELOG et concepts synchronisés avec les gates réellement qualifiés.
 - M4_READINESS_PRECHECK, préparé mais non signé.
 
-## Critères à prouver avant G5
+## Critères qualifiés pour G5
 
-1. CI de PR L4.5 : Ruff, mypy strict, tests, couverture branches >=95%, 3/3 Python.
-2. Import wheel et sdist isolés, exemple 13 à 17, `py.typed`, licence, metadata 0.1.0a2.
-3. Après accord de l'owner : fusion PR sur main et CI **push de ce SHA exact**, distincte de la CI de branche.
-4. Revue P4-G5 documentée : zéro AC bloquant, 40 cas tracés et réserves transparentes.
-5. Revue finale M4 séparée; aucune publication/tag/bump implicite.
+1. CI PR #42091493580 et CI main #42092202193 : Ruff, mypy strict, 967 tests, couverture branches 96 %, 3/3 Python : PASS.
+2. Imports, wheel/sdist isolés et exemples 13 à 17, `py.typed`, licence, metadata 0.1.0a2 : PASS.
+3. Accord explicite du propriétaire, PR #48 fusionnée et CI push/main #42092202193 sur SHA exact : PASS.
+4. Revue P4-G5 avec 40 cas tracés et réserves ouvertes : [PV G5](P4_G5_GATE_REVIEW.md) : PASS.
+5. Revue finale M4 séparée : PENDING au moment de ce bilan; publication/tag/bump : NO-GO.
 
 ## Gouvernance
 
