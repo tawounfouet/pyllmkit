@@ -1,7 +1,7 @@
 # ADR-028 - Composition of P4 with qualified M3 contracts
 
 - Date : 2026-11-05
-- Statut : RECOMMENDED FOR P4-G0 ADOPTION
+- Statut : ACCEPTED (owner, 2026-11-05; P4-G0 CI main a verifier)
 - Phase : L4.4
 - Sources : ADR-014/017/020/021, Inference M3 qualifiee, plan P4 section 4.1.
 
@@ -12,7 +12,9 @@
 - Inference JSON v1 exige exactement ses champs, sans extensions P4.
 - GenerationSupportSnapshot couvre uniquement la generation; aucun snapshot P4 n'est implicite.
 
-## Decision recommandee : OPTION B
+> Approbation du proprietaire : [P4_G0_OWNER_ARCHITECTURE_APPROVAL.md](../quality/P4_G0_OWNER_ARCHITECTURE_APPROVAL.md). Aucune revue tierce revendiquee.
+
+## Decision adoptee : OPTION B
 
 1. Preserver exactement les constructeurs, types, egalite, immutabilite, codecs et invariants M3. **Aucune modification de InferenceRequest, InferenceResponse, InferenceRun ni Interaction JSON v1 en P4.**
 2. Introduire une composition explicite, initialement nommee ToolingInferenceIntent, contenant une InferenceRequest M3 intacte, un tuple ordonne de Tool, ToolChoice optionnel et ResponseFormat optionnel. Toute politique de choix est validee contre ses outils.
