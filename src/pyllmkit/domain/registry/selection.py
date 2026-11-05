@@ -9,6 +9,7 @@ from pyllmkit.domain.inference import DeploymentId
 from pyllmkit.domain.modalities import Modality
 from pyllmkit.domain.providers import ProviderId
 
+from .errors import RegistryError
 from .queries import CapabilityMatchMode
 
 
@@ -81,7 +82,7 @@ class DeploymentResolutionReport:
     selected_id: DeploymentId | None
 
 
-class DeploymentResolutionError(Exception):
+class DeploymentResolutionError(RegistryError):
     """A documented selection failure, optionally carrying safe evidence."""
 
     def __init__(self, message: str, report: DeploymentResolutionReport | None = None) -> None:
