@@ -23,7 +23,14 @@ from .events import (
     UsageUpdated,
 )
 from .protocols import InferenceStream
-from .reconstruction import StreamState, StreamStatus, observe_eof, reduce_event, reduce_stream
+from .reconstruction import (
+    StreamState,
+    StreamStatus,
+    ToolCallProgress,
+    observe_eof,
+    reduce_event,
+    reduce_stream,
+)
 
 __all__ = [
     "InferenceStream",
@@ -45,6 +52,7 @@ __all__ = [
     "TextDelta",
     "ToolCallCompleted",
     "ToolCallDelta",
+    "ToolCallProgress",
     "ToolCallStarted",
     "UsageUpdated",
     "observe_eof",
