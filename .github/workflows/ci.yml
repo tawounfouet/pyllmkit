@@ -30,7 +30,7 @@ jobs:
           MISTRAL_API_KEY: ""
           AWS_ACCESS_KEY_ID: ""
         run: |
-          python -m pytest -q --cov=pyllmkit.domain --cov-branch --cov-report=term-missing --cov-report=xml
+          python -m pytest -q --cov=pyllmkit.domain --cov-branch --cov-report=term-missing --cov-report=xml --cov-fail-under=95
       - name: Offline examples
         run: |
           python examples/01_define_model.py
