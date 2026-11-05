@@ -1,4 +1,4 @@
-"""L3.1 fitness function: imports and dependency boundaries."""
+"""P3 fitness function: inference domain imports and dependency boundaries."""
 
 import ast
 from pathlib import Path
@@ -48,9 +48,10 @@ def test_inference_imports_are_provider_and_application_free() -> None:
         assert tree is not None
 
 
-def test_p3_l31_l32_have_no_provider_or_io_runtime_modules() -> None:
+def test_p3_l31_l32_l33_have_no_provider_or_io_runtime_modules() -> None:
     names = {path.name for path in INFERENCE.glob("*.py")}
     assert names == {
         "__init__.py", "targets.py", "config.py", "request.py", "compatibility.py",
         "identifiers.py", "output.py", "finish.py", "usage.py", "response.py",
+        "failure.py", "run.py",
     }

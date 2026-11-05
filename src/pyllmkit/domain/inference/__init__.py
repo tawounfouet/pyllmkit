@@ -1,4 +1,4 @@
-"""Provider-free inference domain: L3.1 requests and L3.2 responses."""
+"""Provider-free inference domain: requests, responses and pure run lifecycle."""
 
 from .compatibility import (
     GENERATION_PARAMETER_NAMES,
@@ -10,11 +10,13 @@ from .compatibility import (
     validate_request_support,
 )
 from .config import GenerationConfig
+from .failure import InferenceFailure
 from .finish import FinishReason, FinishReasonCode
 from .identifiers import InferenceRunId
 from .output import InferenceOutput, TextOutput
 from .request import InferenceRequest
 from .response import InferenceResponse
+from .run import InferenceRun, InferenceRunState
 from .targets import (
     DeploymentId,
     DeploymentTarget,
@@ -40,6 +42,9 @@ __all__ = [
     "FinishReasonCode",
     "InferenceOutput",
     "InferenceResponse",
+    "InferenceFailure",
+    "InferenceRun",
+    "InferenceRunState",
     "InferenceRunId",
     "TextOutput",
     "Usage",
