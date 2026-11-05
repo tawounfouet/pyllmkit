@@ -205,6 +205,15 @@ def test_same_identity_different_request_does_not_mean_same_snapshot() -> None:
     assert original.request != alternative.request
 
 
+def test_replacing_snapshot_cannot_bypass_invariants() -> None:
+    current = running()
+    with pytest.raises(DomainValidationError, match="COMPLETED"):
+        replace(current, state=InferenceRunState.COMPLETED, finished_at=T2)
+    with pytest.raises(DomainValidationError, match="CREATED"):
+        replace(current, state=InferenceRunState.CREATED)
+    assert current.state is InferenceRunState.RUNNING
+
+
 def test_immutable_and_private_fields_excluded_from_repr() -> None:
     run = completed()
     assert "confidential prompt" not in repr(run)
