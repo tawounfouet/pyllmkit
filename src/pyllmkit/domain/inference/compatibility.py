@@ -65,12 +65,27 @@ class ParameterAssessment:
     name: str
     level: SupportLevel | None
 
+    def __post_init__(self) -> None:
+        if type(self.name) is not str or self.name not in GENERATION_PARAMETER_NAMES:
+            raise DomainValidationError("invalid assessed parameter name")
+        if self.level is not None and type(self.level) is not SupportLevel:
+            raise DomainValidationError("assessment level must be SupportLevel or None")
+
 
 @dataclass(frozen=True, slots=True)
 class CompatibilityReport:
-    """Pure report; never pretends unknown support is native or supported."""
+    """Pure parameter report; never claims an unknown target is executable."""
 
     assessments: tuple[ParameterAssessment, ...]
+
+    def __post_init__(self) -> None:
+        if type(self.assessments) is not tuple or any(
+            type(item) is not ParameterAssessment for item in self.assessments
+        ):
+            raise DomainValidationError("assessments must be a tuple of ParameterAssessment")
+        names = [item.name for item in self.assessments]
+        if len(names) != len(set(names)):
+            raise DomainValidationError("duplicate parameter assessment")
 
     @property
     def unsupported_parameters(self) -> tuple[str, ...]:
@@ -84,11 +99,13 @@ class CompatibilityReport:
 
     @property
     def is_confirmed_native(self) -> bool:
-        return all(item.level is SupportLevel.NATIVE for item in self.assessments)
+        return bool(self.assessments) and all(
+            item.level is SupportLevel.NATIVE for item in self.assessments
+        )
 
     @property
     def is_compatible(self) -> bool | None:
-        """False if explicitly unsupported, True if all native, else UNKNOWN."""
+        """False if explicitly unsupported, True if nonempty/all native, else UNKNOWN."""
         if self.unsupported_parameters:
             return False
         if self.is_confirmed_native:
