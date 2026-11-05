@@ -176,6 +176,20 @@ def test_timestamp_order_checked_for_direct_snapshots() -> None:
         )
 
 
+def test_invalid_reconstructed_snapshot_is_rejected_on_replace() -> None:
+    completed = _new(
+        state=InferenceRunState.COMPLETED, started_at=T0, finished_at=T2,
+        response=InferenceResponse(InferenceRunId("id"), TextOutput("done")),
+    )
+    with pytest.raises(DomainValidationError, match="response.run_id"):
+        replace(
+            completed,
+            response=InferenceResponse(InferenceRunId("foreign-run"), TextOutput("wrong")),
+        )
+    assert completed.response is not None
+    assert completed.response.run_id == completed.run_id
+
+
 def test_six_reconstructible_consistent_snapshots() -> None:
     identity = InferenceRunId("id")
     response = InferenceResponse(identity, TextOutput("done"))
