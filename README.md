@@ -1,5 +1,8 @@
 # PyLLMKit
 
+**Phase 3 / P3-G2 (2026-11-05): RESPONSE READY - GO technique avec reserves.** [PR #25](https://github.com/tawounfouet/pyllmkit/pull/25) integree sur [main SHA 783aa438](https://github.com/tawounfouet/pyllmkit/commit/783aa4381dc05a4b9bc431faab282f2bbe37d38d), [CI #42039312011 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42039312011): **545 tests / 94 %**, Python 3.11/3.12/3.13. [PV P3-G2](docs/quality/P3_G2_GATE_REVIEW.md), [API Response](docs/api/inference-response.md). L3.2 TextOutput/FinishReason/Usage/InferenceResponse qualifies, G3 Run a venir. **G3..M3 et publication 0.1.0a3 non qualifies; metadata 0.1.0a2 non publiee.**
+
+
 **Phase 3 / P3-G1 (2026-11-05): REQUEST READY - TECHNICAL GO WITH RESERVATIONS.** L3.1 integrated by [PR #23](https://github.com/tawounfouet/pyllmkit/pull/23), [main SHA f1ef04b8](https://github.com/tawounfouet/pyllmkit/commit/f1ef04b8ff1bb52a1ee17defa0ec8b20f84ac9d3), [CI #42036557565 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42036557565): 432 tests, 93% coverage, Python 3.11/3.12/3.13. [P3-G1 gate](docs/quality/P3_G1_GATE_REVIEW.md) and [Request API](docs/api/inference-request.md). ADR-021 option A and P3-AC-001..007 qualified. **Next: L3.2 Response Domain. G2..M3 not qualified. Source metadata 0.1.0a2, unpublished.**
 
 
