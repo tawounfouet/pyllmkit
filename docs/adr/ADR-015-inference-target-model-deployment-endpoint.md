@@ -1,6 +1,9 @@
 # ADR-015 - Cibles d'inference explicites
+> **Decision owner P3-G0 (2026-11-05)** : `ACCEPTED`, sous autorite du proprietaire dans la conversation du projet. Cette autorisation concerne les contrats et leur integration, **pas** une GitHub review externe ni la publication d'un package. 
+> **Arbitrage retenu :** Three discriminated Target variants (Model, Deployment, Endpoint); distinct typed IDs; no resolution or provider inferred.
 
-- Statut : **PROPOSED** (P3-BOOT, 2026-11-05).
+
+- **Statut : ACCEPTED** - adoption explicite par le proprietaire pour P3-G0 le 2026-11-05. Contrat de conception adopte, implementation Python non commencee.
 - Sources : plan Phase 3 section 5.1; INF-007/008/011/012, INV-001/002/003, architecture Serving.
 - Depends on : ADR-014.
 
