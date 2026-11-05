@@ -1,5 +1,8 @@
 # PyLLMKit - Roadmap
 
+**2026-11-05 - P3-G4 Inference JSON Codec & Quality : GO technique avec reserves.** [PR #29](https://github.com/tawounfouet/pyllmkit/pull/29) integree sur [main d72b1ce](https://github.com/tawounfouet/pyllmkit/commit/d72b1ce82a4a34c62888ad48b50bcf07537f83d1), [CI #42053906726 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42053906726), **779 tests / 95 %**, 3/3 Python versions. [PV G4](docs/quality/P3_G4_GATE_REVIEW.md). P3-AC-021..028 PASS; six etats Run round-trip verifies. Prochain lot L3.5, G5/M3 PENDING. Pas de version bump, tag ou publication.
+
+
 **2026-11-05 - P3-G3 Run Lifecycle Ready : GO technique avec reserves.** [PR #27](https://github.com/tawounfouet/pyllmkit/pull/27) integree sur [main 361791ff](https://github.com/tawounfouet/pyllmkit/commit/361791ff546612e10b407874c54014b1c0e1ce86), [CI #42044787119 SUCCESS](https://github.com/tawounfouet/pyllmkit/actions/runs/42044787119), 679 tests et 94 % de couverture. P3-AC-014..020 et P3-AC-029 PASS. [PV G3](docs/quality/P3_G3_GATE_REVIEW.md). Prochain L3.4 Inference JSON Codec v1, G4/G5/M3 PENDING, aucune publication.
 
 
