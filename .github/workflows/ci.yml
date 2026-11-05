@@ -55,6 +55,12 @@ jobs:
           python examples/20_stream_sync_async.py
           python examples/21_streaming_json_round_trip.py
           python examples/22_full_streaming_walkthrough.py
+          python examples/23_define_provider_deployment.py
+          python examples/24_registry_search.py
+          python examples/25_effective_capabilities_limits.py
+          python examples/26_deployment_resolution.py
+          python examples/27_offline_discovery_merge.py
+          python examples/28_full_registry_walkthrough.py
       - name: Build wheel and sdist
         run: python -m build
       - name: Wheel clean environment smoke
@@ -85,6 +91,12 @@ jobs:
           .venv-wheel/bin/python examples/20_stream_sync_async.py
           .venv-wheel/bin/python examples/21_streaming_json_round_trip.py
           .venv-wheel/bin/python examples/22_full_streaming_walkthrough.py
+          .venv-wheel/bin/python examples/23_define_provider_deployment.py
+          .venv-wheel/bin/python examples/24_registry_search.py
+          .venv-wheel/bin/python examples/25_effective_capabilities_limits.py
+          .venv-wheel/bin/python examples/26_deployment_resolution.py
+          .venv-wheel/bin/python examples/27_offline_discovery_merge.py
+          .venv-wheel/bin/python examples/28_full_registry_walkthrough.py
       - name: L3.1 clean wheel smoke
         run: |
           .venv-wheel/bin/python -c "from pyllmkit.domain import Content, InferenceRequest, Message, ModelId, ModelTarget, Role, TextContent; r=InferenceRequest(ModelTarget(ModelId('smoke')), (Message(Role.USER, Content((TextContent('x'),))),)); assert r.target.kind == 'model'"
@@ -121,3 +133,9 @@ jobs:
           .venv-sdist/bin/python examples/20_stream_sync_async.py
           .venv-sdist/bin/python examples/21_streaming_json_round_trip.py
           .venv-sdist/bin/python examples/22_full_streaming_walkthrough.py
+          .venv-sdist/bin/python examples/23_define_provider_deployment.py
+          .venv-sdist/bin/python examples/24_registry_search.py
+          .venv-sdist/bin/python examples/25_effective_capabilities_limits.py
+          .venv-sdist/bin/python examples/26_deployment_resolution.py
+          .venv-sdist/bin/python examples/27_offline_discovery_merge.py
+          .venv-sdist/bin/python examples/28_full_registry_walkthrough.py

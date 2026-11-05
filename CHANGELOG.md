@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased] - P6 Registry & Discovery candidate (not merged or released)
+
+- Architecture ADR-039..048, provider/deployment descriptifs, registries, recherches typées, capacités et limites effectives, résolution déterministe.
+- Offline Discovery & Merge : source statique, provenance UTC, conflit explicite, preview et commit atomique InMemory sous contrôle de version.
+- Integration & Quality : tests P6-AC-001..056, exemples 23..28, architecture fitness, compatibilité M1-M5, clean wheel/sdist.
+- PRs #59..#66 empilées ; aucun P6-G0..G7 ou M6 GO sur main à ce stade. Version 0.1.0a2 inchangée ; cible 0.1.0b2 non autorisée à publication. Issues #22, #35 et #36 en réserve.
+
 ## [Unreleased] - M5 Streaming Domain technically qualified (no release)
 
 - **GO technique avec réserves** pour Streaming hors réseau : [main@e733264c](https://github.com/tawounfouet/pyllmkit/commit/e733264cf914d1ada33dbd76df932102139533a4), [CI #42104049873](https://github.com/tawounfouet/pyllmkit/actions/runs/42104049873) SUCCESS (1048 tests cumulatifs, 96,08 % couverture avec branches, Python 3.11-3.13, Ruff, mypy, build et exemples wheel/sdist).
