@@ -1,8 +1,8 @@
 # Phase 3 - Proposition de contrat des primitives d'inference
 
-> Statut : **DRAFT / NOT IMPLEMENTED / NOT APPROVED**
+> Statut : **OWNER APPROVED DESIGN / NOT IMPLEMENTED** (2026-11-05). Gate P3-G0 formel attend la preuve CI exacte sur main.
 > Reference : plan docs/03_PYLLMKIT_PHASE_3_IMPLEMENTATION_PLAN.md (section 3 a 8)
-> Source de verite au G0 : ADR-014..021 apres arbitrage.
+> Source de verite au G0 : ADR-014..021 ACCEPTED et P3_G0_OWNER_ARCHITECTURE_APPROVAL.md.
 > Ceci est une specification, **pas un exemple copiable d'API deja disponible**.
 
 ## 1. Carte du domaine
@@ -88,14 +88,14 @@ class InferenceFailure:
 # Aucun moteur d'execution, stockage ou emission d'evenement.
 ~~~
 
-Les variantes ModelTarget, DeploymentTarget et EndpointTarget, la forme exacte des erreurs et le schema Run sont a faire valider par ADR avant tout code public. Les champs decimaux GenerationConfig sont proposes en **float exact** (0.0 valide, int 0 refuse) : arbitrage ADR-016. Les signatures ci-dessus ne specifient pas les constructeurs finaux. Les dataclasses ci-dessus ne specifient pas les constructeurs finaux.
+Les variantes ModelTarget, DeploymentTarget et EndpointTarget, les erreurs et le schema Run sont arbitres dans les ADR ACCEPTED; les APIs publiques restent a implementer. Les champs decimaux GenerationConfig sont adoptes en **float exact** (0.0 valide, int 0 refuse) : choix ADR-016 accepte. Les signatures ci-dessus ne specifient pas les constructeurs finaux. Les dataclasses ci-dessus ne sont pas une implementation existante; elles illustrent les contrats adoptes.
 
 ## 3. Validation a trois frontieres
 
 | Frontiere | Responsabilite | Autorisee a3 |
 |---|---|---|
 | Domain | Structure, types, invariants, transitions, codec | Oui, sans reseau |
-| Application future | Resolution et evaluation effective de compatibilite | Pas de resolver operationnel P0; evaluateur pur sur snapshot seulement si ADR-021 option A adoptee |
+| Application future | Resolution et evaluation effective de compatibilite | Pas de resolver operationnel P0; evaluateur pur sur snapshot explicitement fourni selon ADR-021 option A adoptee |
 | Adapter futur | Provider mapping, HTTP, auth, retries, SSRF, normalisation | Non |
 
 Un ImageContent est une modalite d'entree et non une preuve de VISION effective. Un target est une reference, pas une session de connexion.
@@ -114,7 +114,7 @@ STREAMING ne fournit pas de flux ni de StreamEvent en a3. L'horloge est fournie 
 ## 5. Seuils qualifiants
 
 - G0 : ADR adoptees et contrat revu, sans preuve implicite.
-- G1 : Target/Config/Request, tests offline et non-regression; AC-007 conditionnel a ADR-021 option A (sinon DEFERRED, jamais PASS fictif).
+- G1 : Target/Config/Request, tests offline et non-regression; AC-007 obligatoire : evaluator pur sur snapshot selon option A ADR-021; jamais PASS sans test.
 - G2 : Output/FinishReason/Usage/Response.
 - G3 : Run, transitions, mauvais run_id et horloge.
 - G4 : Codec JSON v1, tests stricts, securite, non-regression M1/M2.
