@@ -7,7 +7,7 @@
 - **Sources :** plan Phase 3 section 8; ADR-004, ADR-012, ADR-014..019, SER-001..006, PIR2-03/04/06.
 - **Portee :** mapping JSON de domaine, pas payload provider ni parser HTTP.
 
-## Decision proposee
+## Decision adoptee
 
 1. **INFERENCE_SCHEMA_VERSION = 1** est propre au namespace Inference. Model v1 et Interaction v1 restent inchanges.
 2. Trois enveloppes canoniques : **inference_request**, **inference_response**, **inference_run**. Chacune contient schema_version entier exact 1 (bool exclu) et object_type exact.
