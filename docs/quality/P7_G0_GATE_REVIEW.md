@@ -10,7 +10,7 @@
 - CI PR initiale : https://github.com/tawounfouet/pyllmkit/actions/runs/42130423432
 - Résultat CI initiale : completed/success; validate 3.11, 3.12 et 3.13 = success.
 - CI du commit final de statut ADR : à vérifier avant fusion.
-- CI main post-merge : non disponible lors de la rédaction; archiver par addendum sur SHA exact et ne pas prétendre un GO post-merge avant preuve.
+- CI main post-merge : https://github.com/tawounfouet/pyllmkit/actions/runs/42131476162 (completed/success), SHA exact main@0238c97b3d808f1c263de99e19e3858ecf58b02a.
 
 ## 1. Critères inspectés
 
@@ -33,3 +33,7 @@ Autorise seulement la préparation et l'implémentation de L7.1 (ports/fake offl
 ## 3. Post-merge evidence à compléter
 
 Ne déclarer P7-G0 définitivement clos qu'après CI réussie sur le SHA exact de main après fusion de PR #69. Documenter aussi toute exception, avis externe et mise à jour des risques. Ne jamais remplacer la vérification sur main par le seul PASS de la PR.
+
+## 4. Addendum après fusion, 2026-11-06
+
+PR #69 fusionnée dans main au commit `0238c97b3d808f1c263de99e19e3858ecf58b02a`; la CI push #42131476162 a terminé avec `success` sur ce même SHA. Cela clôt le contrôle post-fusion **technique** de P7-G0. Les réserves de sécurité et gouvernance restent ouvertes (#22, #35, #36 et absence de revue tierce).
