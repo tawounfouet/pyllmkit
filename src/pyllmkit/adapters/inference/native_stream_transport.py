@@ -228,8 +228,23 @@ class NativeProviderStreamingAdapter:
     ) -> tuple[str, bytes, dict[str, str], float]:
         if not self.allow_live:
             raise InvocationPortError("live_authorization_required")
-        target, body = _native_payload(self.config.profile, prepared)
         deployment = prepared.resolution.deployment
+        if self.config.profile is ProviderProfile.OLLAMA:
+            if (
+                deployment.runtime != "ollama"
+                or (
+                    deployment.provider_id is not None
+                    and deployment.provider_id.value != "ollama"
+                )
+            ):
+                raise InvocationPortError("adapter_connection_invalid")
+        elif (
+            prepared.context.provider_id is None
+            or prepared.context.provider_id.value != self.config.profile.value
+            or deployment.runtime != "cloud"
+        ):
+            raise InvocationPortError("adapter_connection_invalid")
+        target, body = _native_payload(self.config.profile, prepared)
         if self.config.profile is ProviderProfile.OLLAMA:
             if (
                 deployment.runtime != "ollama"

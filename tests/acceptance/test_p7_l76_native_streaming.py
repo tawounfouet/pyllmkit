@@ -661,7 +661,12 @@ def test_stream_decoder_rejects_invalid_native_data_and_limit(profile: ProviderP
     sync, _, _, _ = service(case)
     prepared = sync.open_stream(req, snap).prepared
     decoder = NativeStreamDecoder(profile, prepared)
-    with pytest.raises(Exception, match="provider_protocol_error"):
+    with pytest.raises(
+        Exception, match=(
+            "unsupported_provider_output" if profile is ProviderProfile.GOOGLE
+            else "provider_protocol_error"
+        ),
+    ):
         decoder.push("json", {"unexpected": "message"})
     with pytest.raises(Exception, match="stream_event_limit"):
         decoder._events = 100_000
