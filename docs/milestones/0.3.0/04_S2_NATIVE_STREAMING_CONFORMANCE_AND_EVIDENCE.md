@@ -43,8 +43,11 @@ licite a une defaillance.
 | `malformed` | 6 | 2 | 12 | JSON invalide => Failed(`provider_protocol_error`) |
 | `bad_mime` | 6 | 2 | 12 | MIME `text/plain` => Failed(`provider_protocol_error`) |
 | `rate_limited` | 6 | 2 | 12 | HTTP 429 => Failed(`rate_limited`) |
+| `post_terminal` | 6 | 2 | 12 | Rejet d'une trame ajoutee apres la fin native |
+| `overlong_line` | 6 | 2 | 12 | Limite de ligne avant le decoding JSON |
 | `pre_cancelled` | 6 | 2 | 12 | Annulation locale, aucun transport contacte |
-| **Total** | | | **72** | Protocoles M5 et fail-closed |
+| `ollama_json_mime` | 1 | 2 | 2 | MIME JSON permis par Ollama uniquement |
+| **Total** | | | **98** | Protocoles M5 et fail-closed |
 
 Les events doivent toujours utiliser le RunId de la session et des
 sequences contigues commencant a zero. La suite refuse toute
@@ -81,9 +84,10 @@ la presence et l'integrite des artefacts.
 ## 5. Périmetre de cette tranche et sorties attendues
 
 - [x] Six fixtures SSE/NDJSON documentees et versionnees.
-- [x] Tests de complétion, EOF, MIME, JSON, 429, pre-annulation.
+- [x] Tests de completion, EOF, MIME, JSON, HTTP 429, trames post-terminal,
+  limites de lignes et pre-annulation (98 cas).
 - [x] Reporter de resultats hors ligne (code et workflow).
-- [ ] Verifier CI SHA exact et trois artefacts JSON/MD non vides.
+- [ ] Verifier CI HEAD final et trois artefacts JSON/MD non vides (campagne en cours).
 - [ ] Verifier la coherence `tested_sha` / `head_sha` / matrix Python.
 - [ ] Ajouter les scenarios de cancellation pendant stream et
   `Task.cancel()` en conditions de transport simulées.
