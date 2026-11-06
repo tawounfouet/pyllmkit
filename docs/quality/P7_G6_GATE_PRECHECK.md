@@ -43,7 +43,7 @@ The additional `test_p7_l76_security_lifecycle.py` suite exercises:
   which must never produce a successful public terminal event.
 
 The native decoder rejects these additional unsupported payloads explicitly.
-The G6 coverage job must run both acceptance files and meet at least 80 percent
+The G6 coverage job must run both acceptance files and meet at least 90 percent
 branch coverage of the streaming application, transport and mapper together.
 
 ## Qualification procedure
@@ -51,7 +51,7 @@ branch coverage of the streaming application, transport and mapper together.
 - [ ] CI succeeds on the final exact PR head SHA (push and pull_request workflows).
 - [ ] Python 3.11, 3.12 and 3.13 pass offline tests.
 - [ ] Ruff and mypy strict pass.
-- [ ] Dedicated G6 branch coverage reaches >=80% with no omitted security tests.
+- [ ] Dedicated G6 branch coverage reaches >=90% with no omitted security tests.
 - [ ] Wheel, sdist and installed-wheel smoke checks pass.
 - [ ] Independent technical review attests provider wire mapping and M5 behavior.
 - [ ] Independent security review assesses transport boundary and secret handling.
