@@ -46,6 +46,7 @@ _REQUIRED: dict[str, int] = {
     "test_cloud_valid_endpoint_still_works_with_synthetic_credential": 10,
     "test_openai_config_mutated_after_construction_is_rejected_at_call": 2,
     "test_ollama_mutated_destination_is_rejected_as_noncanonical": 8,
+    "test_expired_invocation_deadline_prevents_native_egress": 12,
 }
 _ALLOWED = ("PASS", "FAIL", "NOT_APPLICABLE", "UNSUPPORTED", "BLOCKED")
 _FAILURE_TYPE = re.compile(r"[A-Za-z0-9_.]{1,100}\Z")
@@ -82,6 +83,8 @@ def _operation(method: str, mode: str) -> str:
     if method.startswith("test_cloud_"):
         return "cloud_post_async" if mode == "async" else "cloud_post_sync"
     if method.startswith(("test_openai_config_mutated", "test_ollama_mutated_destination")):
+        return "ainvoke" if mode == "async" else "invoke"
+    if method.startswith("test_expired_invocation_deadline_prevents_native_egress"):
         return "ainvoke" if mode == "async" else "invoke"
     if method.startswith(("test_cancel_after_first_delta", "test_external_async_task_cancel", "test_cancel_after_completed_stream")):
         return "astream_prepared" if mode == "async" else "stream_prepared"
@@ -136,7 +139,8 @@ def _records(xml_file: Path) -> list[dict[str, object]]:
                 }
                 else "v030-s6-egress-synthetic-v1"
                 if method.startswith(("test_cloud_", "test_openai_config_mutated",
-                                      "test_ollama_mutated_destination"))
+                                      "test_ollama_mutated_destination",
+                                      "test_expired_invocation_deadline"))
                 else "v030-s2-http-synthetic-v1"
             ),
             "status": status,
