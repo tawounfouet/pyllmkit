@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import re
 
+from pyllmkit.adapters.inference.strict_json import decode_provider_json_object
 from pyllmkit.application.inference import InvocationPortError, PreparedInvocation
 from pyllmkit.domain.capabilities import SupportLevel
 from pyllmkit.domain.inference import (
@@ -153,7 +154,7 @@ def decode_anthropic_messages_response(
     if type(raw) is not bytes or type(prepared) is not PreparedInvocation:
         raise InvocationPortError("provider_protocol_error")
     try:
-        response = json.loads(raw, object_pairs_hook=_unique_json_fields)
+        response = decode_provider_json_object(raw)
     except (UnicodeError, ValueError, TypeError, RecursionError):
         raise InvocationPortError("provider_protocol_error") from None
     if (
