@@ -35,6 +35,9 @@ _REQUIRED: dict[str, int] = {
     "test_adapter_rejects_non_native_assessment_even_when_prepared": 72,
     "test_adapter_rejects_missing_assessment_without_silent_acceptance": 18,
     "test_application_refuses_non_native_support_before_adapter": 24,
+    "test_supported_multiturn_text_history_is_lossless": 6,
+    "test_history_role_restrictions_are_explicit_not_coerced": 30,
+    "test_native_response_usage_and_finish_semantics": 60,
 }
 _ALLOWED = ("PASS", "FAIL", "NOT_APPLICABLE", "UNSUPPORTED", "BLOCKED")
 _FAILURE_TYPE = re.compile(r"[A-Za-z0-9_.]{1,100}\Z")
