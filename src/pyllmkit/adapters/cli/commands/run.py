@@ -1,5 +1,7 @@
 """Typer command for blocking text inference (run)."""
 
+import json
+from datetime import UTC, datetime
 from typing import Annotated
 
 import typer
@@ -77,11 +79,17 @@ def run_command(
         bool,
         typer.Option("--mock/--live", help="Exécution simulée hors ligne (par défaut: simulation)"),
     ] = True,
+    store_content: Annotated[
+        bool,
+        typer.Option(
+            "--store-content",
+            help="Consentement explicite pour conserver prompts, instruction et réponse en SQLite",
+        ),
+    ] = False,
 ) -> None:
     """Exécuter une inférence textuelle bloquante avec rapport d'usage."""
     cfg = get_config()
-    if mock and cfg.defaults.live:
-        mock = False
+    # Live must be requested with --live on this invocation, never inherited from config.
     if model == "gpt-4o" and cfg.defaults.model:
         model = cfg.defaults.model
     if system is None and cfg.defaults.system_prompt:
@@ -118,10 +126,7 @@ def run_command(
 
         # Enregistrement silencieux dans l'historique local pour FinOps / Evals / Observabilité
         try:
-            from datetime import UTC, datetime
-            import json
-
-            store = SqliteRunStore()
+            store = SqliteRunStore(store_content=store_content)
             dur_ms = None
             if execution.run.started_at and execution.run.finished_at:
                 dur_ms = (
@@ -138,7 +143,7 @@ def run_command(
                 resp_text = execution.response.output.text
                 if execution.response.finish_reason:
                     raw_code = execution.response.finish_reason.code.value
-                    finish = "stop" if raw_code == "unknown" and execution.run.state.value == "completed" else raw_code
+                    finish = raw_code
                 if execution.response.usage:
                     in_tok = execution.response.usage.input_tokens
                     out_tok = execution.response.usage.output_tokens
