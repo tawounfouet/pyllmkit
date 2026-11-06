@@ -67,6 +67,9 @@ jobs:
       - name: v0.3.0 S2 offline conformance evidence
         run: |
           python tools/v030_conformance_report.py --output-dir artifacts/v030-conformance --head-sha "${{ github.event.pull_request.head.sha || github.sha }}" --tested-sha "${{ github.sha }}"
+      - name: v0.3.0 S8 independent offline evidence integrity
+        run: |
+          python tools/v030_s8_integrated_evidence.py --evidence-json artifacts/v030-conformance/conformance.json --output-dir artifacts/v030-conformance --head-sha "${{ github.event.pull_request.head.sha || github.sha }}" --tested-sha "${{ github.sha }}"
       - name: Upload v0.3.0 conformance evidence
         if: always()
         uses: actions/upload-artifact@v4
