@@ -99,15 +99,15 @@ ADR-054 et ADR-055 ; programme de S0 dans le plan `0.3.0`.
 
 | ID | Classe | Priorite | Constat prouve ou risque | Traitement |
 |---|---|---|---|---|
-| GAP-01 | TEST_COVERAGE | P0 | `test_p7_six_provider_registry.py` instancie des **fakes**, pas les six transports natifs | S2 : harnais MockTransport |
-| GAP-02 | CONTRACT_DIFFERENCE | P0 | Restrictions de roles et exigences de `max_output_tokens` different entre codecs | S1/S4 : profil commun + limitations |
-| GAP-03 | VALIDATION_PARITY | P0 | Set de parametres natifs et methode de verification des snapshots different selon encoders | S1/S4 : scenarios stricts sans champ omis |
-| GAP-04 | ERROR_TAXONOMY | P0 | `normalize_http_failure` existe ; equivalence des erreurs **tous** providers pas encore testee | S3 : table de decision + tests |
-| GAP-05 | STREAMING | P0 | Le transport en streaming sync reel est refuse faute de deadline preemptive | S5/S6 : conserver fail-closed ou preuve |
-| GAP-06 | SECURITY_GOVERNANCE | P0 | `main` non protegee et egress DNS/TLS live non atteste | #22, #36, #81 |
-| GAP-07 | RELEASE_VERSION | P0 S9 | Package toujours `0.1.0a2` ; cible `0.3.0` non qualifiee | #35, S8/S9 |
-| GAP-08 | EVIDENCE | P1 | Pas de rapport `provider x mode x scenario` sur SHA et Python exact | S2/S8 : report JSON/MD |
-| GAP-09 | CI_GATE | P0 | Une ancienne CI P7 verte signalait une couverture L7.6 sous seuil ; corrigee #80 | S8 : audit des codes de sortie et log |
+| GAP-01 | TEST_COVERAGE | P0 | `test_p7_six_provider_registry.py` instancie des **fakes**, pas les six transports natifs | [#84](https://github.com/tawounfouet/pyllmkit/issues/84), S2 |
+| GAP-02 | CONTRACT_DIFFERENCE | P0 | Restrictions de roles et exigences de `max_output_tokens` different entre codecs | [#83](https://github.com/tawounfouet/pyllmkit/issues/83), [#86](https://github.com/tawounfouet/pyllmkit/issues/86) |
+| GAP-03 | VALIDATION_PARITY | P0 | Set de parametres natifs et methode de verification des snapshots different selon encoders | [#83](https://github.com/tawounfouet/pyllmkit/issues/83), [#86](https://github.com/tawounfouet/pyllmkit/issues/86) |
+| GAP-04 | ERROR_TAXONOMY | P0 | `normalize_http_failure` existe ; equivalence des erreurs **tous** providers pas encore testee | [#85](https://github.com/tawounfouet/pyllmkit/issues/85) |
+| GAP-05 | STREAMING | P0 | Le transport en streaming sync reel est refuse faute de deadline preemptive | [#87](https://github.com/tawounfouet/pyllmkit/issues/87), [#81](https://github.com/tawounfouet/pyllmkit/issues/81) |
+| GAP-06 | SECURITY_GOVERNANCE | P0 | `main` non protegee et egress DNS/TLS live non atteste | [#22](https://github.com/tawounfouet/pyllmkit/issues/22), [#36](https://github.com/tawounfouet/pyllmkit/issues/36), [#81](https://github.com/tawounfouet/pyllmkit/issues/81) |
+| GAP-07 | RELEASE_VERSION | P0 S9 | Package toujours `0.1.0a2` ; cible `0.3.0` non qualifiee | [#35](https://github.com/tawounfouet/pyllmkit/issues/35), S8/S9 |
+| GAP-08 | EVIDENCE | P1 | Pas de rapport `provider x mode x scenario` sur SHA et Python exact | [#84](https://github.com/tawounfouet/pyllmkit/issues/84), S2/S8 |
+| GAP-09 | CI_GATE | P0 | Une ancienne CI P7 verte signalait une couverture L7.6 sous seuil ; corrigee #80 | [PR #80](https://github.com/tawounfouet/pyllmkit/pull/80), suivi S8 |
 
 Une divergence est **a investiguer**, pas necessairement un bug.
 Ne pas creer de `PASS` transversaux a partir d'un inventaire de classes.
@@ -119,8 +119,8 @@ Ne pas creer de `PASS` transversaux a partir d'un inventaire de classes.
 - [x] Protocols et surfaces publiques repertories.
 - [x] Etat de la CI et limites de qualification archive.
 - [x] Carte d'invariants et matrice de risques tracees.
-- [ ] Registre GitHub des gaps lie a des issues.
-- [ ] Validation sur SHA exact de la PR S0 sur Python 3.11-3.13.
+- [x] Registre GitHub des gaps lie aux issues #22, #35, #36, #81, #83-#87 et PR #80.
+- [x] Validation initiale sur PR #82 SHA `baf71e4609512f43dafaa99cd68ea977b85d9b2c` : [CI #42214251711](https://github.com/tawounfouet/pyllmkit/actions/runs/42214251711), Python 3.11-3.13 SUCCESS et **1 929 tests** chacun. Une revalidation du HEAD final reste necessaire.
 - [ ] Revue independante de l'ADR-059 et du profil S1.
 - [ ] Gate S0-G0 formellement prononce ; aucun GO release implicite.
 
