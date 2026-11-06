@@ -55,6 +55,9 @@ jobs:
       - name: P7 L7.5d Mistral Chat mapping and adapter branch coverage
         run: |
           python -m pytest -q tests/acceptance/test_p7_l75d_mistral_chat.py --cov=pyllmkit.adapters.inference.mistral_chat --cov=pyllmkit.adapters.inference.mistral_chat_mapping --cov-branch --cov-report=term-missing --cov-fail-under=95
+      - name: P7 L7.6 six-provider stream mapping and transport branch coverage
+        run: |
+          python -m pytest -q tests/acceptance/test_p7_l76_native_streaming.py --cov=pyllmkit.adapters.inference.native_stream_mapping --cov=pyllmkit.adapters.inference.native_stream_transport --cov=pyllmkit.application.inference.streaming --cov-branch --cov-report=term-missing --cov-fail-under=75
       - name: Offline examples
         run: |
           python examples/01_define_model.py
@@ -95,6 +98,7 @@ jobs:
           python examples/36_xai_responses_mock.py
           python examples/37_mistral_chat_mock.py
           python examples/38_six_provider_offline_registry.py
+          python examples/39_native_streaming_contracts.py
       - name: Build wheel and sdist
         run: python -m build
       - name: Wheel clean environment smoke
