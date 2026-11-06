@@ -35,6 +35,7 @@ from tests.conformance.stream_fixtures import (
 
 _OUTCOMES = (
     "complete", "truncated", "malformed", "bad_mime", "rate_limited",
+    "post_terminal", "overlong_line",
 )
 
 
@@ -79,6 +80,12 @@ def _collect(provider: str, scenario: str, *, async_mode: bool) -> tuple[
             )
         if scenario == "malformed":
             body = malformed_wire(provider)
+        elif scenario == "overlong_line":
+            prefix = b"" if provider == "ollama" else b"data: "
+            body = prefix + b"x" * 262_145 + b"\n\n"
+        elif scenario == "post_terminal":
+            suffix = b"{}\n" if provider == "ollama" else b"data: {}\n\n"
+            body = stream_wire(provider) + suffix
         else:
             body = stream_wire(provider, truncate=scenario == "truncated")
         return httpx.Response(
@@ -136,6 +143,8 @@ def test_native_stream_conformance(
             "malformed": "provider_protocol_error",
             "bad_mime": "provider_protocol_error",
             "rate_limited": "rate_limited",
+            "post_terminal": "provider_protocol_error",
+            "overlong_line": "stream_wire_limit",
         }
         assert events[-1].reason_code == expected[scenario]
         assert "SYNTHETIC_BODY_MUST_NOT_APPEAR_IN_ERRORS" not in str(events[-1])
@@ -174,3 +183,36 @@ def test_pre_cancelled_native_session_never_contacts_transport(
     assert events[1].reason_code == "user_cancelled"
     assert [event.sequence for event in events] == [0, 1]
     assert all(event.run_id == session.run_id for event in events)
+
+
+
+@pytest.mark.parametrize("async_mode", (False, True), ids=("sync", "async"))
+def test_ollama_json_content_type_is_explicitly_supported(async_mode: bool) -> None:
+    """Ollama native JSONL accepts JSON MIME; SSE providers do not."""
+    calls: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(request)
+        return httpx.Response(
+            200, headers={"content-type": "application/json"},
+            content=stream_wire("ollama"),
+        )
+
+    case = prepared("ollama")
+    port = _stream_adapter("ollama", handler=handler)
+    if async_mode:
+        session = AsyncStreamingSession(case, port)
+
+        async def run() -> list[StreamEvent]:
+            return [event async for event in session]
+
+        events = asyncio.run(run())
+    else:
+        session = StreamingSession(case, port)
+        events = list(session)
+
+    assert len(calls) == 1
+    assert isinstance(events[-1], ResponseCompleted)
+    assert [event.delta for event in events if isinstance(event, TextDelta)] == [
+        "He", "llo",
+    ]
