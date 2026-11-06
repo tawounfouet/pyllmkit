@@ -6,6 +6,8 @@ that DNS/peer-IP/TLS are qualified by a MockTransport.
 """
 
 import asyncio
+from dataclasses import replace
+from datetime import UTC, datetime, timedelta
 
 import httpx
 import pytest
@@ -45,7 +47,7 @@ def _normal_url(provider: str, base: str) -> str:
 
 @pytest.mark.parametrize("provider", _CLOUD_PROVIDERS)
 @pytest.mark.parametrize("async_mode", (False, True), ids=("sync", "async"))
-@pytest.mark.parametrize("destination", _BAD_DESTINATIONS)
+@pytest.mark.parametrize("destination", _BAD_DESTINATIONS, ids=("external", "loopback", "subdomain", "userinfo"))
 def test_cloud_rejects_any_unapproved_endpoint_before_secret_and_transport(
     provider: str, async_mode: bool, destination: str,
 ) -> None:
@@ -158,7 +160,7 @@ _OLLAMA_MALFORMED_URLS = (
 )
 
 
-@pytest.mark.parametrize("destination", _OLLAMA_MALFORMED_URLS)
+@pytest.mark.parametrize("destination", _OLLAMA_MALFORMED_URLS, ids=("userinfo", "query", "wrong_scheme", "fragment"))
 @pytest.mark.parametrize("async_mode", (False, True), ids=("sync", "async"))
 def test_ollama_mutated_destination_is_rejected_as_noncanonical(
     destination: str, async_mode: bool,
@@ -182,4 +184,34 @@ def test_ollama_mutated_destination_is_rejected_as_noncanonical(
         else:
             native.invoke(prepared("ollama"))
     assert error.value.code == "adapter_connection_invalid"
+    assert calls == []
+
+
+
+@pytest.mark.parametrize("provider", (*_CLOUD_PROVIDERS, "ollama"))
+@pytest.mark.parametrize("async_mode", (False, True), ids=("sync", "async"))
+def test_expired_invocation_deadline_prevents_native_egress(
+    provider: str, async_mode: bool,
+) -> None:
+    calls: list[httpx.Request] = []
+
+    def capture(request: httpx.Request) -> httpx.Response:
+        calls.append(request)
+        return httpx.Response(200, json={"synthetic": "unexpected"})
+
+    native = adapter(
+        provider, transport=httpx.MockTransport(capture), async_mode=async_mode,
+    )
+    base = prepared(provider)
+    expired = replace(
+        base, context=replace(
+            base.context, deadline=datetime.now(UTC) - timedelta(seconds=5),
+        ),
+    )
+    with pytest.raises(InvocationPortError, match="provider_timeout") as failure:
+        if async_mode:
+            asyncio.run(native.ainvoke(expired))
+        else:
+            native.invoke(expired)
+    assert failure.value.code == "provider_timeout"
     assert calls == []
