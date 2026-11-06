@@ -31,5 +31,13 @@ def offline_domain_test_environment(monkeypatch: pytest.MonkeyPatch) -> None:
         "AWS_ACCESS_KEY_ID",
         "AWS_SECRET_ACCESS_KEY",
         "AZURE_OPENAI_API_KEY",
+        "PYLLMKIT_HISTORY_DB",
     ):
         monkeypatch.delenv(key, raising=False)
+
+    # Isoler les tests de la configuration globale de l'utilisateur
+    monkeypatch.setenv("PYLLMKIT_CONFIG", "/dev/null")
+
+    from pyllmkit.adapters.cli import config as cli_config
+
+    cli_config._ACTIVE_CONFIG = None

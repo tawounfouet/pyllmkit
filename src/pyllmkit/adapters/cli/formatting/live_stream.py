@@ -3,8 +3,6 @@
 import asyncio
 import time
 from dataclasses import dataclass
-from dataclasses import dataclass
-import time
 from typing import Any
 
 from rich.console import Console
@@ -101,6 +99,8 @@ def consume_and_render_stream(
                 elif isinstance(event, ResponseCompleted):
                     if event.finish_reason is not None:
                         finish_reason = event.finish_reason.code.value
+                        if finish_reason == "unknown":
+                            finish_reason = "stop"
                     live.update(
                         Panel(
                             Text(accumulated_text),
@@ -190,6 +190,8 @@ async def aconsume_and_render_stream(
                 elif isinstance(event, ResponseCompleted):
                     if event.finish_reason is not None:
                         finish_reason = event.finish_reason.code.value
+                        if finish_reason == "unknown":
+                            finish_reason = "stop"
                     live.update(
                         Panel(
                             Text(accumulated_text),

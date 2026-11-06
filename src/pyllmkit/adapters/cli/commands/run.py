@@ -21,6 +21,7 @@ from pyllmkit.domain.models import ModelId
 from pyllmkit.domain.registry.selection import DeploymentResolutionError
 
 from ..catalog import create_reference_catalog
+from ..config import get_config
 from ..console import console
 from ..formatting.errors import build_error_panel
 from ..formatting.panels import build_response_panel, build_usage_panel
@@ -78,6 +79,18 @@ def run_command(
     ] = True,
 ) -> None:
     """Exécuter une inférence textuelle bloquante avec rapport d'usage."""
+    cfg = get_config()
+    if mock and cfg.defaults.live:
+        mock = False
+    if model == "gpt-4o" and cfg.defaults.model:
+        model = cfg.defaults.model
+    if system is None and cfg.defaults.system_prompt:
+        system = cfg.defaults.system_prompt
+    if temperature is None and cfg.defaults.temperature is not None:
+        temperature = cfg.defaults.temperature
+    if max_tokens is None and cfg.defaults.max_tokens is not None:
+        max_tokens = cfg.defaults.max_tokens
+
     catalog = create_reference_catalog()
     service = create_cli_inference_service(catalog, mock=mock)
 
@@ -117,9 +130,9 @@ def run_command(
         # Enregistrement silencieux dans l'historique local pour FinOps / Evals / Observabilité
         try:
             from datetime import UTC, datetime
-            from pyllmkit.domain.inference import DeploymentId
 
             from pyllmkit.domain.inference import DeploymentId
+
 
             store = SqliteRunStore()
             dur_ms = None
@@ -137,7 +150,8 @@ def run_command(
             if execution.response:
                 resp_text = execution.response.output.text
                 if execution.response.finish_reason:
-                    finish = execution.response.finish_reason.code.value
+                    raw_code = execution.response.finish_reason.code.value
+                    finish = "stop" if raw_code == "unknown" and execution.run.state.value == "completed" else raw_code
                 if execution.response.usage:
                     in_tok = execution.response.usage.input_tokens
                     out_tok = execution.response.usage.output_tokens
@@ -156,6 +170,20 @@ def run_command(
                 if deployment and deployment.provider_id
                 else ("ollama" if "llama" in model else "openai")
             )
+
+            # Formatage de l'échange complet au standard ChatML / OpenAI JSONL pour Fine-Tuning
+            import json
+
+            messages_payload = [
+                {
+                    "role": m.role.value,
+                    "content": getattr(m.content.parts[0], "text", "") if m.content.parts else "",
+                }
+                for m in request.messages
+            ]
+            if resp_text:
+                messages_payload.append({"role": "assistant", "content": resp_text})
+            msgs_json = json.dumps(messages_payload, ensure_ascii=False)
 
             rec = RunRecord(
                 run_id=execution.run.run_id.value,
@@ -177,6 +205,7 @@ def run_command(
                 max_tokens=max_tokens,
                 system_prompt=system,
                 mode="run",
+                messages_json=msgs_json,
             )
             store.record_run(rec)
         except Exception:

@@ -22,6 +22,7 @@ from pyllmkit.domain.models import ModelId
 from pyllmkit.domain.registry.selection import DeploymentResolutionError
 
 from ..catalog import create_reference_catalog
+from ..config import get_config
 from ..console import console
 from ..formatting.errors import build_error_panel
 from ..formatting.live_stream import aconsume_and_render_stream
@@ -78,6 +79,18 @@ def stream_command(
     ] = True,
 ) -> None:
     """Consommer une inférence en direct avec affichage incrémental (streaming)."""
+    cfg = get_config()
+    if mock and cfg.defaults.live:
+        mock = False
+    if model == "gpt-4o" and cfg.defaults.model:
+        model = cfg.defaults.model
+    if system is None and cfg.defaults.system_prompt:
+        system = cfg.defaults.system_prompt
+    if temperature is None and cfg.defaults.temperature is not None:
+        temperature = cfg.defaults.temperature
+    if max_tokens is None and cfg.defaults.max_tokens is not None:
+        max_tokens = cfg.defaults.max_tokens
+
     catalog = create_reference_catalog()
     service = create_cli_async_streaming_service(catalog, mock=mock)
 
@@ -106,6 +119,7 @@ def stream_command(
 
         # Enregistrement dans l'historique local pour FinOps / Evals / Observabilité
         try:
+            import json
             from datetime import UTC, datetime
 
             from ..storage import RunRecord, SqliteRunStore
@@ -122,6 +136,18 @@ def stream_command(
             tot_tok = summary.usage.total_tokens if summary.usage else None
             cached_tok = summary.usage.cached_input_tokens if summary.usage else None
             reas_tok = summary.usage.reasoning_tokens if summary.usage else None
+
+            # Formatage ChatML / OpenAI JSONL pour Fine-Tuning
+            messages_payload = [
+                {
+                    "role": m.role.value,
+                    "content": getattr(m.content.parts[0], "text", "") if m.content.parts else "",
+                }
+                for m in request.messages
+            ]
+            if summary.text:
+                messages_payload.append({"role": "assistant", "content": summary.text})
+            msgs_json = json.dumps(messages_payload, ensure_ascii=False)
 
             rec = RunRecord(
                 run_id=session.run_id.value,
@@ -143,52 +169,7 @@ def stream_command(
                 max_tokens=max_tokens,
                 system_prompt=system,
                 mode="stream",
-            )
-            store.record_run(rec)
-        except Exception:
-            pass
-
-        if summary.exit_code != 0:
-            raise typer.Exit(code=summary.exit_code)
-
-        # Enregistrement dans l'historique local pour FinOps / Evals / Observabilité
-        try:
-            from datetime import UTC, datetime
-            from ..storage import RunRecord, SqliteRunStore
-
-            store = SqliteRunStore()
-            deployment = catalog.deployments.get(session.prepared.resolution.deployment.id)
-            prov_name = (
-                deployment.provider_id.value
-                if deployment and deployment.provider_id
-                else ("ollama" if "llama" in model else "openai")
-            )
-            in_tok = summary.usage.input_tokens if summary.usage else None
-            out_tok = summary.usage.output_tokens if summary.usage else None
-            tot_tok = summary.usage.total_tokens if summary.usage else None
-            cached_tok = summary.usage.cached_input_tokens if summary.usage else None
-            reas_tok = summary.usage.reasoning_tokens if summary.usage else None
-
-            rec = RunRecord(
-                run_id=session.run_id.value,
-                model_id=model,
-                provider=f"{prov_name} (mock)" if mock else prov_name,
-                prompt=prompt,
-                response_text=summary.text,
-                state="completed" if summary.exit_code == 0 else "failed",
-                finish_reason=summary.finish_reason,
-                input_tokens=in_tok,
-                output_tokens=out_tok,
-                duration_ms=summary.duration_ms,
-                created_at=datetime.now(UTC).isoformat(),
-                total_tokens=tot_tok,
-                cached_tokens=cached_tok,
-                reasoning_tokens=reas_tok,
-                ttft_ms=summary.ttft_ms,
-                temperature=temperature,
-                max_tokens=max_tokens,
-                system_prompt=system,
-                mode="stream",
+                messages_json=msgs_json,
             )
             store.record_run(rec)
         except Exception:

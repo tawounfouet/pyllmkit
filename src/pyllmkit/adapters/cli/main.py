@@ -1,11 +1,13 @@
 """Main Typer application entrypoint for PyLLMKit CLI."""
 
 from importlib.metadata import PackageNotFoundError, version
+from pathlib import Path
 from typing import Annotated
 
 import typer
 
 from .commands import (
+    config_app,
     deployments_app,
     models_app,
     providers_app,
@@ -15,6 +17,7 @@ from .commands import (
     stream_command,
     tools_app,
 )
+from .config import load_and_apply_config
 from .console import console
 
 app = typer.Typer(
@@ -25,6 +28,7 @@ app = typer.Typer(
 )
 
 # Enregistrement des sous-commandes d'inspection et de catalogue
+app.add_typer(config_app, name="config")
 app.add_typer(providers_app, name="providers")
 app.add_typer(models_app, name="models")
 app.add_typer(deployments_app, name="deployments")
@@ -65,5 +69,14 @@ def main(
             is_eager=True,
         ),
     ] = False,
+    config: Annotated[
+        Path | None,
+        typer.Option(
+            "--config",
+            "-c",
+            help="Chemin vers un fichier de configuration alternatif (.json, .yaml, .toml).",
+        ),
+    ] = None,
 ) -> None:
     """CLI de gestion, inspection et inférence PyLLMKit."""
+    load_and_apply_config(config)

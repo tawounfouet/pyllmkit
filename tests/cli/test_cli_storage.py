@@ -150,3 +150,92 @@ def test_cli_stream_records_to_history(tmp_path: Path, monkeypatch: pytest.Monke
     assert runs[0].max_tokens == 100
 
 
+def test_cli_runs_inspect_json_and_export(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Verify runs inspect --json and runs export command for Fine-Tuning ChatML."""
+    db_file = tmp_path / "export_history.db"
+    monkeypatch.setenv("PYLLMKIT_HISTORY_DB", str(db_file))
+
+    # Run one inference with system prompt
+    res_run = runner.invoke(
+        app,
+        ["run", "Quelle heure est-il ?", "--system", "Tu es une horloge suisse."],
+    )
+    assert res_run.exit_code == 0
+
+    store = SqliteRunStore(db_file)
+    runs = store.list_runs()
+    assert len(runs) == 1
+    run_id = runs[0].run_id
+
+    # Test inspect --json
+    res_json = runner.invoke(app, ["runs", "inspect", run_id, "--json"])
+    assert res_json.exit_code == 0
+    assert '"run_id":' in res_json.output
+    assert '"role": "system"' in res_json.output
+    assert '"role": "user"' in res_json.output
+    assert '"role": "assistant"' in res_json.output
+
+    # Test export to stdout
+    res_exp_stdout = runner.invoke(app, ["runs", "export"])
+    assert res_exp_stdout.exit_code == 0
+    assert '{"messages":' in res_exp_stdout.output
+
+    # Test export to file
+    out_file = tmp_path / "dataset.jsonl"
+    res_exp_file = runner.invoke(app, ["runs", "export", "-o", str(out_file)])
+    assert res_exp_file.exit_code == 0
+    assert out_file.exists()
+    content = out_file.read_text(encoding="utf-8")
+    assert '{"messages":' in content
+    assert "Tu es une horloge suisse." in content
+
+
+def test_cli_finish_reason_normalization(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Verify that a completed run with UNKNOWN finish reason is normalized to stop in panel and database."""
+    from unittest.mock import MagicMock
+
+    from pyllmkit.domain.inference import (
+        FinishReason,
+        FinishReasonCode,
+        InferenceResponse,
+        InferenceRunId,
+        TextOutput,
+    )
+
+    db_file = tmp_path / "norm_history.db"
+    monkeypatch.setenv("PYLLMKIT_HISTORY_DB", str(db_file))
+
+    mock_service = MagicMock()
+    mock_run = MagicMock()
+    mock_run.run_id.value = "norm-run-123"
+    mock_run.state.value = "completed"
+    mock_run.failure = None
+    mock_run.started_at = None
+    mock_run.finished_at = None
+
+    mock_resp = InferenceResponse(
+        run_id=InferenceRunId("norm-run-123"),
+        output=TextOutput("Réponse test"),
+        finish_reason=FinishReason(FinishReasonCode.UNKNOWN),
+    )
+    mock_exec = MagicMock()
+    mock_exec.run = mock_run
+    mock_exec.response = mock_resp
+    mock_service.invoke.return_value = mock_exec
+
+    monkeypatch.setattr(
+        "pyllmkit.adapters.cli.commands.run.create_cli_inference_service",
+        lambda _cat, mock=True: mock_service,
+    )
+
+    res = runner.invoke(app, ["run", "Test normalisation"])
+    assert res.exit_code == 0
+    assert "Finish Reason : stop" in res.output
+
+    store = SqliteRunStore(db_file)
+    runs = store.list_runs()
+    assert len(runs) == 1
+    assert runs[0].finish_reason == "stop"
+
+
+

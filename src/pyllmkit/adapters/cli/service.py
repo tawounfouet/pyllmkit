@@ -28,7 +28,13 @@ from pyllmkit.application.inference import (
     StreamingInferenceService,
 )
 from pyllmkit.application.registry import DeploymentResolver
-from pyllmkit.domain.inference import DeploymentId, FinishReason, FinishReasonCode
+from pyllmkit.domain.inference import (
+    DeploymentId,
+    FinishReason,
+    FinishReasonCode,
+    InferenceResponse,
+    TextOutput,
+)
 from pyllmkit.domain.streaming import (
     ResponseCompleted,
     ResponseStarted,
@@ -43,19 +49,49 @@ from pyllmkit.protocols.inference import (
 
 
 @dataclass(slots=True)
+class DynamicCliFakeInferenceAdapter:
+    """Mock adapter reflecting the requested target model in offline mode."""
+
+    def invoke(self, prepared: PreparedInvocation) -> InferenceResponse:
+        model_name = getattr(prepared, "native_model_alias", None) or (
+            prepared.resolution.deployment.model_id.value if prepared.resolution else "unknown"
+        )
+        prov_name = (
+            prepared.resolution.deployment.provider_id.value
+            if (prepared.resolution and prepared.resolution.deployment.provider_id)
+            else "ollama"
+        )
+        simulated_text = (
+            f"Bonjour ! Ceci est une réponse de simulation pour le modèle '{model_name}' "
+            f"via le fournisseur '{prov_name}' (mode offline)."
+        )
+        return InferenceResponse(prepared.context.run_id, TextOutput(simulated_text))
+
+
+@dataclass(slots=True)
 class FakeAsyncStreamingAdapter:
     """Fake async streaming adapter yielding text deltas for CLI simulation."""
-
-    simulated_text: str
 
     async def astream_prepared(
         self, prepared: PreparedInvocation,
     ) -> AsyncIterator[StreamEvent]:
         run = prepared.context.run_id
+        model_name = getattr(prepared, "native_model_alias", None) or (
+            prepared.resolution.deployment.model_id.value if prepared.resolution else "unknown"
+        )
+        prov_name = (
+            prepared.resolution.deployment.provider_id.value
+            if (prepared.resolution and prepared.resolution.deployment.provider_id)
+            else "ollama"
+        )
+        simulated_text = (
+            f"Bonjour ! Ceci est une réponse de simulation en flux continu pour le modèle '{model_name}' "
+            f"via le fournisseur '{prov_name}' (mode offline)."
+        )
         seq = 0
         yield ResponseStarted(run_id=run, sequence=seq)
         seq += 1
-        words = self.simulated_text.split(" ")
+        words = simulated_text.split(" ")
         for i, word in enumerate(words):
             delta = word if i == 0 else f" {word}"
             yield TextDelta(run_id=run, sequence=seq, delta=delta)
@@ -71,14 +107,24 @@ class FakeAsyncStreamingAdapter:
 class FakeStreamingAdapter:
     """Fake streaming adapter yielding text deltas for CLI simulation."""
 
-    simulated_text: str
-
     def stream_prepared(self, prepared: PreparedInvocation) -> Iterator[StreamEvent]:
         run = prepared.context.run_id
+        model_name = getattr(prepared, "native_model_alias", None) or (
+            prepared.resolution.deployment.model_id.value if prepared.resolution else "unknown"
+        )
+        prov_name = (
+            prepared.resolution.deployment.provider_id.value
+            if (prepared.resolution and prepared.resolution.deployment.provider_id)
+            else "ollama"
+        )
+        simulated_text = (
+            f"Bonjour ! Ceci est une réponse de simulation en flux continu pour le modèle '{model_name}' "
+            f"via le fournisseur '{prov_name}' (mode offline)."
+        )
         seq = 0
         yield ResponseStarted(run_id=run, sequence=seq)
         seq += 1
-        words = self.simulated_text.split(" ")
+        words = simulated_text.split(" ")
         for i, word in enumerate(words):
             delta = word if i == 0 else f" {word}"
             yield TextDelta(run_id=run, sequence=seq, delta=delta)
@@ -145,10 +191,14 @@ def create_cli_inference_service(
         "mistral": ProviderConnectionConfig.mistral(CredentialRef("mistral")),
     }
 
+    registered_keys: set[AdapterKey] = set()
     deployments = catalog.deployments.list()
     for dep in deployments:
         aliases[dep.id] = dep.model_id.value
         key = AdapterKey(dep.provider_id, dep.runtime)
+
+        if key in registered_keys:
+            continue
 
         prov_name = dep.provider_id.value if dep.provider_id else "ollama"
         conn = connections.get(prov_name)
@@ -156,16 +206,11 @@ def create_cli_inference_service(
             continue
 
         if mock:
-            # Deterministic mock adapter for offline and test runs
-            simulated_text = (
-                f"Bonjour ! Ceci est une réponse de simulation pour le modèle '{dep.model_id.value}' "
-                f"via le fournisseur '{prov_name}' (mode offline)."
-            )
             registry.register(
                 AdapterRegistration(
                     key,
                     conn,
-                    sync_factory=_make_sync_factory(simulated_text),
+                    sync_factory=lambda _cfg: DynamicCliFakeInferenceAdapter(),
                 )
             )
         else:
@@ -176,6 +221,7 @@ def create_cli_inference_service(
                     sync_factory=_make_live_sync_factory(prov_name, _make_env_resolver()),
                 )
             )
+        registered_keys.add(key)
 
     port = RegisteredInferencePort(registry)
     return InferenceService(resolver, port, aliases)
@@ -211,11 +257,7 @@ def create_cli_streaming_service(
             continue
 
         if mock:
-            simulated_text = (
-                f"Bonjour ! Ceci est une réponse de simulation en flux continu pour le modèle '{dep.model_id.value}' "
-                f"via le fournisseur '{prov_name}' (mode offline)."
-            )
-            bindings[dep.id] = FakeStreamingAdapter(simulated_text)
+            bindings[dep.id] = FakeStreamingAdapter()
         else:
             creds = None if prov_name == "ollama" else env_resolver
             bindings[dep.id] = NativeProviderStreamingAdapter(
@@ -257,11 +299,7 @@ def create_cli_async_streaming_service(
             continue
 
         if mock:
-            simulated_text = (
-                f"Bonjour ! Ceci est une réponse de simulation en flux continu pour le modèle '{dep.model_id.value}' "
-                f"via le fournisseur '{prov_name}' (mode offline)."
-            )
-            bindings[dep.id] = FakeAsyncStreamingAdapter(simulated_text)
+            bindings[dep.id] = FakeAsyncStreamingAdapter()
         else:
             creds = None if prov_name == "ollama" else env_resolver
             bindings[dep.id] = NativeProviderStreamingAdapter(

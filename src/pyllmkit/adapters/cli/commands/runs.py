@@ -1,11 +1,14 @@
 """Typer commands for execution history inspection (runs list, runs inspect)."""
 
+import json
+from pathlib import Path
 from typing import Annotated
 
 import typer
 from rich.panel import Panel
 from rich.table import Table
 
+from ..config import get_config
 from ..console import console
 from ..formatting.errors import build_error_panel
 from ..storage import SqliteRunStore
@@ -71,6 +74,10 @@ def runs_inspect(
         str,
         typer.Argument(help="Identifiant unique (ou préfixe) de l'inférence"),
     ],
+    as_json: Annotated[
+        bool,
+        typer.Option("--json", help="Afficher les données complètes au format JSON brut"),
+    ] = False,
 ) -> None:
     """Afficher les détails complets d'un run archivé."""
     store = SqliteRunStore()
@@ -92,6 +99,10 @@ def runs_inspect(
         )
         console.print(panel)
         raise typer.Exit(code=1)
+
+    if as_json:
+        console.print_json(json.dumps(record.as_dict(), ensure_ascii=False))
+        return
 
     details = [
         f"[bold]Run ID        :[/bold] {record.run_id}",
@@ -123,6 +134,8 @@ def runs_inspect(
         gen_parts.append(f"max_tokens={record.max_tokens}")
     if gen_parts:
         details.append(f"[bold]Configuration :[/bold] {', '.join(gen_parts)}")
+    if record.messages_json:
+        details.append("[bold]Fine-Tuning   :[/bold] [green]Format ChatML / JSONL archivé[/green]")
 
     details.append(f"[bold]Date (UTC)    :[/bold] {record.created_at}")
 
@@ -134,3 +147,49 @@ def runs_inspect(
         console.print(Panel(record.response_text, title="Réponse", border_style="green"))
     else:
         console.print(Panel("[dim]Aucun texte de réponse enregistré[/dim]", title="Réponse", border_style="dim"))
+
+
+@runs_app.command(name="export", help="Exporter l'historique d'inférences au format JSONL pour le Fine-Tuning.")
+def runs_export(
+    output: Annotated[
+        Path | None,
+        typer.Option("--output", "-o", help="Fichier de sortie .jsonl (affiche sur stdout si omis)"),
+    ] = None,
+    model: Annotated[
+        str | None,
+        typer.Option("--model", "-m", help="Filtrer les runs par identifiant de modèle"),
+    ] = None,
+    limit: Annotated[
+        int,
+        typer.Option("--limit", "-n", help="Nombre maximum de runs à exporter"),
+    ] = 1000,
+) -> None:
+    """Exporter les runs archivés au standard ChatML JSONL (OpenAI, HuggingFace, Axolotl, Unsloth)."""
+    store = SqliteRunStore()
+    records = store.list_runs(limit=limit)
+    if model:
+        records = [r for r in records if r.model_id == model]
+
+    valid_records = [r for r in records if r.state == "completed" and r.response_text]
+
+    lines = []
+    for r in valid_records:
+        chatml_line = json.dumps({"messages": r.to_chatml_messages()}, ensure_ascii=False)
+        lines.append(chatml_line)
+
+    cfg = get_config()
+    if output is None and cfg.storage.export_dir:
+        from datetime import UTC, datetime
+
+        stamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
+        output = cfg.storage.export_dir / f"export_{stamp}.jsonl"
+
+    if output is not None:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text("\n".join(lines) + ("\n" if lines else ""), encoding="utf-8")
+        console.print(
+            f"[bold green]✓[/bold green] {len(lines)} exemple(s) exporté(s) avec succès dans [bold cyan]{output}[/bold cyan]"
+        )
+    else:
+        for line in lines:
+            console.print(line)

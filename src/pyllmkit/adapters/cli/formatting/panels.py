@@ -29,11 +29,15 @@ def build_usage_panel(execution: InferenceExecution) -> Panel:
         duration_ms = (run.finished_at - run.started_at).total_seconds() * 1000
         duration_str = f"{duration_ms:.1f} ms"
 
-    finish_code = (
+    raw_finish = (
         response.finish_reason.code.value
         if (response and response.finish_reason)
         else "stop"
     )
+    if raw_finish == "unknown" and run.state.value == "completed":
+        finish_code = "stop"
+    else:
+        finish_code = raw_finish
 
     in_tokens = "-"
     out_tokens = "-"

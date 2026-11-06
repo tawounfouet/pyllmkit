@@ -14,9 +14,11 @@ from pyllmkit.domain.modalities import Modality, ModalitySet
 from pyllmkit.domain.models import Model, ModelFamily, ModelId, ModelIdentity
 from pyllmkit.domain.providers import InferenceProvider, ProviderId
 
+from .discovery import load_discovered_models
+
 
 def create_reference_catalog() -> InMemoryCatalog:
-    """Instantiate an InMemoryCatalog with standard reference models and deployments."""
+    """Instantiate an InMemoryCatalog with standard reference models, deployments and discovered models."""
     catalog = InMemoryCatalog()
     text_modes = ModalitySet(frozenset({Modality("text")}), frozenset({Modality("text")}))
 
@@ -27,25 +29,111 @@ def create_reference_catalog() -> InMemoryCatalog:
         ),
     ))
 
-    # Reference models
-    models_data = [
+    # Reference models for the 6 canonical providers
+    reference_models_data = [
+        # Ollama (Local)
         ("llama3.2", "meta", "ollama", "ollama", "local"),
+        ("llama3.1", "meta", "ollama", "ollama", "local"),
+        ("llama3", "meta", "ollama", "ollama", "local"),
+        ("mistral", "mistral", "ollama", "ollama", "local"),
+        ("qwen2.5", "alibaba", "ollama", "ollama", "local"),
+        ("phi3", "microsoft", "ollama", "ollama", "local"),
+        ("deepseek-r1", "deepseek", "ollama", "ollama", "local"),
+
+        # OpenAI (Cloud)
         ("gpt-4o", "openai", "openai", "cloud", "global"),
+        ("gpt-4o-mini", "openai", "openai", "cloud", "global"),
+        ("gpt-4-turbo", "openai", "openai", "cloud", "global"),
+        ("gpt-4", "openai", "openai", "cloud", "global"),
+        ("gpt-3.5-turbo", "openai", "openai", "cloud", "global"),
+        ("o1", "openai", "openai", "cloud", "global"),
+        ("o1-preview", "openai", "openai", "cloud", "global"),
+        ("o1-mini", "openai", "openai", "cloud", "global"),
+        ("o3-mini", "openai", "openai", "cloud", "global"),
+
+        # Anthropic (Cloud)
         ("claude-3-5-sonnet", "anthropic", "anthropic", "cloud", "global"),
+        ("claude-3-5-haiku", "anthropic", "anthropic", "cloud", "global"),
+        ("claude-3-opus", "anthropic", "anthropic", "cloud", "global"),
+        ("claude-3-sonnet", "anthropic", "anthropic", "cloud", "global"),
+        ("claude-3-haiku", "anthropic", "anthropic", "cloud", "global"),
+
+        # Google Gemini (Cloud)
         ("gemini-1.5-pro", "google", "google", "cloud", "global"),
-        ("grok-2", "xai", "xai", "cloud", "global"),
+        ("gemini-1.5-flash", "google", "google", "cloud", "global"),
+        ("gemini-1.5-flash-8b", "google", "google", "cloud", "global"),
+        ("gemini-2.0-flash", "google", "google", "cloud", "global"),
+        ("gemini-2.0-flash-exp", "google", "google", "cloud", "global"),
+
+        # Mistral AI (Cloud)
         ("mistral-large", "mistral", "mistral", "cloud", "global"),
+        ("mistral-small", "mistral", "mistral", "cloud", "global"),
+        ("codestral", "mistral", "mistral", "cloud", "global"),
+        ("pixtral-12b", "mistral", "mistral", "cloud", "global"),
+        ("open-mistral-7b", "mistral", "mistral", "cloud", "global"),
+
+        # xAI (Cloud)
+        ("grok-2", "xai", "xai", "cloud", "global"),
+        ("grok-2-mini", "xai", "xai", "cloud", "global"),
+        ("grok-beta", "xai", "xai", "cloud", "global"),
     ]
 
-    for model_name, family, provider_name, runtime, region in models_data:
+    for model_name, family, provider_name, runtime, region in reference_models_data:
         mid = ModelId(model_name)
         did = DeploymentId(f"dep-{model_name}")
         pid = None if provider_name == "ollama" else ProviderId(provider_name)
 
+        if catalog.models.get(mid) is None:
+            catalog.models.register(
+                Model(
+                    mid,
+                    ModelIdentity(ModelFamily(family)),
+                    capabilities=streaming_cap,
+                    modalities=text_modes,
+                )
+            )
+
+        if pid is not None and catalog.providers.get(pid) is None:
+            catalog.providers.register(
+                InferenceProvider(pid, provider_name, modalities=text_modes)
+            )
+
+        if catalog.deployments.get(did) is None:
+            catalog.deployments.register(
+                Deployment(
+                    did,
+                    mid,
+                    pid,
+                    DeploymentStatus.AVAILABLE,
+                    capabilities=streaming_cap,
+                    modalities=text_modes,
+                    runtime=runtime,
+                    region=region,
+                )
+            )
+
+    # Ingestion des modèles découverts via 'pyllmkit models sync'
+    discovered = load_discovered_models()
+    for item in discovered:
+        mid_str = item.get("id")
+        if not mid_str:
+            continue
+        mid = ModelId(mid_str)
+        if catalog.models.get(mid) is not None:
+            continue
+
+        fam_str = item.get("family", "unknown")
+        prov_str = item.get("provider", "openai")
+        run_str = item.get("runtime", "cloud")
+        reg_str = item.get("region", "global")
+
+        did = DeploymentId(f"dep-{mid_str}")
+        pid = None if prov_str == "ollama" else ProviderId(prov_str)
+
         catalog.models.register(
             Model(
                 mid,
-                ModelIdentity(ModelFamily(family)),
+                ModelIdentity(ModelFamily(fam_str)),
                 capabilities=streaming_cap,
                 modalities=text_modes,
             )
@@ -53,21 +141,21 @@ def create_reference_catalog() -> InMemoryCatalog:
 
         if pid is not None and catalog.providers.get(pid) is None:
             catalog.providers.register(
-                InferenceProvider(pid, provider_name, modalities=text_modes)
+                InferenceProvider(pid, prov_str, modalities=text_modes)
             )
 
-        catalog.deployments.register(
-            Deployment(
-                did,
-                mid,
-                pid,
-                DeploymentStatus.AVAILABLE,
-                capabilities=streaming_cap,
-                modalities=text_modes,
-                runtime=runtime,
-                region=region,
+        if catalog.deployments.get(did) is None:
+            catalog.deployments.register(
+                Deployment(
+                    did,
+                    mid,
+                    pid,
+                    DeploymentStatus.AVAILABLE,
+                    capabilities=streaming_cap,
+                    modalities=text_modes,
+                    runtime=run_str,
+                    region=reg_str,
+                )
             )
-        )
 
     return catalog
-
