@@ -10,6 +10,12 @@ from .contracts import (
     PreparedInvocation,
 )
 from .service import AsyncInferenceService, InferenceService
+from .streaming import (
+    AsyncStreamingInferenceService,
+    AsyncStreamingSession,
+    StreamingInferenceService,
+    StreamingSession,
+)
 
 __all__ = [
     "InferenceExecution",
