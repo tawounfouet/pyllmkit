@@ -9,7 +9,10 @@ from __future__ import annotations
 import json
 import re
 
-from pyllmkit.adapters.inference.strict_json import decode_provider_json_object
+from pyllmkit.adapters.inference.strict_json import (
+    decode_provider_json_object,
+    matches_model_alias,
+)
 from pyllmkit.application.inference import InvocationPortError, PreparedInvocation
 from pyllmkit.domain.capabilities import SupportLevel
 from pyllmkit.domain.inference import (
@@ -102,7 +105,7 @@ def decode_openai_responses_response(raw: bytes, prepared: PreparedInvocation) -
         raise InvocationPortError("provider_protocol_error")
     if payload.get("error") is not None or payload.get("incomplete_details") is not None:
         raise InvocationPortError("provider_protocol_error")
-    if payload.get("model") != prepared.native_model_alias:
+    if not matches_model_alias(payload.get("model"), prepared.native_model_alias):
         raise InvocationPortError("provider_model_mismatch")
 
     outputs = payload.get("output")

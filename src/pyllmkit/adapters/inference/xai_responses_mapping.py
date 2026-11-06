@@ -10,7 +10,10 @@ from __future__ import annotations
 import json
 import re
 
-from pyllmkit.adapters.inference.strict_json import decode_provider_json_object
+from pyllmkit.adapters.inference.strict_json import (
+    decode_provider_json_object,
+    matches_model_alias,
+)
 from pyllmkit.application.inference import InvocationPortError, PreparedInvocation
 from pyllmkit.domain.capabilities import SupportLevel
 from pyllmkit.domain.inference import (
@@ -104,7 +107,7 @@ def decode_xai_responses_response(
         raise InvocationPortError("provider_protocol_error")
     if data.get("store") is True:
         raise InvocationPortError("provider_privacy_policy_violation")
-    if data.get("model") != prepared.native_model_alias:
+    if not matches_model_alias(data.get("model"), prepared.native_model_alias):
         raise InvocationPortError("provider_model_mismatch")
     output = data.get("output")
     if type(output) is not list or len(output) != 1:

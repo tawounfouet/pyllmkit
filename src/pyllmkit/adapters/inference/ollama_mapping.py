@@ -9,7 +9,10 @@ from __future__ import annotations
 import json
 import re
 
-from pyllmkit.adapters.inference.strict_json import decode_provider_json_object
+from pyllmkit.adapters.inference.strict_json import (
+    decode_provider_json_object,
+    matches_model_alias,
+)
 from pyllmkit.application.inference import InvocationPortError, PreparedInvocation
 from pyllmkit.domain.capabilities import SupportLevel
 from pyllmkit.domain.inference import (
@@ -108,7 +111,7 @@ def decode_ollama_response(
     if data.get("done") is not True:
         raise InvocationPortError("provider_protocol_error")
     native_model = data.get("model")
-    if native_model is not None and native_model != prepared.native_model_alias:
+    if native_model is not None and not matches_model_alias(native_model, prepared.native_model_alias):
         raise InvocationPortError("provider_model_mismatch")
     message = data.get("message")
     if type(message) is not dict or set(message) - _ALLOWED_MESSAGE_FIELDS:

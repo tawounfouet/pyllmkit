@@ -419,6 +419,30 @@ def test_p7_ac048_native_response_mismatch_is_refused() -> None:
         })
 
 
+def test_native_stream_accepts_snapshot_model_alias() -> None:
+    sync, _, request, snapshot = service("openai")
+    session = sync.open_stream(request, snapshot)
+    decoder = NativeStreamDecoder(ProviderProfile.OPENAI, session.prepared)
+    # response.created with a dated snapshot matching ALIASES["openai"] ("gpt-text-test-2024-08-06")
+    decoder.push("response.created", {
+        "type": "response.created",
+        "response": {
+            "status": "in_progress",
+            "model": f"{ALIASES['openai']}-2024-08-06",
+        },
+    })
+    # response.created with an unrelated model is rejected
+    with pytest.raises(Exception, match="provider_protocol_error"):
+        decoder.push("response.created", {
+            "type": "response.created",
+            "response": {
+                "status": "in_progress",
+                "model": "unrelated-model",
+            },
+        })
+
+
+
 def test_p7_ac048_duplicate_json_fields_and_excessive_wire_line_rejected() -> None:
     with pytest.raises(Exception, match="provider_protocol_error"):
         decode_native_json('{"type":"ping","type":"ping"}')

@@ -20,7 +20,10 @@ from pyllmkit.adapters.inference.openai_responses_mapping import (
     decode_openai_responses_response,
 )
 from pyllmkit.adapters.inference.security import ProviderProfile
-from pyllmkit.adapters.inference.strict_json import decode_provider_json_object
+from pyllmkit.adapters.inference.strict_json import (
+    decode_provider_json_object,
+    matches_model_alias,
+)
 from pyllmkit.adapters.inference.xai_responses_mapping import decode_xai_responses_response
 from pyllmkit.application.inference import InvocationPortError, PreparedInvocation
 from pyllmkit.domain.inference import InferenceResponse
@@ -163,7 +166,8 @@ class NativeStreamDecoder:
             raise InvocationPortError("unsupported_provider_output")
         if any(msg.get(k) not in (None, [], {}, "") for k in ("thinking", "tool_calls", "images")):
             raise InvocationPortError("unsupported_provider_output")
-        if frame.get("model") not in (None, self.prepared.native_model_alias):
+        model = frame.get("model")
+        if model is not None and not matches_model_alias(model, self.prepared.native_model_alias):
             raise InvocationPortError("provider_model_mismatch")
         delta = self._append(_str(msg["content"]))
         if frame.get("done") is True:
@@ -215,13 +219,14 @@ class NativeStreamDecoder:
             raise InvocationPortError("provider_protocol_error")
         if kind in ("response.created", "response.in_progress"):
             response = _dict(frame.get("response"))
+            model = response.get("model")
             if (
                 response.get("status") not in ("in_progress", "queued", None)
                 or response.get("output") not in (None, [])
                 or response.get("tools") not in (None, [])
                 or response.get("error") is not None
                 or response.get("store") is True
-                or response.get("model") not in (None, self.prepared.native_model_alias)
+                or (model is not None and not matches_model_alias(model, self.prepared.native_model_alias))
             ):
                 raise InvocationPortError("provider_protocol_error")
             return ""
@@ -320,7 +325,7 @@ class NativeStreamDecoder:
             if (
                 message.get("type") != "message"
                 or message.get("role") != "assistant"
-                or message.get("model") != self.prepared.native_model_alias
+                or not matches_model_alias(message.get("model"), self.prepared.native_model_alias)
                 or message.get("content") != []
             ):
                 raise InvocationPortError("unsupported_provider_output")
@@ -394,7 +399,7 @@ class NativeStreamDecoder:
             raise InvocationPortError("provider_protocol_error")
         if frame.get("object") != "chat.completion.chunk":
             raise InvocationPortError("provider_protocol_error")
-        if frame.get("model") != self.prepared.native_model_alias:
+        if not matches_model_alias(frame.get("model"), self.prepared.native_model_alias):
             raise InvocationPortError("provider_model_mismatch")
         choices = frame.get("choices")
         if choices == []:

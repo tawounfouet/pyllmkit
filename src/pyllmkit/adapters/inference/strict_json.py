@@ -8,9 +8,33 @@ this provider infrastructure module.
 from __future__ import annotations
 
 import json
+import re
 from typing import NoReturn
 
 from pyllmkit.application.inference import InvocationPortError
+
+_SNAPSHOT_SUFFIX = re.compile(
+    r"^(?:-(?:\d{4}-\d{2}-\d{2}|\d{8}|\d{4}|latest)|:[a-zA-Z0-9_.-]+)$"
+)
+
+
+def matches_model_alias(observed: object, expected_alias: str) -> bool:
+    """Validate whether an observed model string matches the expected alias or a valid snapshot."""
+    if type(observed) is not str or type(expected_alias) is not str:
+        return False
+    if observed == expected_alias:
+        return True
+    if observed.startswith(expected_alias):
+        suffix = observed[len(expected_alias):]
+        if _SNAPSHOT_SUFFIX.fullmatch(suffix):
+            return True
+    for suffix_trim in ("-latest", ":latest"):
+        if expected_alias.endswith(suffix_trim):
+            base = expected_alias[:-len(suffix_trim)]
+            if observed == base or matches_model_alias(observed, base):
+                return True
+    return False
+
 
 
 def _unique_object(pairs: list[tuple[str, object]]) -> dict[str, object]:

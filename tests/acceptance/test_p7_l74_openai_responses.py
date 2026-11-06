@@ -276,6 +276,21 @@ def test_p7_ac029_reject_noncomplete_or_nontyped_output(
         decode_openai_responses_response(json.dumps(data).encode(), _prepared())
 
 
+def test_openai_responses_snapshot_alias_matching() -> None:
+    prepared = _prepared()
+    # Pinned dated snapshot of gpt-4.1-mini is accepted
+    data = _native()
+    data["model"] = "gpt-4.1-mini-2024-08-06"
+    resp = decode_openai_responses_response(json.dumps(data).encode(), prepared)
+    assert resp.output.text == "Salut"
+
+    # Different model family is rejected
+    data["model"] = "gpt-4.1-mini-turbo"
+    with pytest.raises(InvocationPortError, match="provider_model_mismatch"):
+        decode_openai_responses_response(json.dumps(data).encode(), prepared)
+
+
+
 @pytest.mark.parametrize("content,code", [
     ([{"type": "refusal", "refusal": "no"}], "unsupported_provider_output"),
     ([{"type": "output_text", "text": 7}], "unsupported_provider_output"),
