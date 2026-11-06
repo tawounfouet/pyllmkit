@@ -9,6 +9,8 @@ from __future__ import annotations
 import asyncio
 import json
 from collections.abc import AsyncGenerator, AsyncIterator, Generator, Iterator
+from datetime import UTC, datetime
+from time import monotonic
 from dataclasses import dataclass, field
 
 from pyllmkit.adapters.inference.anthropic_messages_mapping import (
@@ -63,6 +65,20 @@ _CLOUD_BASE = {
     ProviderProfile.XAI: "https://api.x.ai/v1/responses",
     ProviderProfile.MISTRAL: "https://api.mistral.ai/v1/chat/completions",
 }
+
+
+def _sync_budget_lines(
+    lines: Iterator[str], *, started_at: float, budget_seconds: float,
+    prepared: PreparedInvocation,
+) -> Iterator[str]:
+    """Cooperative monotonic budget checks, never a hard blocking-read watchdog."""
+    for line in lines:
+        if (
+            monotonic() - started_at >= budget_seconds
+            or datetime.now(UTC) >= prepared.context.deadline
+        ):
+            raise InvocationPortError("provider_timeout")
+        yield line
 
 
 def _bounded_lines(lines: Iterator[str]) -> Iterator[str]:
@@ -283,7 +299,13 @@ class NativeProviderStreamingAdapter:
         )
 
     def _frames(self, prepared: PreparedInvocation) -> Generator[tuple[str, str], None, None]:
+        # A synchronous HTTPX read can block beyond a total deadline if the
+        # peer continuously trickles data. No production sync socket without
+        # a separately verified hard-stop execution boundary (P7-G7).
+        if self._test_transport is None:
+            raise InvocationPortError("sync_stream_deadline_not_enforceable")
         target, body, headers, timeout = self._request(prepared)
+        started_at = monotonic()
         httpx = _httpx()
         try:
             with httpx.Client(
@@ -297,13 +319,21 @@ class NativeProviderStreamingAdapter:
                         self.config.profile, response.status_code,
                         response.headers.get("content-type", ""),
                     )
-                    lines = _bounded_lines(response.iter_lines())
+                    lines = _sync_budget_lines(
+                        _bounded_lines(response.iter_lines()),
+                        started_at=started_at, budget_seconds=timeout, prepared=prepared,
+                    )
                     if self.config.profile is ProviderProfile.OLLAMA:
                         for line in lines:
                             if line:
                                 yield "json", line
                     else:
                         yield from _sse_frames(lines)
+                    if (
+                        monotonic() - started_at >= timeout
+                        or datetime.now(UTC) >= prepared.context.deadline
+                    ):
+                        raise InvocationPortError("provider_timeout")
         except InvocationPortError:
             raise
         except httpx.TimeoutException:
