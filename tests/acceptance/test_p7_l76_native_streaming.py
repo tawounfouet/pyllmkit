@@ -47,8 +47,8 @@ from pyllmkit.domain.streaming import (
     ResponseCompleted,
     ResponseFailed,
     ResponseStarted,
-    StreamStatus,
     StreamingPort,
+    StreamStatus,
     TextDelta,
     consume_stream,
 )
