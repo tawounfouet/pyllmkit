@@ -38,6 +38,10 @@ _REQUIRED: dict[str, int] = {
     "test_supported_multiturn_text_history_is_lossless": 6,
     "test_history_role_restrictions_are_explicit_not_coerced": 30,
     "test_native_response_usage_and_finish_semantics": 60,
+    "test_cancel_after_first_delta_closes_native_mock_transport": 12,
+    "test_single_use_stream_session_rejects_replay_without_second_call": 12,
+    "test_external_async_task_cancel_propagates_and_closes_native_mock_socket": 6,
+    "test_cancel_after_completed_stream_has_no_second_terminal": 12,
 }
 _ALLOWED = ("PASS", "FAIL", "NOT_APPLICABLE", "UNSUPPORTED", "BLOCKED")
 _FAILURE_TYPE = re.compile(r"[A-Za-z0-9_.]{1,100}\Z")
@@ -55,6 +59,8 @@ def _provider(test_name: str) -> str | None:
 
 
 def _mode(test_name: str) -> str:
+    if test_name.startswith("test_external_async_task_cancel_"):
+        return "async"
     if "[" not in test_name:
         return "unspecified"
     params = test_name.rsplit("[", 1)[-1][:-1].split("-")
@@ -66,6 +72,10 @@ def _mode(test_name: str) -> str:
 
 
 def _operation(method: str, mode: str) -> str:
+    if method.startswith(("test_cancel_after_first_delta", "test_external_async_task_cancel", "test_cancel_after_completed_stream")):
+        return "astream_prepared" if mode == "async" else "stream_prepared"
+    if method.startswith("test_single_use_stream_session"):
+        return "open_astream" if mode == "async" else "open_stream"
     if (method.startswith("test_native_stream_conformance")
             or method.startswith("test_ollama_json_content_type")):
         return "astream_prepared" if mode == "async" else "stream_prepared"
