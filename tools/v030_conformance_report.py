@@ -55,7 +55,8 @@ def _mode(test_name: str) -> str:
 
 
 def _operation(method: str, mode: str) -> str:
-    if method.startswith("test_native_stream_conformance"):
+    if (method.startswith("test_native_stream_conformance")
+            or method.startswith("test_ollama_json_content_type")):
         return "astream_prepared" if mode == "async" else "stream_prepared"
     if method.startswith("test_pre_cancelled_native_session"):
         return "open_astream" if mode == "async" else "open_stream"
