@@ -70,9 +70,9 @@ aucun retry/failover.
 - [x] Nouveaux tests adversariaux en rouge avant correctif.
 - [x] Correctif partage de parsing strict dans les sept decodeurs.
 - [x] Tests unitaires de rejet et de validite du parser.
-- [ ] CI exacte sur SHA final, Python 3.11, 3.12, 3.13.
-- [ ] Artefacts conformance JSON/Markdown complets, matrice S3 incluse.
-- [ ] Aucun echec des anciens tests P7 ni baisse des seuils coverage.
+- [x] Premiere CI du correctif [#42221138575](https://github.com/tawounfouet/pyllmkit/actions/runs/42221138575), SHA `d059204d9869e86e82884964c595a84b93757209` : 3 jobs Python 3.11-3.13 SUCCESS, 2 344 tests generaux. Revalidation du SHA documentaire final requise.
+- [x] Trois artefacts JSON/Markdown non vides, verdict PASS pour 380 cas de conformite par version Python.
+- [x] P7 reste vert sans seuil abaisse ; L7.6 couverture **90,81 %** (seuil 90 %). Le nouveau parser strict atteint **100,00 %** de couverture avec branches (seuil 95 %).
 - [ ] Revue independante du traitement d'erreurs, des limites et de la
   non-divulgation de donnees.
 - [ ] Arbitrage G3 explicite, non deduit d'une CI verte.
