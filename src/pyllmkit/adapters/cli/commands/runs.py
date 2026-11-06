@@ -74,12 +74,14 @@ def runs_inspect(
 ) -> None:
     """Afficher les détails complets d'un run archivé."""
     store = SqliteRunStore()
-    record = store.get_run(run_id.strip())
+    target_id = run_id.strip()
+    clean_prefix = target_id.rstrip(".").strip()
+    record = store.get_run(target_id)
 
-    if record is None:
-        # Search by prefix if exact match not found
+    if record is None and clean_prefix:
+        # Recherche par préfixe (tolère les points de suspension '...' copiés depuis le tableau)
         all_runs = store.list_runs(limit=100)
-        matches = [r for r in all_runs if r.run_id.startswith(run_id.strip())]
+        matches = [r for r in all_runs if r.run_id.startswith(clean_prefix)]
         if len(matches) == 1:
             record = matches[0]
 

@@ -117,6 +117,7 @@ def run_command(
         # Enregistrement silencieux dans l'historique local pour FinOps / Evals / Observabilité
         try:
             from datetime import UTC, datetime
+            from pyllmkit.domain.inference import DeploymentId
 
             from pyllmkit.domain.inference import DeploymentId
 

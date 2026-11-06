@@ -16,6 +16,7 @@ ERROR_HINTS = {
     "unsupported_input_modality": "Le modèle ne prend pas en charge la modalité demandée (seul le texte est supporté dans ce profil).",
     "target_not_routable": "La cible spécifiée ne peut être routée vers aucun déploiement actif.",
     "native_model_binding_missing": "Aucun alias natif configuré pour ce déploiement.",
+    "run_not_found": "Aucune exécution archivée ne correspond à cet identifiant. Utilisez 'pyllmkit runs list' pour afficher les Run IDs existants.",
 }
 
 
