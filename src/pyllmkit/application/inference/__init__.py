@@ -16,6 +16,7 @@ from .streaming import (
     StreamingInferenceService,
     StreamingSession,
 )
+from .streaming_resilience import StreamCancellationSignal
 
 __all__ = [
     "InferenceExecution",
@@ -34,4 +35,5 @@ __all__ += [
     "AsyncStreamingInferenceService",
     "StreamingSession",
     "AsyncStreamingSession",
+    "StreamCancellationSignal",
 ]
