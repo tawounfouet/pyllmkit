@@ -1,5 +1,6 @@
 """Typer command for streaming text inference (stream)."""
 
+import asyncio
 from typing import Annotated
 
 import typer
@@ -23,8 +24,8 @@ from pyllmkit.domain.registry.selection import DeploymentResolutionError
 from ..catalog import create_reference_catalog
 from ..console import console
 from ..formatting.errors import build_error_panel
-from ..formatting.live_stream import consume_and_render_stream
-from ..service import create_cli_streaming_service
+from ..formatting.live_stream import aconsume_and_render_stream
+from ..service import create_cli_async_streaming_service
 
 
 def _build_support_snapshot(request: InferenceRequest) -> GenerationSupportSnapshot | None:
@@ -78,7 +79,7 @@ def stream_command(
 ) -> None:
     """Consommer une inférence en direct avec affichage incrémental (streaming)."""
     catalog = create_reference_catalog()
-    service = create_cli_streaming_service(catalog, mock=mock)
+    service = create_cli_async_streaming_service(catalog, mock=mock)
 
     gen_config = None
     if temperature is not None or max_tokens is not None:
@@ -100,8 +101,8 @@ def stream_command(
 
     try:
         snapshot = _build_support_snapshot(request)
-        session = service.open_stream(request, support_snapshot=snapshot)
-        exit_code = consume_and_render_stream(session, model, console)
+        session = service.open_astream(request, support_snapshot=snapshot)
+        exit_code = asyncio.run(aconsume_and_render_stream(session, model, console))
         if exit_code != 0:
             raise typer.Exit(code=exit_code)
 

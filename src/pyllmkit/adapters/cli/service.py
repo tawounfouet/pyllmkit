@@ -1,6 +1,6 @@
 """Service factory for CLI inference operations."""
 
-from collections.abc import Callable, Iterator
+from collections.abc import AsyncIterator, Callable, Iterator
 from dataclasses import dataclass
 
 from pyllmkit.adapters.inference import (
@@ -22,6 +22,7 @@ from pyllmkit.adapters.inference import (
 )
 from pyllmkit.adapters.registry import InMemoryCatalog
 from pyllmkit.application.inference import (
+    AsyncStreamingInferenceService,
     InferenceService,
     PreparedInvocation,
     StreamingInferenceService,
@@ -34,7 +35,36 @@ from pyllmkit.domain.streaming import (
     StreamEvent,
     TextDelta,
 )
-from pyllmkit.protocols.inference import InferencePort, PreparedStreamingPort
+from pyllmkit.protocols.inference import (
+    AsyncPreparedStreamingPort,
+    InferencePort,
+    PreparedStreamingPort,
+)
+
+
+@dataclass(slots=True)
+class FakeAsyncStreamingAdapter:
+    """Fake async streaming adapter yielding text deltas for CLI simulation."""
+
+    simulated_text: str
+
+    async def astream_prepared(
+        self, prepared: PreparedInvocation,
+    ) -> AsyncIterator[StreamEvent]:
+        run = prepared.context.run_id
+        seq = 0
+        yield ResponseStarted(run_id=run, sequence=seq)
+        seq += 1
+        words = self.simulated_text.split(" ")
+        for i, word in enumerate(words):
+            delta = word if i == 0 else f" {word}"
+            yield TextDelta(run_id=run, sequence=seq, delta=delta)
+            seq += 1
+        yield ResponseCompleted(
+            run_id=run,
+            sequence=seq,
+            finish_reason=FinishReason(FinishReasonCode.STOP),
+        )
 
 
 @dataclass(slots=True)
@@ -195,4 +225,50 @@ def create_cli_streaming_service(
             )
 
     return StreamingInferenceService(resolver, bindings, aliases)
+
+
+def create_cli_async_streaming_service(
+    catalog: InMemoryCatalog,
+    *,
+    mock: bool = True,
+) -> AsyncStreamingInferenceService:
+    """Instantiate an AsyncStreamingInferenceService configured for CLI operations."""
+    resolver = DeploymentResolver(catalog.models, catalog.deployments, catalog.providers)
+    bindings: dict[DeploymentId, AsyncPreparedStreamingPort] = {}
+    aliases: dict[DeploymentId, str] = {}
+
+    connections = {
+        "ollama": ProviderConnectionConfig.ollama_local(),
+        "openai": ProviderConnectionConfig.openai(CredentialRef("openai")),
+        "anthropic": ProviderConnectionConfig.anthropic(CredentialRef("anthropic")),
+        "google": ProviderConnectionConfig.google(CredentialRef("google")),
+        "xai": ProviderConnectionConfig.xai(CredentialRef("xai")),
+        "mistral": ProviderConnectionConfig.mistral(CredentialRef("mistral")),
+    }
+
+    env_resolver = _make_env_resolver()
+
+    deployments = catalog.deployments.list()
+    for dep in deployments:
+        aliases[dep.id] = dep.model_id.value
+        prov_name = dep.provider_id.value if dep.provider_id else "ollama"
+        conn = connections.get(prov_name)
+        if conn is None:
+            continue
+
+        if mock:
+            simulated_text = (
+                f"Bonjour ! Ceci est une réponse de simulation en flux continu pour le modèle '{dep.model_id.value}' "
+                f"via le fournisseur '{prov_name}' (mode offline)."
+            )
+            bindings[dep.id] = FakeAsyncStreamingAdapter(simulated_text)
+        else:
+            creds = None if prov_name == "ollama" else env_resolver
+            bindings[dep.id] = NativeProviderStreamingAdapter(
+                config=conn,
+                credentials=creds,
+                allow_live=True,
+            )
+
+    return AsyncStreamingInferenceService(resolver, bindings, aliases)
 

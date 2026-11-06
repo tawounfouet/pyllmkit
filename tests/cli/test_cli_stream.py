@@ -112,3 +112,78 @@ def test_consume_and_render_stream_events() -> None:
     exit_code = consume_and_render_stream(cast(StreamingSession, cast(Any, sig_session)), "test-model", console)
     assert exit_code == 130
     assert sig_session.cancelled is True
+
+
+def test_aconsume_and_render_stream_events() -> None:
+    """Test async stream rendering handles failure, cancel and normal flow."""
+    import asyncio
+    from collections.abc import AsyncIterator
+    from typing import Any, cast
+
+    from rich.console import Console
+
+    from pyllmkit.adapters.cli.formatting.live_stream import aconsume_and_render_stream
+    from pyllmkit.application.inference.streaming import AsyncStreamingSession
+    from pyllmkit.domain.inference import InferenceRunId
+    from pyllmkit.domain.streaming import (
+        ResponseCancelled,
+        ResponseCompleted,
+        ResponseFailed,
+        StreamEvent,
+        TextDelta,
+    )
+
+    console = Console(record=True, width=100)
+    run_id = InferenceRunId("1234567890abcdef1234567890abcdef")
+
+    class MockAsyncSuccessSession:
+        async def __aiter__(self) -> AsyncIterator[StreamEvent]:
+            yield TextDelta(run_id=run_id, sequence=0, delta="Bonjour ")
+            yield TextDelta(run_id=run_id, sequence=1, delta="monde !")
+            yield ResponseCompleted(run_id=run_id, sequence=2)
+
+        def cancel(self) -> None:
+            pass
+
+    exit_code = asyncio.run(
+        aconsume_and_render_stream(
+            cast(AsyncStreamingSession, cast(Any, MockAsyncSuccessSession())),
+            "test-model",
+            console,
+        )
+    )
+    assert exit_code == 0
+
+    class MockAsyncFailureSession:
+        async def __aiter__(self) -> AsyncIterator[StreamEvent]:
+            yield TextDelta(run_id=run_id, sequence=0, delta="Début...")
+            yield ResponseFailed(run_id=run_id, sequence=1, reason_code="timeout_error")
+
+        def cancel(self) -> None:
+            pass
+
+    exit_code = asyncio.run(
+        aconsume_and_render_stream(
+            cast(AsyncStreamingSession, cast(Any, MockAsyncFailureSession())),
+            "test-model",
+            console,
+        )
+    )
+    assert exit_code == 1
+
+    class MockAsyncCancelSession:
+        async def __aiter__(self) -> AsyncIterator[StreamEvent]:
+            yield TextDelta(run_id=run_id, sequence=0, delta="Début...")
+            yield ResponseCancelled(run_id=run_id, sequence=1, reason_code="user_cancelled")
+
+        def cancel(self) -> None:
+            pass
+
+    exit_code = asyncio.run(
+        aconsume_and_render_stream(
+            cast(AsyncStreamingSession, cast(Any, MockAsyncCancelSession())),
+            "test-model",
+            console,
+        )
+    )
+    assert exit_code == 130

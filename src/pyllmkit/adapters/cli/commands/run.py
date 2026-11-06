@@ -166,6 +166,8 @@ def run_command(
         panel = build_error_panel(code, str(exc))
         console.print(panel)
         raise typer.Exit(code=1) from None
+    except typer.Exit:
+        raise
     except Exception as exc:
         panel = build_error_panel("unexpected_error", str(exc))
         console.print(panel)
