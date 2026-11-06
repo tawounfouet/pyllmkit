@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import re
 
+from pyllmkit.adapters.inference.strict_json import decode_provider_json_object
 from pyllmkit.application.inference import InvocationPortError, PreparedInvocation
 from pyllmkit.domain.inference import (
     FinishReason,
@@ -99,7 +100,7 @@ def decode_openai_responses_response(raw: bytes, prepared: PreparedInvocation) -
     if type(raw) is not bytes or type(prepared) is not PreparedInvocation:
         raise InvocationPortError("provider_protocol_error")
     try:
-        payload = json.loads(raw, object_pairs_hook=_pairs_without_duplicates)
+        payload = decode_provider_json_object(raw)
     except (UnicodeError, ValueError, TypeError, RecursionError):
         raise InvocationPortError("provider_protocol_error") from None
     if type(payload) is not dict:
