@@ -6,8 +6,6 @@ that DNS/peer-IP/TLS are qualified by a MockTransport.
 """
 
 import asyncio
-from dataclasses import replace
-
 import httpx
 import pytest
 
