@@ -11,7 +11,7 @@ from rich.table import Table
 from ..config import get_config
 from ..console import console
 from ..formatting.errors import build_error_panel
-from ..model_specs import compute_run_cost
+from ..model_specs import compute_run_cost, pricing_provenance
 from ..storage import SqliteRunStore
 
 runs_app = typer.Typer(
@@ -45,7 +45,7 @@ def runs_list(
     table.add_column("Finish", style="yellow")
     table.add_column("Durée (ms)", justify="right")
     table.add_column("Tokens", justify="right")
-    table.add_column("Coût", justify="right", style="green")
+    table.add_column("Coût estimé*", justify="right", style="green")
     table.add_column("Date (UTC)", style="dim")
 
     for rec in records:
@@ -82,6 +82,7 @@ def runs_list(
         )
 
     console.print(table)
+    console.print("[dim]* Estimation sur tarifs du catalogue local, non vérifiés en temps réel.[/dim]")
 
 
 @runs_app.command(name="inspect", help="Inspecter le détail d'une inférence archivée.")
@@ -150,6 +151,7 @@ def runs_inspect(
     )
     if cost_str != "-":
         details.append(f"[bold]Coût estimé   :[/bold] [bold green]{cost_str}[/bold green]")
+        details.append(f"[dim]{pricing_provenance(record.model_id)}[/dim]")
     elif record.input_tokens is not None or record.output_tokens is not None:
         details.append("[bold]Coût estimé   :[/bold] [dim]N/A (modèle hors catalogue tarifaire)[/dim]")
 
