@@ -3,7 +3,7 @@
 import asyncio
 import json
 from dataclasses import replace
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 
 import httpx
 import pytest
@@ -16,6 +16,7 @@ from pyllmkit.adapters.inference import (
     FakeInferenceAdapter,
     OllamaAdapter,
     ProviderConnectionConfig,
+    CredentialRef,
     RegisteredAsyncInferencePort,
     RegisteredInferencePort,
 )
@@ -411,4 +412,4 @@ def test_p7_ac024_unsafe_adapter_flags_rejected_and_no_network_on_import() -> No
     with pytest.raises(InvocationPortError, match="live_authorization_invalid"):
         OllamaAdapter(_CONN, allow_live="yes")  # type: ignore[arg-type]
     with pytest.raises(InvocationPortError, match="adapter_connection_invalid"):
-        OllamaAdapter(ProviderConnectionConfig.openai(None), allow_live=True)  # type: ignore[arg-type]
+        OllamaAdapter(ProviderConnectionConfig.openai(CredentialRef("cloud")), allow_live=True)

@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import json
 import re
-from collections.abc import Mapping
 
 from pyllmkit.application.inference import InvocationPortError, PreparedInvocation
 from pyllmkit.domain.inference import (

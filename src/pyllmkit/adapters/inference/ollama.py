@@ -11,8 +11,6 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import Any
 
-from pyllmkit.application.inference import InvocationPortError, PreparedInvocation
-from pyllmkit.domain.inference import InferenceResponse
 from pyllmkit.adapters.inference.errors import normalize_http_failure
 from pyllmkit.adapters.inference.ollama_mapping import (
     decode_ollama_response,
@@ -22,6 +20,8 @@ from pyllmkit.adapters.inference.security import (
     ProviderConnectionConfig,
     ProviderProfile,
 )
+from pyllmkit.application.inference import InvocationPortError, PreparedInvocation
+from pyllmkit.domain.inference import InferenceResponse
 
 _MAX_REQUEST_BYTES = 1_048_576
 _MAX_RESPONSE_BYTES = 2_097_152
