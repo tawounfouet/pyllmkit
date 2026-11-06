@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import re
 
+from pyllmkit.adapters.inference.strict_json import decode_provider_json_object
 from pyllmkit.application.inference import InvocationPortError, PreparedInvocation
 from pyllmkit.domain.capabilities import SupportLevel
 from pyllmkit.domain.inference import (
@@ -115,7 +116,7 @@ def decode_gemini_response(raw: bytes, prepared: PreparedInvocation) -> Inferenc
     if type(raw) is not bytes or type(prepared) is not PreparedInvocation:
         raise InvocationPortError("provider_protocol_error")
     try:
-        result = json.loads(raw, object_pairs_hook=_unique)
+        result = decode_provider_json_object(raw)
     except (ValueError, UnicodeError, TypeError, RecursionError):
         raise InvocationPortError("provider_protocol_error") from None
     if type(result) is not dict:
