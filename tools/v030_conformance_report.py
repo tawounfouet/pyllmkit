@@ -31,6 +31,10 @@ _REQUIRED: dict[str, int] = {
     "test_ollama_json_content_type_is_explicitly_supported": 2,
     "test_native_transport_error_is_sanitized_and_nonretryable": 48,
     "test_native_response_failure_is_strict_and_nonleaking": 72,
+    "test_explicit_native_parameter_is_mapped_or_rejected": 48,
+    "test_adapter_rejects_non_native_assessment_even_when_prepared": 72,
+    "test_adapter_rejects_missing_assessment_without_silent_acceptance": 18,
+    "test_application_refuses_non_native_support_before_adapter": 24,
 }
 _ALLOWED = ("PASS", "FAIL", "NOT_APPLICABLE", "UNSUPPORTED", "BLOCKED")
 _FAILURE_TYPE = re.compile(r"[A-Za-z0-9_.]{1,100}\Z")
