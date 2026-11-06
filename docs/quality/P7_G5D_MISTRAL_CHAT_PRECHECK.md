@@ -33,3 +33,7 @@ preuve de connectivité ni de facturation. Aucun test cloud réel ou
 release. G1..G5c et revues indépendantes prérequis avant fusion.
 
 Documentation: https://docs.mistral.ai/inference/conversations/chat-completion
+
+## Préqualification CI et composition transversale
+
+Sur le code pré-documentaire `a75b08c4b5de445299d4c9ecfcf7750096c43cab`, les jobs CI sur Python 3.13 ont validé 1 640 tests généraux, 56 tests Mistral et 98,05 % de couverture avec branches des deux nouveaux modules Mistral. Le présent commit fixe le seuil à 95 %, ajoute le test transversal de routage des six fournisseurs en sync/async, et l'exemple offline #38. Il faut confirmer la CI sur le SHA final du présent commit.

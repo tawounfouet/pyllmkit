@@ -54,7 +54,7 @@ jobs:
           python -m pytest -q tests/acceptance/test_p7_l75c_xai_responses.py --cov=pyllmkit.adapters.inference.xai_responses --cov=pyllmkit.adapters.inference.xai_responses_mapping --cov-branch --cov-report=term-missing --cov-fail-under=95
       - name: P7 L7.5d Mistral Chat mapping and adapter branch coverage
         run: |
-          python -m pytest -q tests/acceptance/test_p7_l75d_mistral_chat.py --cov=pyllmkit.adapters.inference.mistral_chat --cov=pyllmkit.adapters.inference.mistral_chat_mapping --cov-branch --cov-report=term-missing --cov-fail-under=85
+          python -m pytest -q tests/acceptance/test_p7_l75d_mistral_chat.py --cov=pyllmkit.adapters.inference.mistral_chat --cov=pyllmkit.adapters.inference.mistral_chat_mapping --cov-branch --cov-report=term-missing --cov-fail-under=95
       - name: Offline examples
         run: |
           python examples/01_define_model.py
@@ -94,6 +94,7 @@ jobs:
           python examples/35_google_gemini_mock.py
           python examples/36_xai_responses_mock.py
           python examples/37_mistral_chat_mock.py
+          python examples/38_six_provider_offline_registry.py
       - name: Build wheel and sdist
         run: python -m build
       - name: Wheel clean environment smoke
