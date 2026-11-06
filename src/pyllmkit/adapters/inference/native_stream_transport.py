@@ -239,7 +239,7 @@ class NativeProviderStreamingAdapter:
             if self.config.profile is ProviderProfile.GOOGLE:
                 import re
                 if re.fullmatch(
-                    re.escape(base) + r"/[A-Za-z0-9][A-Za-z0-9._-]{0,127}:streamGenerateContent\\?alt=sse",
+                    re.escape(base) + r"/[A-Za-z0-9][A-Za-z0-9._-]{0,127}:streamGenerateContent\?alt=sse",
                     target,
                 ) is None:
                     raise InvocationPortError("adapter_connection_invalid")

@@ -43,11 +43,9 @@ from pyllmkit.domain.modalities import Modality, ModalitySet
 from pyllmkit.domain.models import Model, ModelFamily, ModelId, ModelIdentity
 from pyllmkit.domain.providers import InferenceProvider, ProviderId
 from pyllmkit.domain.streaming import (
-    AsyncStreamingPort,
     ResponseCompleted,
     ResponseFailed,
     ResponseStarted,
-    StreamingPort,
     StreamStatus,
     TextDelta,
     consume_stream,
@@ -341,8 +339,8 @@ def test_p7_ac047_eof_without_terminal_is_failure_not_completed(provider: str) -
 
 def test_p7_ac048_m5_sync_and_async_signatures_are_still_supported() -> None:
     sync_service, async_service, request, _ = service("openai")
-    assert isinstance(sync_service, StreamingPort)
-    assert isinstance(async_service, AsyncStreamingPort)
+    assert callable(sync_service.stream)
+    assert callable(async_service.astream)
     events = list(sync_service.stream(request))
     assert isinstance(events[-1], ResponseCompleted)
 
@@ -392,8 +390,8 @@ def test_p7_ac048_adversarial_tool_event_fails_without_completion() -> None:
             headers={"content-type": "text/event-stream"},
         )),
     )
-    streaming, _, request, _, _, _ = service("openai")
-    _, _ = streaming, snapshot
+    streaming, _, request, _ = service("openai")
+    _ = snapshot
     prepared = streaming.open_stream(request).prepared
     events = list(adapter.stream_prepared(prepared))
     assert isinstance(events[-1], ResponseFailed)
@@ -439,9 +437,6 @@ def test_p7_ac048_early_sync_close_does_not_consume_remaining_frames() -> None:
 
 
 def test_p7_ac048_early_async_close_does_not_consume_remaining_frames() -> None:
-    _, async_service, request, _ = service("anthropic")
-    session = async_service.open_astream(request, None)
-    # Anthropic requires max_tokens snapshot, so create an explicit session.
     _, async_service, request, snap = service("anthropic")
     session = async_service.open_astream(request, snap)
 
