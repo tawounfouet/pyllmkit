@@ -33,7 +33,10 @@ jobs:
           python -m pytest -q --cov=pyllmkit.domain --cov-branch --cov-report=term-missing --cov-report=xml --cov-fail-under=95
       - name: P7 L7.1 application and fake adapter branch coverage
         run: |
-          python -m pytest -q tests/acceptance/test_p7_l71_inference_kernel.py --cov=pyllmkit.application.inference --cov=pyllmkit.adapters.inference --cov-branch --cov-report=term-missing --cov-fail-under=85
+          python -m pytest -q tests/acceptance/test_p7_l71_inference_kernel.py --cov=pyllmkit.application.inference --cov=pyllmkit.adapters.inference.fake --cov-branch --cov-report=term-missing --cov-fail-under=85
+      - name: P7 L7.2 security and adapter composition coverage
+        run: |
+          python -m pytest -q tests/acceptance/test_p7_l72_secure_adapter_registry.py --cov=pyllmkit.adapters.inference.security --cov=pyllmkit.adapters.inference.registry --cov=pyllmkit.adapters.inference.routing --cov=pyllmkit.adapters.inference.errors --cov=pyllmkit.protocols.credentials --cov-branch --cov-report=term-missing --cov-fail-under=95
       - name: Offline examples
         run: |
           python examples/01_define_model.py
@@ -65,6 +68,7 @@ jobs:
           python examples/27_offline_discovery_merge.py
           python examples/28_full_registry_walkthrough.py
           python examples/29_offline_inference_kernel.py
+          python examples/30_secure_registry_fake.py
       - name: Build wheel and sdist
         run: python -m build
       - name: Wheel clean environment smoke

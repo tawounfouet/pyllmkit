@@ -1,5 +1,38 @@
-"""L7.1 pure fake adapters for offline inference contract testing."""
+"""P7 executable composition contracts, fake adapters and guarded endpoints."""
 
+from pyllmkit.protocols.credentials import (
+    CredentialRef,
+    CredentialResolutionError,
+    SecretValue,
+    SecurityConfigurationError,
+)
+
+from .errors import normalize_http_failure
 from .fake import AsyncFakeInferenceAdapter, FakeInferenceAdapter
+from .registry import (
+    AdapterKey,
+    AdapterRegistration,
+    AdapterRegistry,
+    AdapterRegistryError,
+)
+from .routing import RegisteredAsyncInferencePort, RegisteredInferencePort
+from .security import EnvCredentialResolver, ProviderConnectionConfig, ProviderProfile
 
-__all__ = ["FakeInferenceAdapter", "AsyncFakeInferenceAdapter"]
+__all__ = [
+    "AsyncFakeInferenceAdapter",
+    "FakeInferenceAdapter",
+    "AdapterKey",
+    "AdapterRegistration",
+    "AdapterRegistry",
+    "AdapterRegistryError",
+    "RegisteredInferencePort",
+    "RegisteredAsyncInferencePort",
+    "CredentialRef",
+    "CredentialResolutionError",
+    "EnvCredentialResolver",
+    "ProviderConnectionConfig",
+    "ProviderProfile",
+    "SecretValue",
+    "SecurityConfigurationError",
+    "normalize_http_failure",
+]
