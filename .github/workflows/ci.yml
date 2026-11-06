@@ -60,7 +60,7 @@ jobs:
           python -m pytest -q tests/acceptance/test_p7_l76_native_streaming.py tests/acceptance/test_p7_l76_security_lifecycle.py --cov=pyllmkit.adapters.inference.native_stream_mapping --cov=pyllmkit.adapters.inference.native_stream_transport --cov=pyllmkit.application.inference.streaming --cov-branch --cov-report=term-missing --cov-fail-under=90
       - name: P7 L7.7 stream resilience and cancellation branch coverage
         run: |
-          python -m pytest -q tests/acceptance/test_p7_l77_stream_resilience.py --cov=pyllmkit.application.inference.streaming_resilience --cov-branch --cov-report=term-missing --cov-fail-under=85
+          python -m pytest -q tests/acceptance/test_p7_l77_stream_resilience.py --cov=pyllmkit.application.inference.streaming_resilience --cov-branch --cov-report=term-missing --cov-fail-under=95
       - name: Offline examples
         run: |
           python examples/01_define_model.py
