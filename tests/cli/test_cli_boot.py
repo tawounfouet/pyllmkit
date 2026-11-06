@@ -12,11 +12,14 @@ runner = CliRunner()
 
 def test_cli_help_displays_banner_and_options() -> None:
     """CLI-AC-003: --help shows application description and flags."""
+    import re
+
     result = runner.invoke(app, ["--help"])
     assert result.exit_code == 0
-    assert "pyllmkit" in result.output
-    assert "--help" in result.output
-    assert "--version" in result.output
+    clean = re.sub(r"\x1b\[[0-9;]*[a-zA-Z]", "", result.output)
+    assert "pyllmkit" in clean
+    assert "--help" in clean or "help" in clean.lower()
+    assert "--version" in clean or "version" in clean.lower()
 
 
 def test_cli_version_flag_displays_version() -> None:

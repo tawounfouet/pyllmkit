@@ -14,7 +14,6 @@ from ..config import (
     API_KEY_ENV_MAPPINGS,
     ensure_in_gitignore,
     generate_template_config,
-    get_config,
     load_and_apply_config,
     mask_secret,
 )
@@ -30,7 +29,7 @@ config_app = typer.Typer(
 @config_app.command(name="show", help="Afficher la configuration active, les clés d'API et les chemins de stockage.")
 def config_show() -> None:
     """Inspecter la configuration active avec cascade local/global."""
-    cfg = get_config()
+    cfg = load_and_apply_config()
 
     if cfg.config_path and cfg.global_config_path and cfg.config_path != cfg.global_config_path:
         header = (
@@ -120,7 +119,7 @@ def config_show() -> None:
 @config_app.command(name="path", help="Afficher le chemin du fichier de configuration actif.")
 def config_path() -> None:
     """Afficher le chemin du fichier de configuration."""
-    cfg = get_config()
+    cfg = load_and_apply_config()
     if cfg.config_path and cfg.global_config_path and cfg.config_path != cfg.global_config_path:
         console.print(f"[bold green]✓[/bold green] Fichier local (prioritaire) : [bold cyan]{cfg.config_path}[/bold cyan]")
         console.print(f"[bold blue]ℹ[/bold blue] Fichier global (fallback)   : [dim]{cfg.global_config_path}[/dim]")
