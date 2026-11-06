@@ -19,6 +19,48 @@ PROVIDER_FAMILY_MAP = {
 }
 
 
+
+# Discovery uses fixed endpoints. Never put API credentials in query strings.
+_ALLOWED_ENDPOINTS = frozenset({
+    "https://api.openai.com/v1/models",
+    "https://api.anthropic.com/v1/models",
+    "https://generativelanguage.googleapis.com/v1beta/models",
+    "https://api.mistral.ai/v1/models",
+    "https://api.x.ai/v1/models",
+    "http://127.0.0.1:11434/api/tags",
+})
+_MAX_DISCOVERY_BYTES = 4 * 1024 * 1024
+
+
+class _DenyRedirects(urllib.request.HTTPRedirectHandler):
+    """Disallow forwarding Authorization and API keys to any redirect target."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+def _safe_open(request: urllib.request.Request, timeout: float):
+    """Use an isolated, proxy-free, redirect-free opener for known destinations."""
+    if request.full_url not in _ALLOWED_ENDPOINTS:
+        raise ValueError("discovery_destination_not_approved")
+    if isinstance(timeout, bool) or not isinstance(timeout, (int, float)) or not 0 < timeout <= 60:
+        raise ValueError("discovery_timeout_invalid")
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), _DenyRedirects())
+    return opener.open(request, timeout=timeout)
+
+
+def _get_json(url: str, headers: dict[str, str], timeout: float) -> dict[str, Any]:
+    request = urllib.request.Request(url, headers=headers)
+    with _safe_open(request, timeout) as response:
+        raw = response.read(_MAX_DISCOVERY_BYTES + 1)
+    if len(raw) > _MAX_DISCOVERY_BYTES:
+        raise ValueError("discovery_response_too_large")
+    data = json.loads(raw.decode("utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError("discovery_response_invalid")
+    return data
+
+
 def get_discovered_models_path(local: bool = False) -> Path:
     """Resolve destination path for discovered models JSON cache."""
     if local:
@@ -80,11 +122,9 @@ def fetch_provider_models(
             raise ValueError("Clé d'API OpenAI requise pour interroger le catalogue")
         url = "https://api.openai.com/v1/models"
         headers["Authorization"] = f"Bearer {api_key}"
-        req = urllib.request.Request(url, headers=headers)
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-            items = data.get("data", [])
-            return sorted(item["id"] for item in items if isinstance(item, dict) and "id" in item)
+        data = _get_json(url, headers, timeout)
+        items = data.get("data", [])
+        return sorted(item["id"] for item in items if isinstance(item, dict) and "id" in item)
 
     elif prov == "anthropic":
         if not api_key:
@@ -92,67 +132,58 @@ def fetch_provider_models(
         url = "https://api.anthropic.com/v1/models"
         headers["x-api-key"] = api_key
         headers["anthropic-version"] = "2023-06-01"
-        req = urllib.request.Request(url, headers=headers)
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-            items = data.get("data", [])
-            return sorted(item["id"] for item in items if isinstance(item, dict) and "id" in item)
+        data = _get_json(url, headers, timeout)
+        items = data.get("data", [])
+        return sorted(item["id"] for item in items if isinstance(item, dict) and "id" in item)
 
     elif prov in ("google", "gemini"):
         if not api_key:
             raise ValueError("Clé d'API Gemini requise pour interroger le catalogue")
-        url = f"https://generativelanguage.googleapis.com/v1beta/models?key={api_key}"
-        req = urllib.request.Request(url, headers=headers)
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-            items = data.get("models", [])
-            results = []
-            for item in items:
-                name = item.get("name", "")
-                if name.startswith("models/"):
-                    name = name[len("models/"):]
-                if name:
-                    results.append(name)
-            return sorted(results)
+        url = "https://generativelanguage.googleapis.com/v1beta/models"
+        headers["x-goog-api-key"] = api_key
+        data = _get_json(url, headers, timeout)
+        items = data.get("models", [])
+        results = []
+        for item in items:
+            name = item.get("name", "")
+            if name.startswith("models/"):
+                name = name[len("models/"):]
+            if name:
+                results.append(name)
+        return sorted(results)
 
     elif prov == "mistral":
         if not api_key:
             raise ValueError("Clé d'API Mistral requise pour interroger le catalogue")
         url = "https://api.mistral.ai/v1/models"
         headers["Authorization"] = f"Bearer {api_key}"
-        req = urllib.request.Request(url, headers=headers)
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-            items = data.get("data", [])
-            return sorted(item["id"] for item in items if isinstance(item, dict) and "id" in item)
+        data = _get_json(url, headers, timeout)
+        items = data.get("data", [])
+        return sorted(item["id"] for item in items if isinstance(item, dict) and "id" in item)
 
     elif prov == "xai":
         if not api_key:
             raise ValueError("Clé d'API xAI requise pour interroger le catalogue")
         url = "https://api.x.ai/v1/models"
         headers["Authorization"] = f"Bearer {api_key}"
-        req = urllib.request.Request(url, headers=headers)
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-            items = data.get("data", [])
-            return sorted(item["id"] for item in items if isinstance(item, dict) and "id" in item)
+        data = _get_json(url, headers, timeout)
+        items = data.get("data", [])
+        return sorted(item["id"] for item in items if isinstance(item, dict) and "id" in item)
 
     elif prov == "ollama":
-        url = "http://localhost:11434/api/tags"
-        req = urllib.request.Request(url, headers=headers)
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-            items = data.get("models", [])
-            results = []
-            for item in items:
-                name = item.get("name", "")
-                if not name:
-                    continue
-                if name.endswith(":latest"):
-                    name = name[:-7]
-                if name and name not in results:
-                    results.append(name)
-            return sorted(results)
+        url = "http://127.0.0.1:11434/api/tags"
+        data = _get_json(url, headers, timeout)
+        items = data.get("models", [])
+        results = []
+        for item in items:
+            name = item.get("name", "")
+            if not name:
+                continue
+            if name.endswith(":latest"):
+                name = name[:-7]
+            if name and name not in results:
+                results.append(name)
+        return sorted(results)
 
     else:
         raise ValueError(f"Fournisseur non supporté pour la synchronisation : {prov}")
@@ -214,7 +245,7 @@ def sync_configured_providers(
         except Exception as exc:
             results[prov] = {
                 "status": "error",
-                "message": f"Échec ({exc})",
+                "message": f"Échec de synchronisation ({type(exc).__name__})",
                 "count": 0,
             }
 
