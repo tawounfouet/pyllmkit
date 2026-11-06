@@ -189,8 +189,7 @@ def test_p7_ac012_explicit_credential_reference_no_secret_in_repr() -> None:
         missing.resolve(ref)
 
 
-@pytest.mark.parametrize("value", ("", " ", "../wrong", "ABC
-X", "x" * 81, 123))
+@pytest.mark.parametrize("value", ("", " ", "../wrong", "ABC\nX", "x" * 81, 123))
 def test_p7_ac012_invalid_credential_references_fail_closed(value: object) -> None:
     with pytest.raises(SecurityConfigurationError, match="invalid_credential_reference"):
         CredentialRef(value)  # type: ignore[arg-type]

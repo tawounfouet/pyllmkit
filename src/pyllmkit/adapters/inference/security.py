@@ -37,7 +37,7 @@ class CredentialRef:
         return "CredentialRef(<redacted>)"
 
 
-@dataclass(frozen=True, slots=True, repr=False)
+@dataclass(frozen=True, slots=True, repr=False, eq=False)
 class SecretValue:
     """Secret retained only in infrastructure; explicit reveal by a trusted adapter."""
 
@@ -172,13 +172,16 @@ class ProviderConnectionConfig:
 
     def _validate_local_endpoint(self) -> None:
         """Allow only IP literals 127.0.0.1 and ::1, with an explicit TCP port."""
+        if any(ord(char) <= 32 or ord(char) > 126 for char in self.endpoint_url):
+            raise SecurityConfigurationError("endpoint_not_approved")
         try:
             parsed = urlsplit(self.endpoint_url)
             port = parsed.port
         except ValueError:
             raise SecurityConfigurationError("endpoint_not_approved") from None
         if (
-            parsed.scheme != "http"
+            self.endpoint_url != parsed.geturl()
+            or parsed.scheme != "http"
             or parsed.hostname not in ("127.0.0.1", "::1")
             or parsed.username is not None
             or parsed.password is not None
