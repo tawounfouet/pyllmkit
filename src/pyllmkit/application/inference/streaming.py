@@ -17,6 +17,11 @@ from pyllmkit.application.inference.contracts import (
     PreparedInvocation,
 )
 from pyllmkit.application.inference.service import _InvocationPipeline
+from pyllmkit.application.inference.streaming_resilience import (
+    StreamCancellationSignal,
+    aiter_resilient,
+    iter_resilient,
+)
 from pyllmkit.application.registry import DeploymentResolver
 from pyllmkit.domain.inference import (
     DeploymentId,
@@ -54,14 +59,28 @@ class StreamingSession:
     prepared: PreparedInvocation = field(repr=False)
     adapter: PreparedStreamingPort = field(repr=False)
     _one_shot: _OneShot = field(default_factory=_OneShot, repr=False, compare=False)
+    _cancellation: StreamCancellationSignal = field(
+        default_factory=StreamCancellationSignal, repr=False, compare=False,
+    )
 
     @property
     def run_id(self) -> InferenceRunId:
         return self.prepared.context.run_id
 
+    @property
+    def cancelled(self) -> bool:
+        return self._cancellation.cancelled
+
+    def cancel(self) -> None:
+        """Stop local consumption when the iterator is next resumed."""
+        self._cancellation.cancel()
+
     def __iter__(self) -> Iterator[StreamEvent]:
         self._one_shot.claim()
-        return self.adapter.stream_prepared(self.prepared)
+        return iter_resilient(
+            lambda: self.adapter.stream_prepared(self.prepared),
+            self.run_id, self._cancellation,
+        )
 
 
 @dataclass(frozen=True, slots=True)
@@ -71,14 +90,28 @@ class AsyncStreamingSession:
     prepared: PreparedInvocation = field(repr=False)
     adapter: AsyncPreparedStreamingPort = field(repr=False)
     _one_shot: _OneShot = field(default_factory=_OneShot, repr=False, compare=False)
+    _cancellation: StreamCancellationSignal = field(
+        default_factory=StreamCancellationSignal, repr=False, compare=False,
+    )
 
     @property
     def run_id(self) -> InferenceRunId:
         return self.prepared.context.run_id
 
+    @property
+    def cancelled(self) -> bool:
+        return self._cancellation.cancelled
+
+    def cancel(self) -> None:
+        """Request cooperative cancellation; no remote cancel is implied."""
+        self._cancellation.cancel()
+
     def __aiter__(self) -> AsyncIterator[StreamEvent]:
         self._one_shot.claim()
-        return self.adapter.astream_prepared(self.prepared)
+        return aiter_resilient(
+            lambda: self.adapter.astream_prepared(self.prepared),
+            self.run_id, self._cancellation,
+        )
 
 
 class StreamingInferenceService:
