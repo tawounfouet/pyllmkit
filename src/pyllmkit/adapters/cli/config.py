@@ -420,7 +420,7 @@ storage:
 
 defaults:
   model: "gpt-4o"
-  live: true
+  live: false
   temperature: 0.7
   max_tokens: 1500
   system_prompt: "Tu es un assistant IA expert dédié à ce projet."
@@ -433,7 +433,7 @@ defaults:
   },
   "defaults": {
     "model": "gpt-4o",
-    "live": true,
+    "live": false,
     "temperature": 0.7,
     "max_tokens": 1500,
     "system_prompt": "Tu es un assistant IA expert dédié à ce projet."
@@ -460,7 +460,7 @@ defaults:
   model: "gpt-4o"
   temperature: 0.7
   max_tokens: 1000
-  live: true
+  live: false
   system_prompt: "Tu es un assistant IA concis et précis."
 """
 
@@ -480,7 +480,7 @@ defaults:
     "model": "gpt-4o",
     "temperature": 0.7,
     "max_tokens": 1000,
-    "live": true,
+    "live": false,
     "system_prompt": "Tu es un assistant IA concis et précis."
   }
 }
