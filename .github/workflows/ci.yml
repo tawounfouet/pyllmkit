@@ -58,6 +58,9 @@ jobs:
       - name: P7 L7.6 six-provider stream mapping and transport branch coverage
         run: |
           python -m pytest -q tests/acceptance/test_p7_l76_native_streaming.py tests/acceptance/test_p7_l76_security_lifecycle.py --cov=pyllmkit.adapters.inference.native_stream_mapping --cov=pyllmkit.adapters.inference.native_stream_transport --cov=pyllmkit.application.inference.streaming --cov-branch --cov-report=term-missing --cov-fail-under=90
+      - name: P7 L7.7 stream resilience and cancellation branch coverage
+        run: |
+          python -m pytest -q tests/acceptance/test_p7_l77_stream_resilience.py --cov=pyllmkit.application.inference.streaming_resilience --cov-branch --cov-report=term-missing --cov-fail-under=85
       - name: Offline examples
         run: |
           python examples/01_define_model.py
@@ -99,6 +102,7 @@ jobs:
           python examples/37_mistral_chat_mock.py
           python examples/38_six_provider_offline_registry.py
           python examples/39_native_streaming_contracts.py
+          python examples/40_stream_resilience_offline.py
       - name: Build wheel and sdist
         run: python -m build
       - name: Wheel clean environment smoke
