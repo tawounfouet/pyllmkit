@@ -9,7 +9,10 @@ from __future__ import annotations
 import json
 import re
 
-from pyllmkit.adapters.inference.strict_json import decode_provider_json_object
+from pyllmkit.adapters.inference.strict_json import (
+    decode_provider_json_object,
+    matches_model_alias,
+)
 from pyllmkit.application.inference import InvocationPortError, PreparedInvocation
 from pyllmkit.domain.capabilities import SupportLevel
 from pyllmkit.domain.inference import (
@@ -147,7 +150,7 @@ def decode_anthropic_messages_response(
     response = decode_provider_json_object(raw)
     if (response.get("type") != "message" or response.get("role") != "assistant"):
         raise InvocationPortError("provider_protocol_error")
-    if response.get("model") != prepared.native_model_alias:
+    if not matches_model_alias(response.get("model"), prepared.native_model_alias):
         raise InvocationPortError("provider_model_mismatch")
     stop = response.get("stop_reason")
     if type(stop) is not str:

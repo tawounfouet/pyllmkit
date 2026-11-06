@@ -27,6 +27,10 @@ BANNED_EXACT = frozenset(
         "boto3",
         "subprocess",
         "os",
+        "typer",
+        "rich",
+        "fastapi",
+        "pydantic",
         "pyllmkit.providers",
         "pyllmkit.infrastructure",
         "pyllmkit.facade",
@@ -100,7 +104,7 @@ def forbidden_imports(path: Path) -> list[str]:
                     if is_forbidden(submodule):
                         found.append(f"{path}:{node.lineno}: {submodule}")
         elif isinstance(node, ast.Call):
-            module = _literal_import(node)
-            if module is not None and is_forbidden(module):
-                found.append(f"{path}:{node.lineno}: dynamic:{module}")
+            dynamic_mod = _literal_import(node)
+            if dynamic_mod is not None and is_forbidden(dynamic_mod):
+                found.append(f"{path}:{node.lineno}: dynamic:{dynamic_mod}")
     return found

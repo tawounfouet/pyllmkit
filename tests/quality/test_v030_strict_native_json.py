@@ -7,7 +7,10 @@ projection. Error messages and exception chaining contain no native bodies.
 import pytest
 
 from pyllmkit.adapters.inference.native_stream_mapping import decode_native_json
-from pyllmkit.adapters.inference.strict_json import decode_provider_json_object
+from pyllmkit.adapters.inference.strict_json import (
+    decode_provider_json_object,
+    matches_model_alias,
+)
 from pyllmkit.application.inference import InvocationPortError
 
 
@@ -66,3 +69,32 @@ def test_native_json_accepts_valid_nested_object_without_type_coercion() -> None
 def test_invalid_root_types_are_sanitized(invalid_type: object) -> None:
     with pytest.raises(InvocationPortError, match="provider_protocol_error"):
         decode_provider_json_object(invalid_type)  # type: ignore[arg-type]
+
+
+def test_matches_model_alias_branch_coverage() -> None:
+    """Verify matches_model_alias branches for exact, snapshot, latest and mismatch cases."""
+    # Non-string checks
+    assert not matches_model_alias(123, "gpt-4o")
+    assert not matches_model_alias("gpt-4o", None)  # type: ignore[arg-type]
+
+    # Exact match
+    assert matches_model_alias("gpt-4o", "gpt-4o")
+
+    # Snapshot and tag suffixes
+    assert matches_model_alias("gpt-4o-2024-08-06", "gpt-4o")
+    assert matches_model_alias("gpt-4o-20240806", "gpt-4o")
+    assert matches_model_alias("gpt-4o-1234", "gpt-4o")
+    assert matches_model_alias("gpt-4o-latest", "gpt-4o")
+    assert matches_model_alias("llama3:8b-instruct", "llama3")
+
+    # Expected alias trimming -latest / :latest
+    assert matches_model_alias("gpt-4o", "gpt-4o-latest")
+    assert matches_model_alias("gpt-4o-2024-08-06", "gpt-4o-latest")
+    assert matches_model_alias("llama3", "llama3:latest")
+    assert matches_model_alias("llama3:8b", "llama3:latest")
+
+    # Non matching prefix or invalid suffix
+    assert not matches_model_alias("claude-3-opus", "gpt-4o")
+    assert not matches_model_alias("claude-3-opus", "gpt-4o-latest")
+    assert not matches_model_alias("gpt-4o-invalid-version-string", "gpt-4o")
+
