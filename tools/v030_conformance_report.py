@@ -26,8 +26,9 @@ _REQUIRED: dict[str, int] = {
     "test_status_failure_has_one_safe_code_and_one_transport_attempt": 108,
     "test_explicit_live_opt_in_gate_prevents_even_mock_transport_contact": 12,
     "test_native_response_projection_is_consistent_and_lossless": 24,
-    "test_native_stream_conformance": 60,
+    "test_native_stream_conformance": 84,
     "test_pre_cancelled_native_session_never_contacts_transport": 12,
+    "test_ollama_json_content_type_is_explicitly_supported": 2,
 }
 _ALLOWED = ("PASS", "FAIL", "NOT_APPLICABLE", "UNSUPPORTED", "BLOCKED")
 _FAILURE_TYPE = re.compile(r"[A-Za-z0-9_.]{1,100}\Z")
@@ -126,7 +127,12 @@ def _verify(records: list[dict[str, object]], process_status: int) -> list[str]:
             item["provider"] for item in records
             if item["scenario_id"] == scenario
         }
-        if providers != set(_PROVIDERS):
+        required_providers = (
+            {"ollama"}
+            if scenario == "test_ollama_json_content_type_is_explicitly_supported"
+            else set(_PROVIDERS)
+        )
+        if providers != required_providers:
             errors.append(f"incomplete_provider_axis:{scenario}")
     if not records:
         errors.append("empty_conformance_report")
