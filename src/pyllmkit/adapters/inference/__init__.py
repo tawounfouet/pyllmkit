@@ -7,7 +7,7 @@ from pyllmkit.protocols.credentials import (
     SecurityConfigurationError,
 )
 
-from .anthropic_messages import AsyncAnthropicMessagesAdapter, AnthropicMessagesAdapter
+from .anthropic_messages import AnthropicMessagesAdapter, AsyncAnthropicMessagesAdapter
 from .errors import normalize_http_failure
 from .fake import AsyncFakeInferenceAdapter, FakeInferenceAdapter
 from .ollama import AsyncOllamaAdapter, OllamaAdapter
