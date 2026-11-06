@@ -138,13 +138,14 @@ def build_models_table(models: Sequence[Model], show_pricing: bool = False) -> T
         table.add_column("Out / 1M", justify="right", style="yellow")
         table.add_column("Cache R", justify="right", style="dim")
         table.add_column("Cache W", justify="right", style="dim")
+        table.add_column("Relevé local", justify="right", style="dim")
     else:
         table.add_column("Capacités", style="green")
         table.add_column("Modalités In", style="yellow")
         table.add_column("Modalités Out", style="cyan")
 
     if not models:
-        empty_cols = ["-"] * (6 if show_pricing else 4)
+        empty_cols = ["-"] * (7 if show_pricing else 4)
         table.add_row("[dim]Aucun modèle déclaré[/dim]", *empty_cols)
         return table
 
@@ -158,9 +159,9 @@ def build_models_table(models: Sequence[Model], show_pricing: bool = False) -> T
                 out_cost = f"${spec.pricing.output_cost:.2f}"
                 cr = f"${spec.pricing.cache_read:.2f}" if spec.pricing.cache_read is not None else "-"
                 cw = f"${spec.pricing.cache_write:.2f}" if spec.pricing.cache_write is not None else "-"
-                table.add_row(m.id.value, fam, ctx_str, in_cost, out_cost, cr, cw)
+                table.add_row(m.id.value, fam, ctx_str, in_cost, out_cost, cr, cw, spec.last_verified or "?")
             else:
-                table.add_row(m.id.value, fam, "-", "-", "-", "-", "-")
+                table.add_row(m.id.value, fam, "-", "-", "-", "-", "-", "-")
         else:
             caps = ", ".join(cap.id.value for cap in m.capabilities) if m.capabilities else "standard"
             in_modes = (
