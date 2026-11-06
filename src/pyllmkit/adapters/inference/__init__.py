@@ -21,8 +21,11 @@ from .registry import (
 )
 from .routing import RegisteredAsyncInferencePort, RegisteredInferencePort
 from .security import EnvCredentialResolver, ProviderConnectionConfig, ProviderProfile
+from .xai_responses import AsyncXAIResponsesAdapter, XAIResponsesAdapter
 
 __all__ = [
+    "XAIResponsesAdapter",
+    "AsyncXAIResponsesAdapter",
     "GoogleGeminiAdapter",
     "AsyncGoogleGeminiAdapter",
     "AnthropicMessagesAdapter",
