@@ -245,7 +245,9 @@ class NativeProviderStreamingAdapter:
                     raise InvocationPortError("adapter_connection_invalid")
             else:
                 _validate_destination(self.config.profile, base, target)
-            if self.credentials is None:\n                raise InvocationPortError("credential_resolver_invalid")\n            key = _secret(self.config, self.credentials)
+            if self.credentials is None:
+                raise InvocationPortError("credential_resolver_invalid")
+            key = _secret(self.config, self.credentials)
         return target, body, _stream_headers(self.config.profile, key), _timeout(
             prepared, self.config,
         )
