@@ -10,7 +10,6 @@ import httpx
 import pytest
 
 from pyllmkit.application.inference import InvocationPortError
-
 from tests.conformance.providers import (
     FAKE_SECRET,
     PROVIDERS,
