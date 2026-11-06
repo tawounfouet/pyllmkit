@@ -51,7 +51,7 @@ inference tutorial. Actual offline inference composition remains in
   credential resolution / socket connections.
 - [x] CI invokes the example using both repository sources and the
   installed wheel environment with no optional dependency.
-- [ ] CI exact HEAD successful on Python 3.11, 3.12, 3.13.
+- [x] CI for implementation HEAD `e730b0f7c3b19b818fcfb57671d15c617a772e34`: [push #42231990405](https://github.com/tawounfouet/pyllmkit/actions/runs/42231990405) and [PR #42232045702](https://github.com/tawounfouet/pyllmkit/actions/runs/42232045702), all Python 3.11/3.12/3.13 jobs SUCCESS. General tests: 2 716 per version; conformance: 752 PASS; S7 no-HTTPX wheel step SUCCESS on all three. Revalidate documentation-final HEAD.
 - [ ] Public guide and example code independently reviewed.
 - [ ] S7-G7 decision recorded with explicit release prohibition.
 
