@@ -125,6 +125,8 @@ class OpenAIResponsesAdapter:
     def invoke(self, prepared: PreparedInvocation) -> InferenceResponse:
         if not self.allow_live:
             raise InvocationPortError("live_authorization_required")
+        # Freeze is not a security boundary against object.__setattr__ mutation.
+        _validate(self.config, self.credentials)
         body = _prepare(prepared)
         timeout = _deadline(prepared, self.config)
         secret = _authorize_secret(self.config, self.credentials)
@@ -174,6 +176,7 @@ class AsyncOpenAIResponsesAdapter:
     async def ainvoke(self, prepared: PreparedInvocation) -> InferenceResponse:
         if not self.allow_live:
             raise InvocationPortError("live_authorization_required")
+        _validate(self.config, self.credentials)
         body = _prepare(prepared)
         timeout = _deadline(prepared, self.config)
         secret = _authorize_secret(self.config, self.credentials)

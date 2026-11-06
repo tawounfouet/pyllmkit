@@ -22,6 +22,7 @@ from pyllmkit.adapters.inference.security import (
 )
 from pyllmkit.application.inference import InvocationPortError, PreparedInvocation
 from pyllmkit.domain.inference import InferenceResponse
+from pyllmkit.protocols.credentials import SecurityConfigurationError
 
 _MAX_REQUEST_BYTES = 1_048_576
 _MAX_RESPONSE_BYTES = 2_097_152
@@ -48,12 +49,12 @@ def _preflight(prepared: PreparedInvocation, config: ProviderConnectionConfig) -
         raise InvocationPortError("adapter_connection_invalid")
     if not config.allow_local or config.credential_ref is not None or config.follow_redirects:
         raise InvocationPortError("adapter_connection_invalid")
-    # Defense in depth: re-validate immutable connection data before transport.
-    from urllib.parse import urlsplit
-
-    endpoint = urlsplit(config.endpoint_url)
-    if endpoint.hostname not in ("127.0.0.1", "::1") or endpoint.path != "/api/chat":
-        raise InvocationPortError("adapter_connection_invalid")
+    # A frozen config may be tampered with after construction. Re-run the
+    # canonical loopback preflight, including scheme, userinfo and query.
+    try:
+        config._validate_local_endpoint()
+    except SecurityConfigurationError:
+        raise InvocationPortError("adapter_connection_invalid") from None
     body = encode_ollama_request(prepared)
     if len(body) > _MAX_REQUEST_BYTES:
         raise InvocationPortError("request_too_large")
