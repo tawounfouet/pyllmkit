@@ -7,6 +7,7 @@ from pyllmkit.protocols.credentials import (
     SecurityConfigurationError,
 )
 
+from .anthropic_messages import AsyncAnthropicMessagesAdapter, AnthropicMessagesAdapter
 from .errors import normalize_http_failure
 from .fake import AsyncFakeInferenceAdapter, FakeInferenceAdapter
 from .ollama import AsyncOllamaAdapter, OllamaAdapter
@@ -21,6 +22,8 @@ from .routing import RegisteredAsyncInferencePort, RegisteredInferencePort
 from .security import EnvCredentialResolver, ProviderConnectionConfig, ProviderProfile
 
 __all__ = [
+    "AnthropicMessagesAdapter",
+    "AsyncAnthropicMessagesAdapter",
     "OpenAIResponsesAdapter",
     "AsyncOpenAIResponsesAdapter",
     "OllamaAdapter",
