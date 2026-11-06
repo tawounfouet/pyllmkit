@@ -328,7 +328,7 @@ def test_registry_requires_exact_runtime_and_provider_combination() -> None:
     )
     rejected = _service(other, other_id, registry).invoke(other_req)
     assert rejected.run.failure is not None
-    assert rejected.run.failure.code == "adapter_unexpected_error"
+    assert rejected.run.failure.code == "adapter_not_registered"
     assert len(fake.calls) == 1
 
 
