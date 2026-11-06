@@ -9,9 +9,9 @@ from __future__ import annotations
 import asyncio
 import json
 from collections.abc import AsyncGenerator, AsyncIterator, Generator, Iterator
+from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from time import monotonic
-from dataclasses import dataclass, field
 
 from pyllmkit.adapters.inference.anthropic_messages_mapping import (
     encode_anthropic_messages_request,
