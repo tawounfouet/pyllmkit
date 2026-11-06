@@ -8,6 +8,7 @@ injected _test_transport is for hermetic MockTransport tests only.
 from __future__ import annotations
 
 import asyncio
+import re
 from datetime import UTC, datetime
 from typing import Any
 
@@ -40,6 +41,23 @@ def validate_cloud_connection(
         raise InvocationPortError("adapter_connection_invalid")
     if not isinstance(credentials, CredentialResolverPort):
         raise InvocationPortError("credential_resolver_invalid")
+
+
+def _validate_destination(profile: ProviderProfile, base_url: str, url: str) -> None:
+    if type(url) is not str:
+        raise InvocationPortError("adapter_connection_invalid")
+    if profile is ProviderProfile.GOOGLE:
+        prefix = base_url + "/"
+        if (
+            not url.startswith(prefix)
+            or re.fullmatch(
+                r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}:generateContent",
+                url[len(prefix):],
+            ) is None
+        ):
+            raise InvocationPortError("adapter_connection_invalid")
+    elif url != base_url:
+        raise InvocationPortError("adapter_connection_invalid")
 
 
 def validate_live_flag(value: bool) -> None:
@@ -138,6 +156,7 @@ def cloud_post_sync(
 ) -> bytes:
     """Single bounded request; does not decode a provider-specific payload."""
     validate_cloud_connection(config, credentials, profile=profile, base_url=base_url)
+    _validate_destination(profile, base_url, url)
     payload = require_body_limit(body)
     timeout = _timeout(prepared, config)
     key = _secret(config, credentials)

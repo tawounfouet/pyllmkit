@@ -37,3 +37,7 @@ Les tests utilisent HTTPX MockTransport. `allow_live=False` par défaut.
 Aucune clé réelle, aucune connexion Google, aucun coût, aucune release.
 Les gates #70-#74, la protection de main et les revues de sécurité sont
 pré-requis à un GO live. Streaming non implémenté.
+
+## Addendum technique
+
+CI initiale sur `25dbea6cfc8d4e1baa28a8686462f4a818d3c756` : 1 534 tests généraux réussis, 71 tests Gemini réussis, couverture 95,44 % du mapping + transport cloud. Le seuil de la CI est relevé à 95 %. Un contrôle secondaire du chemin demandé par le transport est ajouté pour refuser les URL arbitraires, en plus de la validation de la configuration et de l'alias. Le HEAD final doit être requalifié par GitHub Actions.

@@ -533,3 +533,32 @@ def test_gemini_httpx_optional_and_secret_errors_sanitized(monkeypatch: pytest.M
     with pytest.raises(InvocationPortError, match="credential_unavailable") as exc:
         _secret(CONFIG,Exploding())  # type: ignore[arg-type]
     assert "SECRET_IN_ERROR" not in str(exc.value)
+
+
+def test_cloud_destination_is_checked_again_after_app_validation() -> None:
+    from pyllmkit.adapters.inference.cloud_http import _validate_destination
+
+    with pytest.raises(InvocationPortError, match="adapter_connection_invalid"):
+        _validate_destination(
+            ProviderProfile.GOOGLE, CONFIG.endpoint_url,
+            "https://generativelanguage.googleapis.com/v1beta/models/../metadata",
+        )
+    with pytest.raises(InvocationPortError, match="adapter_connection_invalid"):
+        _validate_destination(
+            ProviderProfile.GOOGLE, CONFIG.endpoint_url, "https://evil.example/v1/responses",
+        )
+    with pytest.raises(InvocationPortError, match="adapter_connection_invalid"):
+        _validate_destination(
+            ProviderProfile.XAI, ProviderConnectionConfig.xai(REF).endpoint_url,
+            "https://evil.example/v1/responses",
+        )
+    with pytest.raises(InvocationPortError, match="adapter_connection_invalid"):
+        _validate_destination(
+            ProviderProfile.MISTRAL, ProviderConnectionConfig.mistral(REF).endpoint_url,
+            "https://api.mistral.ai/v1/chat/completions/extra",
+        )
+    _validate_destination(ProviderProfile.GOOGLE, CONFIG.endpoint_url, URL)
+    _validate_destination(
+        ProviderProfile.XAI, ProviderConnectionConfig.xai(REF).endpoint_url,
+        ProviderConnectionConfig.xai(REF).endpoint_url,
+    )
