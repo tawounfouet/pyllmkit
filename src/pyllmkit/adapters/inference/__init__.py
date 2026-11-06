@@ -8,6 +8,7 @@ from pyllmkit.protocols.credentials import (
 )
 
 from .errors import normalize_http_failure
+from .ollama import AsyncOllamaAdapter, OllamaAdapter
 from .fake import AsyncFakeInferenceAdapter, FakeInferenceAdapter
 from .registry import (
     AdapterKey,
@@ -19,6 +20,8 @@ from .routing import RegisteredAsyncInferencePort, RegisteredInferencePort
 from .security import EnvCredentialResolver, ProviderConnectionConfig, ProviderProfile
 
 __all__ = [
+    "OllamaAdapter",
+    "AsyncOllamaAdapter",
     "AsyncFakeInferenceAdapter",
     "FakeInferenceAdapter",
     "AdapterKey",
