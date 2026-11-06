@@ -38,12 +38,9 @@ def build_usage_panel(
     raw_finish = (
         response.finish_reason.code.value
         if (response and response.finish_reason)
-        else "stop"
+        else "unknown"
     )
-    if raw_finish == "unknown" and run.state.value == "completed":
-        finish_code = "stop"
-    else:
-        finish_code = raw_finish
+    finish_code = raw_finish
 
     in_tokens: int | None = None
     out_tokens: int | None = None
@@ -121,7 +118,7 @@ def build_usage_panel(
 def build_stream_usage_panel(
     run_id: str,
     duration_ms: float,
-    finish_reason: str,
+    finish_reason: str | None,
     in_tokens: int | None = None,
     out_tokens: int | None = None,
     cached_tokens: int | None = None,
@@ -132,7 +129,7 @@ def build_stream_usage_panel(
     exit_code: int = 0,
 ) -> Panel:
     """Format execution metrics and FinOps cost for streaming sessions."""
-    finish_code = finish_reason if finish_reason != "unknown" else "stop"
+    finish_code = finish_reason or "unknown"
     status_str = (
         "[green]completed[/green]"
         if exit_code == 0
