@@ -447,3 +447,293 @@ def test_p7_ac048_early_async_close_does_not_consume_remaining_frames() -> None:
         await stream.aclose()
 
     asyncio.run(run())
+
+
+@pytest.mark.parametrize("provider", PROVIDERS)
+def test_single_use_sync_session_prevents_repeat_network_with_same_run_id(provider: str) -> None:
+    sync, _, req, snap = service(provider)
+    session = sync.open_stream(req, snap)
+    first = list(session)
+    assert isinstance(first[-1], ResponseCompleted)
+    with pytest.raises(InvocationPreconditionError, match="stream_session_already_consumed"):
+        iter(session)
+
+
+@pytest.mark.parametrize("provider", PROVIDERS)
+def test_single_use_async_session_prevents_repeat_network_with_same_run_id(provider: str) -> None:
+    _, async_service, req, snap = service(provider)
+    session = async_service.open_astream(req, snap)
+
+    async def twice() -> None:
+        first = [event async for event in session]
+        assert isinstance(first[-1], ResponseCompleted)
+        with pytest.raises(InvocationPreconditionError, match="stream_session_already_consumed"):
+            aiter(session)
+
+    asyncio.run(twice())
+
+
+@pytest.mark.parametrize("provider", PROVIDERS)
+def test_wrong_provider_stream_binding_cannot_route_another_deployment(provider: str) -> None:
+    sync, _, req, snap = service(provider)
+    session = sync.open_stream(req, snap)
+    other = "openai" if provider != "openai" else "anthropic"
+    _, _, _, _, config, credentials = fixture(other)
+    mismatched = NativeProviderStreamingAdapter(
+        config, credentials, allow_live=True,
+        _test_transport=transport(other),
+    )
+    events = list(mismatched.stream_prepared(session.prepared))
+    assert isinstance(events[0], ResponseStarted)
+    assert isinstance(events[-1], ResponseFailed)
+    assert events[-1].reason_code == "adapter_connection_invalid"
+
+
+@pytest.mark.parametrize("provider", PROVIDERS)
+def test_provider_non_200_http_status_never_completes_stream(provider: str) -> None:
+    sync, _, req, snap = service(provider)
+    cfg = sync.open_stream(req, snap).adapter.config
+    creds = sync.open_stream(req, snap).adapter.credentials
+    mime = "application/x-ndjson" if provider == "ollama" else "text/event-stream"
+    adapter = NativeProviderStreamingAdapter(
+        cfg, creds, allow_live=True,
+        _test_transport=httpx.MockTransport(lambda _: httpx.Response(
+            429, json={"error": {"message": "SECRET_BODY"}},
+            headers={"content-type": mime},
+        )),
+    )
+    events = list(adapter.stream_prepared(sync.open_stream(req, snap).prepared))
+    assert isinstance(events[-1], ResponseFailed)
+    assert events[-1].reason_code == "rate_limited"
+    assert "SECRET_BODY" not in repr(events)
+
+
+@pytest.mark.parametrize("provider", PROVIDERS)
+def test_wrong_stream_mime_is_not_parsed_as_json_or_sse(provider: str) -> None:
+    sync, _, req, snap = service(provider)
+    session = sync.open_stream(req, snap)
+    original = session.adapter
+    adapter = NativeProviderStreamingAdapter(
+        original.config, original.credentials, allow_live=True,
+        _test_transport=httpx.MockTransport(lambda _: httpx.Response(
+            200, content=wire(provider), headers={"content-type": "text/html"},
+        )),
+    )
+    events = list(adapter.stream_prepared(session.prepared))
+    assert isinstance(events[-1], ResponseFailed)
+    assert events[-1].reason_code == "provider_protocol_error"
+
+
+@pytest.mark.parametrize("provider", PROVIDERS)
+def test_stream_transport_connection_timeout_and_remote_errors(provider: str) -> None:
+    sync, _, req, snap = service(provider)
+    session = sync.open_stream(req, snap)
+    for error, code in (
+        (httpx.ReadTimeout("SECRET_TLS"), "provider_timeout"),
+        (httpx.ConnectError("SECRET_TLS"), "connection_failure"),
+        (httpx.RemoteProtocolError("SECRET_TLS"), "provider_protocol_error"),
+    ):
+        def fail(_: httpx.Request, exception: Exception = error) -> httpx.Response:
+            raise exception
+
+        adapter = NativeProviderStreamingAdapter(
+            session.adapter.config, session.adapter.credentials, allow_live=True,
+            _test_transport=httpx.MockTransport(fail),
+        )
+        events = list(adapter.stream_prepared(session.prepared))
+        assert isinstance(events[-1], ResponseFailed)
+        assert events[-1].reason_code == code
+        assert "SECRET_TLS" not in repr(events)
+
+
+@pytest.mark.parametrize("provider", PROVIDERS)
+def test_stream_async_failure_codes_are_sanitized(provider: str) -> None:
+    _, async_service, req, snap = service(provider)
+    prepared_session = async_service.open_astream(req, snap)
+
+    async def fail(_: httpx.Request) -> httpx.Response:
+        raise httpx.ReadTimeout("SECRET_ASYNC")
+
+    adapter = NativeProviderStreamingAdapter(
+        prepared_session.adapter.config, prepared_session.adapter.credentials,
+        allow_live=True, _test_transport=httpx.MockTransport(fail),
+    )
+
+    async def collect() -> list[object]:
+        return [event async for event in adapter.astream_prepared(prepared_session.prepared)]
+
+    events = asyncio.run(collect())
+    assert isinstance(events[-1], ResponseFailed)
+    assert events[-1].reason_code == "provider_timeout"
+    assert "SECRET_ASYNC" not in repr(events)
+
+
+@pytest.mark.parametrize("provider", PROVIDERS)
+def test_stream_request_rejected_if_deadline_is_past(provider: str) -> None:
+    from dataclasses import replace
+    from datetime import UTC, datetime
+
+    sync, async_service, req, snap = service(provider)
+    prepared = sync.open_stream(req, snap).prepared
+    invalid = replace(prepared, context=replace(
+        prepared.context, deadline=datetime(2000, 1, 1, tzinfo=UTC),
+    ))
+    adapter = sync.open_stream(req, snap).adapter
+    first = list(adapter.stream_prepared(invalid))
+    assert isinstance(first[-1], ResponseFailed)
+    assert first[-1].reason_code == "provider_timeout"
+
+    async def collect() -> list[object]:
+        return [e async for e in async_service.open_astream(req, snap).adapter.astream_prepared(invalid)]
+    second = asyncio.run(collect())
+    assert isinstance(second[-1], ResponseFailed)
+    assert second[-1].reason_code == "provider_timeout"
+
+
+@pytest.mark.parametrize("provider", PROVIDERS)
+def test_stream_injected_native_unexpected_error_uses_safe_terminal(provider: str) -> None:
+    sync, _, req, snap = service(provider)
+    session = sync.open_stream(req, snap)
+
+    def fail(_: httpx.Request) -> httpx.Response:
+        raise ValueError("NATIVE-SECRET-UNEXPECTED")
+
+    adapter = NativeProviderStreamingAdapter(
+        session.adapter.config, session.adapter.credentials, allow_live=True,
+        _test_transport=httpx.MockTransport(fail),
+    )
+    events = list(adapter.stream_prepared(session.prepared))
+    assert isinstance(events[-1], ResponseFailed)
+    assert events[-1].reason_code == "adapter_unexpected_error"
+    assert "NATIVE-SECRET" not in repr(events)
+
+
+@pytest.mark.parametrize("provider", ("openai", "xai", "anthropic", "google", "mistral"))
+def test_unknown_sse_event_does_not_disappear_silently(provider: str) -> None:
+    sync, _, req, snap = service(provider)
+    session = sync.open_stream(req, snap)
+    body = _sse("danger.tool_call", {
+        "type": "danger.tool_call", "arguments": "SECRET_NATIVE",
+    })
+    adapter = NativeProviderStreamingAdapter(
+        session.adapter.config, session.adapter.credentials, allow_live=True,
+        _test_transport=httpx.MockTransport(lambda _: httpx.Response(
+            200, content=body.encode(), headers={"content-type": "text/event-stream"},
+        )),
+    )
+    events = list(adapter.stream_prepared(session.prepared))
+    assert isinstance(events[-1], ResponseFailed)
+    assert not any(isinstance(x, ResponseCompleted) for x in events)
+    assert "SECRET_NATIVE" not in repr(events)
+
+
+def test_sse_frame_parser_rejects_unsupported_fields_duplicate_event_and_partial_data() -> None:
+    cases = (
+        ("retry: 3000", ""),
+        ("id: 42", ""),
+        ("event: a", "event: b", "data: {}", ""),
+        ("data: 1", "event: b", ""),
+    )
+    for lines in cases:
+        with pytest.raises(Exception, match="provider_protocol_error"):
+            list(_sse_frames(iter(lines)))
+    assert list(_sse_frames(iter((": keep-alive", "")))) == []
+
+
+def test_stream_line_budgets_and_parser_limits_are_enforced() -> None:
+    from pyllmkit.adapters.inference.native_stream_transport import (
+        _bounded_lines,
+    )
+
+    with pytest.raises(Exception, match="stream_wire_limit"):
+        list(_bounded_lines(iter(("x" * 262_145,))))
+    with pytest.raises(Exception, match="stream_wire_limit"):
+        list(_bounded_lines(iter(("x" * 262_144,) * 49)))
+
+
+@pytest.mark.parametrize("profile", (
+    ProviderProfile.OLLAMA, ProviderProfile.GOOGLE, ProviderProfile.OPENAI,
+    ProviderProfile.ANTHROPIC, ProviderProfile.XAI, ProviderProfile.MISTRAL,
+))
+def test_stream_decoder_rejects_invalid_native_data_and_limit(profile: ProviderProfile) -> None:
+    case = profile.value
+    _, _, req, snap = service(case)
+    sync, _, _, _ = service(case)
+    prepared = sync.open_stream(req, snap).prepared
+    decoder = NativeStreamDecoder(profile, prepared)
+    with pytest.raises(Exception, match="provider_protocol_error"):
+        decoder.push("json", {"unexpected": "message"})
+    with pytest.raises(Exception, match="stream_event_limit"):
+        decoder._events = 100_000
+        decoder.push("ignored", {})
+    with pytest.raises(Exception, match="stream_text_limit"):
+        decoder._append("x" * (1_048_576 + 1))
+
+
+def test_response_decoder_rejects_duplicate_done_marker_and_missing_complete() -> None:
+    sync, _, req, snap = service("mistral")
+    decoder = NativeStreamDecoder(ProviderProfile.MISTRAL, sync.open_stream(req, snap).prepared)
+    with pytest.raises(Exception, match="provider_not_completed"):
+        decoder.finish()
+    with pytest.raises(Exception, match="provider_not_completed"):
+        decoder.marker("[DONE]")
+    decoder._done_marker = False
+    decoder._mistral_reason = "stop"
+    decoder._chunks.append("Hello")
+    decoder.marker("[DONE]")
+    assert decoder.finish().output.text == "Hello"
+    with pytest.raises(Exception, match="provider_protocol_error"):
+        decoder.marker("[DONE]")
+
+
+def test_response_decoders_reject_nontext_tool_and_hidden_state() -> None:
+    sync, _, req, snap = service("ollama")
+    decoder = NativeStreamDecoder(ProviderProfile.OLLAMA, sync.open_stream(req, snap).prepared)
+    with pytest.raises(Exception, match="unsupported_provider_output"):
+        decoder.push("json", {
+            "model": ALIASES["ollama"], "done": False,
+            "message": {"role": "assistant", "content": "x", "tool_calls": [{"name": "run"}]},
+        })
+    sync, _, req, snap = service("anthropic")
+    decoder = NativeStreamDecoder(ProviderProfile.ANTHROPIC, sync.open_stream(req, snap).prepared)
+    with pytest.raises(Exception, match="provider_protocol_error"):
+        decoder.push("content_block_delta", {
+            "type": "content_block_delta", "index": 0,
+            "delta": {"type": "thinking_delta", "thinking": "PRIVATE"},
+        })
+    decoder.push("message_start", {
+        "type": "message_start", "message": {
+            "type": "message", "role": "assistant", "model": ALIASES["anthropic"],
+            "content": [],
+        },
+    })
+    with pytest.raises(Exception, match="unsupported_provider_output"):
+        decoder.push("content_block_start", {
+            "type": "content_block_start", "index": 0,
+            "content_block": {"type": "thinking", "thinking": "PRIVATE"},
+        })
+
+
+def test_stream_mistral_requires_done_after_native_finish() -> None:
+    sync, _, req, snap = service("mistral")
+    prepared = sync.open_stream(req, snap).prepared
+    decoder = NativeStreamDecoder(ProviderProfile.MISTRAL, prepared)
+    for line in wire("mistral").decode().splitlines():
+        if line.startswith("data: "):
+            raw = line[6:]
+            if raw == "[DONE]":
+                break
+            decoder.push("message", json.loads(raw))
+    with pytest.raises(Exception, match="provider_not_completed"):
+        decoder.finish()
+
+
+def test_stream_response_output_rejects_encrypted_reasoning_before_completion() -> None:
+    sync, _, req, snap = service("xai")
+    prepared = sync.open_stream(req, snap).prepared
+    decoder = NativeStreamDecoder(ProviderProfile.XAI, prepared)
+    with pytest.raises(Exception, match="unsupported_provider_output"):
+        decoder.push("response.output_item.added", {
+            "type": "response.output_item.added",
+            "item": {"type": "reasoning", "encrypted_content": "SECRET"},
+        })
