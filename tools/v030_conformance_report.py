@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import platform
 import re
 import subprocess
@@ -59,7 +58,8 @@ def _operation(method: str, mode: str) -> str:
         return "astream_prepared" if mode == "async" else "stream_prepared"
     if method.startswith("test_pre_cancelled_native_session"):
         return "open_astream" if mode == "async" else "open_stream"
-    if "adapter" in method or "response_projection" in method or "status_failure" in method:
+    if ("adapter" in method or "response_projection" in method or "status_failure" in method
+            or method.startswith("test_explicit_live_opt_in_gate")):
         return "ainvoke" if mode == "async" else "invoke"
     return "encode_or_prepare"
 
@@ -143,10 +143,10 @@ def _markdown(data: dict[str, object]) -> str:
     result = [
         "# PyLLMKit 0.3.0 - Offline Conformance Evidence",
         "",
-        f"- Tested SHA: \`{data['tested_sha']}\`",
-        f"- PR head SHA: \`{data['head_sha']}\`",
-        f"- Python: \`{data['python']}\`",
-        f"- Timestamp: \`{data['generated_at']}\`",
+        f"- Tested SHA: `{data['tested_sha']}`",
+        f"- PR head SHA: `{data['head_sha']}`",
+        f"- Python: `{data['python']}`",
+        f"- Timestamp: `{data['generated_at']}`",
         f"- Verdict: **{data['verdict']}**",
         f"- Cases: **{len(rows)}**",
         "",
@@ -164,7 +164,7 @@ def _markdown(data: dict[str, object]) -> str:
     ]
     observed = Counter(str(item["scenario_id"]) for item in rows)
     for scenario, minimum in _REQUIRED.items():
-        result.append(f"| \`{scenario}\` | {observed[scenario]} | {minimum} |")
+        result.append(f"| `{scenario}` | {observed[scenario]} | {minimum} |")
     result += [
         "",
         "## Boundaries and provenance",
@@ -180,7 +180,7 @@ def _markdown(data: dict[str, object]) -> str:
     assert isinstance(errors, list)
     if errors:
         result += ["## Gate violations", ""]
-        result.extend(f"- \`{str(value)}\`" for value in errors)
+        result.extend(f"- `{str(value)}`" for value in errors)
         result.append("")
     return "\n".join(result)
 
