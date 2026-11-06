@@ -12,11 +12,11 @@
 
 ## Evidence required
 
-- [ ] PR HEAD exact SHA CI succeeds in push and pull_request workflows.
-- [ ] Python 3.11, 3.12, 3.13, Ruff, mypy strict, wheel/sdist and examples pass.
-- [ ] New L7.7 test suite passes, including 6 x sync cancellation, 6 x async
+- [x] PR HEAD exact SHA CI succeeded in the recorded PR workflow.
+- [x] Python 3.11, 3.12, 3.13, Ruff, mypy strict, wheel/sdist and examples pass.
+- [x] New L7.7 test suite passes, including 6 x sync cancellation, 6 x async
   cancellation, premature EOF, and asynchronous cancellation during HTTP I/O.
-- [ ] Branch coverage gate for `streaming_resilience` >=95%.
+- [x] Branch coverage gate for `streaming_resilience` >=95%.
 - [ ] Independent technical reviewer validates M5 protocol compatibility,
   RunId consistency, terminality and no stream replay.
 - [ ] Independent security reviewer assesses timeout assumptions and safe
@@ -40,8 +40,20 @@
   inference termination, billing cessation or provider-side release.
 - DNS/peer-IP/TLS runtime controls, retention and budgets remain NO-GO for live.
 
-## Gate decision
+## Gate decision - integrated engineering qualification (2026-11-06)
 
-**PENDING** until CI HEAD and independent reviews are recorded.
+**GO for offline code integration and further development; NO-GO for live
+production or release.** The owner explicitly authorized merging the
+full #70-#79 stack despite the absence of independent GitHub reviews.
+The resulting source baseline is `main@4633eba36`, with the three Python
+CI jobs on the main push passing. Independent approval, branch protection
+and live security qualification remain outstanding.
 
-A CI-green code branch permits independent review, not merge or live execution.
+The integrated L7.6 coverage gate initially printed below-threshold
+results even though GitHub marked its jobs successful; the follow-up
+[#80](https://github.com/tawounfouet/pyllmkit/pull/80) explicitly
+includes L7.7 resilience tests in the L7.6 coverage run, yielding
+90.87% on Python 3.11-3.13 without lowering the 90% threshold. L7.7
+itself recorded 100% branch coverage and 47 focused tests.
+See [P7_G8_INTEGRATED_GATE_REVIEW.md](P7_G8_INTEGRATED_GATE_REVIEW.md)
+for full evidence, accepted integration exception and remaining NO-GO items.
