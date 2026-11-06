@@ -952,3 +952,195 @@ def test_transport_async_http_stream_closes_on_early_consumer_break() -> None:
 
     asyncio.run(close())
     assert tracked.closed is True
+
+@pytest.mark.parametrize("name", ("openai", "xai", "mistral"))
+def test_native_done_marker_not_allowed_before_provider_terminal(name: str) -> None:
+    decoder = _fresh_decoder(name)
+    with pytest.raises(Exception, match="provider_not_completed"):
+        decoder.marker("[DONE]")
+    with pytest.raises(Exception, match="provider_protocol_error"):
+        decoder.marker("[DONE]")
+
+
+@pytest.mark.parametrize("name", ("ollama", "google", "anthropic"))
+def test_native_done_marker_not_supported_on_non_done_protocols(name: str) -> None:
+    decoder = _fresh_decoder(name)
+    with pytest.raises(Exception, match="provider_protocol_error"):
+        decoder.marker("[DONE]")
+
+
+def test_unknown_profile_is_not_implicitly_dispatched() -> None:
+    decoder = _fresh_decoder("openai")
+    decoder.profile = "not_a_provider"  # type: ignore[assignment]
+    with pytest.raises(Exception, match="adapter_connection_invalid"):
+        decoder.push("ignored", {})
+
+
+def test_native_decoder_rejects_duplicate_finalization() -> None:
+    decoder = _fresh_decoder("ollama")
+    decoder.push("json", {
+        "message": {"role": "assistant", "content": "Hello"},
+        "done": True, "done_reason": "stop",
+    })
+    result = decoder.finish()
+    with pytest.raises(Exception, match="provider_protocol_error"):
+        decoder._finalize(result)
+
+
+def test_native_decoder_fails_if_final_assembled_text_differs() -> None:
+    decoder = _fresh_decoder("ollama")
+    decoder.push("json", {
+        "message": {"role": "assistant", "content": "A"},
+        "done": True, "done_reason": "stop",
+    })
+    from pyllmkit.domain.inference import InferenceResponse, TextOutput
+
+    with pytest.raises(Exception, match="provider_protocol_error"):
+        decoder.push("json", {
+            "message": {"role": "assistant", "content": "B"}, "done": False,
+        })
+    other = InferenceResponse(decoder.prepared.context.run_id, TextOutput("B"))
+    decoder._completed = False
+    with pytest.raises(Exception, match="provider_stream_mismatch"):
+        decoder._finalize(other)
+
+
+@pytest.mark.parametrize("name", ("openai", "xai"))
+def test_responses_completion_without_matching_delta_is_rejected(name: str) -> None:
+    decoder = _fresh_decoder(name)
+    body = {
+        "object": "response",
+        "status": "completed", "model": ALIASES[name], "store": False,
+        "output": [{
+            "type": "message", "role": "assistant", "status": "completed",
+            "content": [{"type": "output_text", "text": "UNSEEN"}],
+        }],
+    }
+    with pytest.raises(Exception, match="provider_stream_mismatch"):
+        decoder.push("response.completed", {
+            "type": "response.completed", "response": body,
+        })
+
+
+def test_native_json_bad_shape_and_unsupported_encoding_rejected() -> None:
+    for body in ('[]', 'null', 'true', '"word"', '123', 'x' * 262_145):
+        with pytest.raises(Exception, match="provider_protocol_error"):
+            decode_native_json(body)
+
+
+def test_gemini_safety_feedback_without_text_is_rejected() -> None:
+    decoder = _fresh_decoder("google")
+    with pytest.raises(Exception, match="provider_content_filtered"):
+        decoder.push("message", {
+            "promptFeedback": {"blockReason": "SAFETY"}, "candidates": [],
+        })
+
+
+def test_gemini_invalid_native_part_type_rejected() -> None:
+    decoder = _fresh_decoder("google")
+    with pytest.raises(Exception, match="provider_protocol_error"):
+        decoder.push("message", {
+            "candidates": [{"content": {
+                "role": "model", "parts": [{"text": 3}],
+            }}],
+        })
+
+
+def test_anthropic_event_error_and_future_event_rejected_after_start() -> None:
+    def start() -> NativeStreamDecoder:
+        decoder = _fresh_decoder("anthropic")
+        decoder.push("message_start", {
+            "type": "message_start",
+            "message": {
+                "type": "message", "role": "assistant",
+                "model": ALIASES["anthropic"], "content": [],
+            },
+        })
+        return decoder
+
+    with pytest.raises(Exception, match="provider_protocol_error"):
+        start().push("error", {
+            "type": "error", "error": {"message": "PRIVATE_DETAIL"},
+        })
+    with pytest.raises(Exception, match="unsupported_provider_output"):
+        start().push("message.future", {"type": "message.future"})
+
+
+def test_anthropic_malformed_usage_is_rejected_without_leaks() -> None:
+    decoder = _fresh_decoder("anthropic")
+    with pytest.raises(Exception, match="provider_protocol_error"):
+        decoder.push("message_start", {
+            "type": "message_start",
+            "message": {
+                "type": "message", "role": "assistant",
+                "model": ALIASES["anthropic"], "content": [],
+                "usage": ["invalid"],
+            },
+        })
+
+
+def test_mistral_usage_can_arrive_in_final_choice_chunk() -> None:
+    decoder = _fresh_decoder("mistral")
+    assert decoder.push("message", {
+        "object": "chat.completion.chunk", "model": ALIASES["mistral"],
+        "choices": [{
+            "index": 0, "delta": {"role": "assistant", "content": "Hi"},
+            "finish_reason": "stop",
+        }],
+        "usage": {"prompt_tokens": 1, "completion_tokens": 2},
+    }) == "Hi"
+    decoder.marker("[DONE]")
+    assert decoder.finish().usage is not None
+    assert decoder.finish().usage.input_tokens == 1
+
+
+def test_mistral_usage_without_completed_reason_is_invalid() -> None:
+    decoder = _fresh_decoder("mistral")
+    with pytest.raises(Exception, match="provider_protocol_error"):
+        decoder.push("message", {
+            "object": "chat.completion.chunk", "model": ALIASES["mistral"],
+            "choices": [], "usage": {"prompt_tokens": 3},
+        })
+
+
+def test_native_stream_http_headers_do_not_expose_basic_auth_or_proxy() -> None:
+    from pyllmkit.adapters.inference.native_stream_transport import (
+        _response_header,
+        _stream_headers,
+    )
+
+    assert _stream_headers(ProviderProfile.GOOGLE, "fake")["x-goog-api-key"] == "fake"
+    assert _stream_headers(ProviderProfile.MISTRAL, "fake")["Authorization"] == "Bearer fake"
+    assert _stream_headers(ProviderProfile.ANTHROPIC, "fake")["anthropic-version"] == (
+        "2026-10-21"
+    )
+    assert "Authorization" not in _stream_headers(ProviderProfile.OLLAMA, None)
+    with pytest.raises(Exception, match="credential_unavailable"):
+        _stream_headers(ProviderProfile.OPENAI, None)
+    with pytest.raises(Exception, match="provider_protocol_error"):
+        _response_header(ProviderProfile.OPENAI, 200, "text/html")
+    with pytest.raises(Exception, match="rate_limited"):
+        _response_header(ProviderProfile.OPENAI, 429, "text/event-stream")
+
+
+def test_streaming_async_service_validates_registered_port_and_missing_binding() -> None:
+    resolver, dep, req, _, _, _ = fixture("ollama")
+    with pytest.raises(TypeError, match="invalid_async_streaming_adapter_binding"):
+        AsyncStreamingInferenceService(resolver, {dep: object()}, {dep: "llama"})
+    service_async = AsyncStreamingInferenceService(resolver, {}, {dep: "llama"})
+    with pytest.raises(InvocationPreconditionError, match="streaming_adapter_not_registered"):
+        service_async.open_astream(req)
+
+
+def test_m5_asynchronous_session_is_correlated_and_cannot_be_reused_after_close() -> None:
+    _, service_async, request, snapshot = service("openai")
+    session = service_async.open_astream(request, snapshot)
+
+    async def close_early() -> None:
+        iterator = aiter(session)
+        assert isinstance(await anext(iterator), ResponseStarted)
+        await iterator.aclose()
+        with pytest.raises(InvocationPreconditionError, match="stream_session_already_consumed"):
+            aiter(session)
+
+    asyncio.run(close_early())
