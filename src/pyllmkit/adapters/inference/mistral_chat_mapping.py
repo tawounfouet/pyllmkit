@@ -85,11 +85,8 @@ def _count(value: object) -> int | None:
 def decode_mistral_chat_response(raw: bytes, prepared: PreparedInvocation) -> InferenceResponse:
     if type(raw) is not bytes or type(prepared) is not PreparedInvocation:
         raise InvocationPortError("provider_protocol_error")
-    try:
-        data = decode_provider_json_object(raw)
-    except (ValueError, UnicodeError, TypeError, RecursionError):
-        raise InvocationPortError("provider_protocol_error") from None
-    if type(data) is not dict or data.get("object") != "chat.completion":
+    data = decode_provider_json_object(raw)
+    if data.get("object") != "chat.completion":
         raise InvocationPortError("provider_protocol_error")
     if data.get("model") != prepared.native_model_alias:
         raise InvocationPortError("provider_model_mismatch")
