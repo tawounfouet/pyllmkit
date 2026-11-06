@@ -61,6 +61,9 @@ jobs:
       - name: P7 L7.7 stream resilience and cancellation branch coverage
         run: |
           python -m pytest -q tests/acceptance/test_p7_l77_stream_resilience.py --cov=pyllmkit.application.inference.streaming_resilience --cov-branch --cov-report=term-missing --cov-fail-under=95
+      - name: v0.3.0 S3 strict JSON and error taxonomy branch coverage
+        run: |
+          python -m pytest -q tests/quality/test_v030_strict_native_json.py tests/conformance/test_v030_s3_error_taxonomy.py --cov=pyllmkit.adapters.inference.strict_json --cov-branch --cov-report=term-missing --cov-fail-under=95
       - name: v0.3.0 S2 offline conformance evidence
         run: |
           python tools/v030_conformance_report.py --output-dir artifacts/v030-conformance --head-sha "${{ github.event.pull_request.head.sha || github.sha }}" --tested-sha "${{ github.sha }}"

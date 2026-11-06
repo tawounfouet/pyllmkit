@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import re
 
+from pyllmkit.adapters.inference.strict_json import decode_provider_json_object
 from pyllmkit.application.inference import InvocationPortError, PreparedInvocation
 from pyllmkit.domain.capabilities import SupportLevel
 from pyllmkit.domain.inference import (
@@ -94,15 +95,6 @@ def encode_gemini_request(prepared: PreparedInvocation) -> bytes:
     return json.dumps(payload, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
 
 
-def _unique(pairs: list[tuple[str, object]]) -> dict[str, object]:
-    result: dict[str, object] = {}
-    for key, value in pairs:
-        if key in result:
-            raise InvocationPortError("provider_protocol_error")
-        result[key] = value
-    return result
-
-
 def _count(value: object) -> int | None:
     if value is None:
         return None
@@ -114,12 +106,7 @@ def _count(value: object) -> int | None:
 def decode_gemini_response(raw: bytes, prepared: PreparedInvocation) -> InferenceResponse:
     if type(raw) is not bytes or type(prepared) is not PreparedInvocation:
         raise InvocationPortError("provider_protocol_error")
-    try:
-        result = json.loads(raw, object_pairs_hook=_unique)
-    except (ValueError, UnicodeError, TypeError, RecursionError):
-        raise InvocationPortError("provider_protocol_error") from None
-    if type(result) is not dict:
-        raise InvocationPortError("provider_protocol_error")
+    result = decode_provider_json_object(raw)
     feedback = result.get("promptFeedback")
     if feedback is not None:
         if type(feedback) is not dict:

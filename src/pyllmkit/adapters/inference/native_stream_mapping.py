@@ -20,6 +20,7 @@ from pyllmkit.adapters.inference.openai_responses_mapping import (
     decode_openai_responses_response,
 )
 from pyllmkit.adapters.inference.security import ProviderProfile
+from pyllmkit.adapters.inference.strict_json import decode_provider_json_object
 from pyllmkit.adapters.inference.xai_responses_mapping import decode_xai_responses_response
 from pyllmkit.application.inference import InvocationPortError, PreparedInvocation
 from pyllmkit.domain.inference import InferenceResponse
@@ -29,25 +30,10 @@ _MAX_DELTA_BYTES = 1_048_576
 _MAX_NATIVE_EVENTS = 100_000
 
 
-def _object_pairs(pairs: list[tuple[str, object]]) -> dict[str, object]:
-    obj: dict[str, object] = {}
-    for key, value in pairs:
-        if key in obj:
-            raise InvocationPortError("provider_protocol_error")
-        obj[key] = value
-    return obj
-
-
 def decode_native_json(raw: str) -> dict[str, object]:
     if type(raw) is not str or len(raw.encode("utf-8")) > 262_144:
         raise InvocationPortError("provider_protocol_error")
-    try:
-        data = json.loads(raw, object_pairs_hook=_object_pairs)
-    except (ValueError, UnicodeError, TypeError, RecursionError):
-        raise InvocationPortError("provider_protocol_error") from None
-    if type(data) is not dict:
-        raise InvocationPortError("provider_protocol_error")
-    return data
+    return decode_provider_json_object(raw)
 
 
 def _dict(value: object) -> dict[str, object]:

@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import re
 
+from pyllmkit.adapters.inference.strict_json import decode_provider_json_object
 from pyllmkit.application.inference import InvocationPortError, PreparedInvocation
 from pyllmkit.domain.capabilities import SupportLevel
 from pyllmkit.domain.inference import (
@@ -101,15 +102,6 @@ def encode_anthropic_messages_request(prepared: PreparedInvocation) -> bytes:
     return json.dumps(payload, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
 
 
-def _unique_json_fields(pairs: list[tuple[str, object]]) -> dict[str, object]:
-    result: dict[str, object] = {}
-    for key, value in pairs:
-        if key in result:
-            raise InvocationPortError("provider_protocol_error")
-        result[key] = value
-    return result
-
-
 def _count(value: object) -> int | None:
     if value is None:
         return None
@@ -152,15 +144,8 @@ def decode_anthropic_messages_response(
     """Require a single typed text block; preserve partial usage and native stop."""
     if type(raw) is not bytes or type(prepared) is not PreparedInvocation:
         raise InvocationPortError("provider_protocol_error")
-    try:
-        response = json.loads(raw, object_pairs_hook=_unique_json_fields)
-    except (UnicodeError, ValueError, TypeError, RecursionError):
-        raise InvocationPortError("provider_protocol_error") from None
-    if (
-        type(response) is not dict
-        or response.get("type") != "message"
-        or response.get("role") != "assistant"
-    ):
+    response = decode_provider_json_object(raw)
+    if (response.get("type") != "message" or response.get("role") != "assistant"):
         raise InvocationPortError("provider_protocol_error")
     if response.get("model") != prepared.native_model_alias:
         raise InvocationPortError("provider_model_mismatch")

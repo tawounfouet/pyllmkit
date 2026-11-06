@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import re
 
+from pyllmkit.adapters.inference.strict_json import decode_provider_json_object
 from pyllmkit.application.inference import InvocationPortError, PreparedInvocation
 from pyllmkit.domain.capabilities import SupportLevel
 from pyllmkit.domain.inference import (
@@ -71,15 +72,6 @@ def encode_xai_responses_request(prepared: PreparedInvocation) -> bytes:
     return json.dumps(payload, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
 
 
-def _unique(pairs: list[tuple[str, object]]) -> dict[str, object]:
-    result: dict[str, object] = {}
-    for name, value in pairs:
-        if name in result:
-            raise InvocationPortError("provider_protocol_error")
-        result[name] = value
-    return result
-
-
 def _count(value: object) -> int | None:
     if value is None:
         return None
@@ -101,11 +93,8 @@ def decode_xai_responses_response(
 ) -> InferenceResponse:
     if type(raw) is not bytes or type(prepared) is not PreparedInvocation:
         raise InvocationPortError("provider_protocol_error")
-    try:
-        data = json.loads(raw, object_pairs_hook=_unique)
-    except (UnicodeError, ValueError, TypeError, RecursionError):
-        raise InvocationPortError("provider_protocol_error") from None
-    if type(data) is not dict or data.get("object") != "response":
+    data = decode_provider_json_object(raw)
+    if data.get("object") != "response":
         raise InvocationPortError("provider_protocol_error")
     if data.get("status") != "completed":
         if data.get("status") in ("incomplete", "in_progress", "queued", "failed"):
