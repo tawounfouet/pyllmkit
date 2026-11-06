@@ -5,7 +5,8 @@ from __future__ import annotations
 import os
 import sqlite3
 from contextlib import closing
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 
@@ -55,9 +56,12 @@ class RunRecord:
     system_prompt: str | None = None
     mode: str = "run"
     messages_json: str | None = None
+    content_stored: bool = True
 
     def to_chatml_messages(self) -> list[dict[str, str]]:
-        """Return the conversation as standard ChatML messages list."""
+        """Return conversation only when explicit persistence consent was recorded."""
+        if not self.content_stored:
+            return []
         if self.messages_json:
             try:
                 import json
@@ -102,13 +106,34 @@ class RunRecord:
             },
             "created_at": self.created_at,
             "messages": self.to_chatml_messages(),
+            "content_stored": self.content_stored,
         }
 
 
 class SqliteRunStore:
     """Zero-dependency execution history store using Python's built-in sqlite3."""
 
-    def __init__(self, db_path: Path | None = None) -> None:
+    def __init__(
+        self,
+        db_path: Path | None = None,
+        *,
+        store_content: bool = False,
+        retention_days: int | None = None,
+    ) -> None:
+        """Persist metadata by default; raw content needs an explicit opt-in."""
+        raw_days = (
+            retention_days
+            if retention_days is not None
+            else os.environ.get("PYLLMKIT_HISTORY_RETENTION_DAYS", "30")
+        )
+        try:
+            days = int(raw_days)
+        except (TypeError, ValueError) as exc:
+            raise ValueError("history_retention_days_invalid") from exc
+        if isinstance(raw_days, bool) or not 1 <= days <= 3650:
+            raise ValueError("history_retention_days_invalid")
+        self._retention_days = days
+        self._store_content = store_content is True
         if db_path is None:
             env_path = os.environ.get("PYLLMKIT_HISTORY_DB")
             if env_path:
@@ -129,10 +154,16 @@ class SqliteRunStore:
                 db_path = config_dir / "history.db"
         self._db_path = db_path
         self._init_db()
+        self.purge_expired()
 
     def _get_connection(self) -> sqlite3.Connection:
-        self._db_path.parent.mkdir(parents=True, exist_ok=True)
-        return sqlite3.connect(self._db_path)
+        self._db_path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+        conn = sqlite3.connect(self._db_path)
+        try:
+            os.chmod(self._db_path, 0o600)
+        except OSError:
+            pass
+        return conn
 
     def _init_db(self) -> None:
         try:
@@ -160,7 +191,8 @@ class SqliteRunStore:
                             max_tokens INTEGER,
                             system_prompt TEXT,
                             mode TEXT NOT NULL DEFAULT 'run',
-                            messages_json TEXT
+                            messages_json TEXT,
+                            content_stored INTEGER NOT NULL DEFAULT 1
                         )
                         """
                     )
@@ -178,6 +210,7 @@ class SqliteRunStore:
                         ("system_prompt", "TEXT"),
                         ("mode", "TEXT NOT NULL DEFAULT 'run'"),
                         ("messages_json", "TEXT"),
+                        ("content_stored", "INTEGER NOT NULL DEFAULT 1"),
                     ]
                     for col_name, col_type in additions:
                         if col_name not in existing_cols:
@@ -186,8 +219,49 @@ class SqliteRunStore:
             # En lecture seule ou environnement restreint, continuer sans migrer
             pass
 
+    def purge_expired(self, now: datetime | None = None) -> int:
+        """Expire records past their UTC calendar retention date."""
+        instant = now or datetime.now(UTC)
+        if instant.tzinfo is None or instant.utcoffset() is None:
+            raise ValueError("history_clock_must_be_timezone_aware")
+        cutoff = (instant.astimezone(UTC) - timedelta(days=self._retention_days)).date()
+        with closing(self._get_connection()) as conn:
+            with conn:
+                cursor = conn.execute(
+                    "DELETE FROM runs WHERE substr(created_at, 1, 10) < ?",
+                    (cutoff.isoformat(),),
+                )
+                return max(0, cursor.rowcount)
+
+    def purge_content(self, run_id: str | None = None) -> int:
+        """Irreversibly scrub sensitive legacy or opted-in content."""
+        statement = (
+            "UPDATE runs SET prompt = '[redacted]', response_text = NULL, "
+            "system_prompt = NULL, messages_json = NULL, content_stored = 0"
+        )
+        args: tuple[str, ...] = ()
+        if run_id is not None:
+            statement += " WHERE run_id = ?"
+            args = (run_id,)
+        with closing(self._get_connection()) as conn:
+            with conn:
+                cursor = conn.execute(statement, args)
+                return max(0, cursor.rowcount)
+
     def record_run(self, record: RunRecord) -> None:
-        """Persist or update an execution record."""
+        """Persist metadata unless raw-content storage was explicitly requested."""
+        if not self._store_content:
+            record = replace(
+                record,
+                prompt="[redacted]",
+                response_text=None,
+                system_prompt=None,
+                messages_json=None,
+                content_stored=False,
+            )
+        else:
+            record = replace(record, content_stored=True)
+        self.purge_expired()
         with closing(self._get_connection()) as conn:
             with conn:
                 conn.execute(
@@ -197,8 +271,8 @@ class SqliteRunStore:
                         state, finish_reason, input_tokens, output_tokens,
                         duration_ms, created_at, total_tokens, cached_tokens,
                         reasoning_tokens, ttft_ms, temperature, max_tokens,
-                        system_prompt, mode, messages_json
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        system_prompt, mode, messages_json, content_stored
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         record.run_id,
@@ -221,6 +295,7 @@ class SqliteRunStore:
                         record.system_prompt,
                         record.mode,
                         record.messages_json,
+                        int(record.content_stored),
                     ),
                 )
 
@@ -261,10 +336,12 @@ class SqliteRunStore:
             system_prompt=str(sys_p) if sys_p is not None else None,
             mode=str(d.get("mode") or "run"),
             messages_json=str(msgs) if msgs is not None else None,
+            content_stored=bool(d.get("content_stored", 1)),
         )
 
     def list_runs(self, limit: int = 20) -> list[RunRecord]:
         """Retrieve recent execution records in reverse chronological order."""
+        self.purge_expired()
         with closing(self._get_connection()) as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM runs ORDER BY created_at DESC LIMIT ?", (limit,))
@@ -275,6 +352,7 @@ class SqliteRunStore:
 
     def get_run(self, run_id: str) -> RunRecord | None:
         """Retrieve a specific run by its identifier."""
+        self.purge_expired()
         with closing(self._get_connection()) as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM runs WHERE run_id = ?", (run_id,))
