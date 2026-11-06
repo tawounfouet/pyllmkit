@@ -7,12 +7,18 @@ from pyllmkit.adapters.inference import (
     AdapterKey,
     AdapterRegistration,
     AdapterRegistry,
+    AnthropicMessagesAdapter,
     CredentialRef,
     EnvCredentialResolver,
     FakeInferenceAdapter,
+    GoogleGeminiAdapter,
+    MistralChatAdapter,
     NativeProviderStreamingAdapter,
+    OllamaAdapter,
+    OpenAIResponsesAdapter,
     ProviderConnectionConfig,
     RegisteredInferencePort,
+    XAIResponsesAdapter,
 )
 from pyllmkit.adapters.registry import InMemoryCatalog
 from pyllmkit.application.inference import (
@@ -28,7 +34,7 @@ from pyllmkit.domain.streaming import (
     StreamEvent,
     TextDelta,
 )
-from pyllmkit.protocols.inference import PreparedStreamingPort
+from pyllmkit.protocols.inference import InferencePort, PreparedStreamingPort
 
 
 @dataclass(slots=True)
@@ -59,6 +65,25 @@ def _make_sync_factory(text: str) -> Callable[[ProviderConnectionConfig], FakeIn
         return FakeInferenceAdapter(text)
 
     return factory
+
+
+def _make_live_sync_factory(
+    prov_name: str,
+    env_resolver: EnvCredentialResolver,
+) -> Callable[[ProviderConnectionConfig], InferencePort]:
+    if prov_name == "ollama":
+        return lambda cfg: OllamaAdapter(cfg, allow_live=True)
+    if prov_name == "openai":
+        return lambda cfg: OpenAIResponsesAdapter(cfg, env_resolver, allow_live=True)
+    if prov_name == "anthropic":
+        return lambda cfg: AnthropicMessagesAdapter(cfg, env_resolver, allow_live=True)
+    if prov_name == "google":
+        return lambda cfg: GoogleGeminiAdapter(cfg, env_resolver, allow_live=True)
+    if prov_name == "xai":
+        return lambda cfg: XAIResponsesAdapter(cfg, env_resolver, allow_live=True)
+    if prov_name == "mistral":
+        return lambda cfg: MistralChatAdapter(cfg, env_resolver, allow_live=True)
+    raise ValueError(f"Unknown live provider: {prov_name}")
 
 
 def _make_env_resolver() -> EnvCredentialResolver:
@@ -111,6 +136,14 @@ def create_cli_inference_service(
                     key,
                     conn,
                     sync_factory=_make_sync_factory(simulated_text),
+                )
+            )
+        else:
+            registry.register(
+                AdapterRegistration(
+                    key,
+                    conn,
+                    sync_factory=_make_live_sync_factory(prov_name, _make_env_resolver()),
                 )
             )
 

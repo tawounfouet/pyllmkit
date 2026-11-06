@@ -70,3 +70,4 @@ def create_reference_catalog() -> InMemoryCatalog:
         )
 
     return catalog
+

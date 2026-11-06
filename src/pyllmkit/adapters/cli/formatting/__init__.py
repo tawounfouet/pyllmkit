@@ -15,3 +15,4 @@ __all__ = [
     "build_deployments_table",
     "build_resolution_panel",
 ]
+

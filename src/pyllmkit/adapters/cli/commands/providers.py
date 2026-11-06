@@ -54,3 +54,4 @@ def inspect_provider(
         border_style="cyan",
     )
     console.print(panel)
+

@@ -10,10 +10,8 @@ from pyllmkit.domain.inference import ModelTarget
 from pyllmkit.domain.models import ModelId
 from pyllmkit.domain.providers import ProviderId
 from pyllmkit.domain.registry.selection import (
-    AmbiguousDeploymentError,
     DeploymentRequirement,
     DeploymentResolutionError,
-    NoCompatibleDeploymentError,
 )
 
 from ..catalog import create_reference_catalog

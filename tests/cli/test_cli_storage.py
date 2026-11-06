@@ -88,3 +88,4 @@ def test_cli_runs_inspect_unknown(tmp_path: Path, monkeypatch: pytest.MonkeyPatc
     res = runner.invoke(app, ["runs", "inspect", "unknown-run-id"])
     assert res.exit_code == 1
     assert "run_not_found" in res.output
+

@@ -61,49 +61,54 @@ def test_cli_stream_unknown_model_failure() -> None:
 
 def test_consume_and_render_stream_events() -> None:
     """CLI-AC-020: test stream rendering handles failure, cancel and sigint."""
+    from collections.abc import Iterator
+    from typing import Any, cast
+
     from rich.console import Console
+
     from pyllmkit.adapters.cli.formatting.live_stream import consume_and_render_stream
+    from pyllmkit.application.inference.streaming import StreamingSession
     from pyllmkit.domain.inference import InferenceRunId
-    from pyllmkit.domain.streaming import ResponseCancelled, ResponseFailed, TextDelta
+    from pyllmkit.domain.streaming import ResponseCancelled, ResponseFailed, StreamEvent, TextDelta
 
     console = Console(record=True, width=100)
     run_id = InferenceRunId("1234567890abcdef1234567890abcdef")
 
     # Failure event test
     class MockFailureSession:
-        def __iter__(self):
+        def __iter__(self) -> Iterator[StreamEvent]:
             yield TextDelta(run_id=run_id, sequence=0, delta="Début...")
             yield ResponseFailed(run_id=run_id, sequence=1, reason_code="timeout_error")
 
-        def cancel(self):
+        def cancel(self) -> None:
             pass
 
-    exit_code = consume_and_render_stream(MockFailureSession(), "test-model", console)
+    exit_code = consume_and_render_stream(cast(StreamingSession, cast(Any, MockFailureSession())), "test-model", console)
     assert exit_code == 1
 
     # Cancellation event test
     class MockCancelSession:
-        def __iter__(self):
+        def __iter__(self) -> Iterator[StreamEvent]:
             yield TextDelta(run_id=run_id, sequence=0, delta="Début...")
             yield ResponseCancelled(run_id=run_id, sequence=1, reason_code="user_cancelled")
 
-        def cancel(self):
+        def cancel(self) -> None:
             pass
 
-    exit_code = consume_and_render_stream(MockCancelSession(), "test-model", console)
+    exit_code = consume_and_render_stream(cast(StreamingSession, cast(Any, MockCancelSession())), "test-model", console)
     assert exit_code == 130
 
     # KeyboardInterrupt test
     class MockSigintSession:
         cancelled = False
 
-        def __iter__(self):
+        def __iter__(self) -> Iterator[StreamEvent]:
             raise KeyboardInterrupt()
 
-        def cancel(self):
+        def cancel(self) -> None:
             self.cancelled = True
 
     sig_session = MockSigintSession()
-    exit_code = consume_and_render_stream(sig_session, "test-model", console)
+    exit_code = consume_and_render_stream(cast(StreamingSession, cast(Any, sig_session)), "test-model", console)
     assert exit_code == 130
     assert sig_session.cancelled is True

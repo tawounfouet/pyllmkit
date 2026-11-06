@@ -36,3 +36,4 @@ def test_cli_dependencies_banned_from_application() -> None:
         imports = _collect_module_imports(py_file)
         violations = imports.intersection(FORBIDDEN_IN_APPLICATION)
         assert not violations, f"Forbidden import(s) {violations} found in application file: {py_file}"
+

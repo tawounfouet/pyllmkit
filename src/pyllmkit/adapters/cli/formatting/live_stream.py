@@ -82,3 +82,4 @@ def consume_and_render_stream(
             return 130
 
     return exit_code
+

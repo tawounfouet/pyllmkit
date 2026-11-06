@@ -35,3 +35,4 @@ def build_error_panel(error_code: str, details: str | None = None, run_id: str |
         title="[bold red]Erreur PyLLMKit[/bold red]",
         border_style="red",
     )
+

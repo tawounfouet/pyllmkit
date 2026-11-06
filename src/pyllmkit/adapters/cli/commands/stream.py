@@ -120,3 +120,4 @@ def stream_command(
         panel = build_error_panel("unexpected_error", str(exc))
         console.print(panel)
         raise typer.Exit(code=2) from None
+

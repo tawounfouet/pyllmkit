@@ -170,3 +170,4 @@ pyllmkit tools validate path/to/my_tool.json
 | `1` | Erreur fonctionnelle ou métier (modèle inconnu, rejet de résolution, schéma invalide, échec fournisseur). |
 | `2` | Erreur inattendue ou exception non rattrapée. |
 | `130` | Interruption par l'utilisateur (`SIGINT` / `Ctrl+C`). |
+

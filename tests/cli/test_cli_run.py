@@ -58,3 +58,4 @@ def test_cli_run_unknown_model_failure() -> None:
     assert result.exit_code == 1
     assert "Erreur PyLLMKit" in result.output
     assert "no_compatible_deployment" in result.output
+

@@ -170,3 +170,4 @@ def build_deployments_table(deployments: Sequence[Deployment]) -> Table:
             status_str,
         )
     return table
+
