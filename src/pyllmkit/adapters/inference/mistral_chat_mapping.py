@@ -74,15 +74,6 @@ def encode_mistral_chat_request(prepared: PreparedInvocation) -> bytes:
     return json.dumps(payload, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
 
 
-def _unique(pairs: list[tuple[str, object]]) -> dict[str, object]:
-    result: dict[str, object] = {}
-    for name, value in pairs:
-        if name in result:
-            raise InvocationPortError("provider_protocol_error")
-        result[name] = value
-    return result
-
-
 def _count(value: object) -> int | None:
     if value is None:
         return None
