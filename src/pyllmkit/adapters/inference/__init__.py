@@ -11,6 +11,7 @@ from .anthropic_messages import AnthropicMessagesAdapter, AsyncAnthropicMessages
 from .errors import normalize_http_failure
 from .fake import AsyncFakeInferenceAdapter, FakeInferenceAdapter
 from .google_gemini import AsyncGoogleGeminiAdapter, GoogleGeminiAdapter
+from .native_stream_transport import NativeProviderStreamingAdapter
 from .mistral_chat import AsyncMistralChatAdapter, MistralChatAdapter
 from .ollama import AsyncOllamaAdapter, OllamaAdapter
 from .openai_responses import AsyncOpenAIResponsesAdapter, OpenAIResponsesAdapter
@@ -25,6 +26,7 @@ from .security import EnvCredentialResolver, ProviderConnectionConfig, ProviderP
 from .xai_responses import AsyncXAIResponsesAdapter, XAIResponsesAdapter
 
 __all__ = [
+    "NativeProviderStreamingAdapter",
     "MistralChatAdapter",
     "AsyncMistralChatAdapter",
     "XAIResponsesAdapter",

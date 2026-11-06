@@ -22,3 +22,17 @@ __all__ = [
     "InferenceService",
     "AsyncInferenceService",
 ]
+
+from .streaming import (
+    AsyncStreamingInferenceService,
+    AsyncStreamingSession,
+    StreamingInferenceService,
+    StreamingSession,
+)
+
+__all__ += [
+    "StreamingInferenceService",
+    "AsyncStreamingInferenceService",
+    "StreamingSession",
+    "AsyncStreamingSession",
+]
