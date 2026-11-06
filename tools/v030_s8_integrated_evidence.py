@@ -109,7 +109,7 @@ def assess_evidence(
     per_provider: Counter[tuple[str, str]] = Counter()
     per_mode: Counter[tuple[str, str, str]] = Counter()
     unique: set[str] = set()
-    for index, entry in enumerate(records):
+    for entry in records:
         if not isinstance(entry, dict) or set(entry) != _FIELDS:
             errors.append("invalid_record_shape")
             continue
