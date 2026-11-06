@@ -33,13 +33,7 @@ _MAX_NATIVE_EVENTS = 100_000
 def decode_native_json(raw: str) -> dict[str, object]:
     if type(raw) is not str or len(raw.encode("utf-8")) > 262_144:
         raise InvocationPortError("provider_protocol_error")
-    try:
-        data = decode_provider_json_object(raw)
-    except (ValueError, UnicodeError, TypeError, RecursionError):
-        raise InvocationPortError("provider_protocol_error") from None
-    if type(data) is not dict:
-        raise InvocationPortError("provider_protocol_error")
-    return data
+    return decode_provider_json_object(raw)
 
 
 def _dict(value: object) -> dict[str, object]:
