@@ -73,6 +73,7 @@ jobs:
           python examples/29_offline_inference_kernel.py
           python examples/30_secure_registry_fake.py
           python examples/31_ollama_mock_transport.py
+          python examples/32_ollama_live_opt_in.py
       - name: Build wheel and sdist
         run: python -m build
       - name: Wheel clean environment smoke
