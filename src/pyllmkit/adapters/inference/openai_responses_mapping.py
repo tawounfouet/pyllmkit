@@ -11,6 +11,7 @@ import re
 
 from pyllmkit.adapters.inference.strict_json import decode_provider_json_object
 from pyllmkit.application.inference import InvocationPortError, PreparedInvocation
+from pyllmkit.domain.capabilities import SupportLevel
 from pyllmkit.domain.inference import (
     FinishReason,
     FinishReasonCode,
@@ -57,6 +58,7 @@ def encode_openai_responses_request(prepared: PreparedInvocation) -> bytes:
     }
     config = prepared.request.generation_config
     if config is not None:
+        levels = {a.name: a.level for a in prepared.parameter_assessment.assessments}
         for name in (
             "temperature", "top_p", "top_k", "max_output_tokens",
             "seed", "stop_sequences", "presence_penalty", "frequency_penalty",
@@ -66,6 +68,8 @@ def encode_openai_responses_request(prepared: PreparedInvocation) -> bytes:
                 continue
             if name not in _SUPPORTED_GENERATION:
                 raise InvocationPortError("unsupported_generation_parameter")
+            if levels.get(name) is not SupportLevel.NATIVE:
+                raise InvocationPortError("unknown_generation_parameter")
             payload[name] = value
     return json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
 

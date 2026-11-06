@@ -11,6 +11,7 @@ import re
 
 from pyllmkit.adapters.inference.strict_json import decode_provider_json_object
 from pyllmkit.application.inference import InvocationPortError, PreparedInvocation
+from pyllmkit.domain.capabilities import SupportLevel
 from pyllmkit.domain.inference import (
     FinishReason,
     FinishReasonCode,
@@ -66,6 +67,7 @@ def encode_ollama_request(prepared: PreparedInvocation) -> bytes:
     }
     config = prepared.request.generation_config
     if config is not None:
+        levels = {a.name: a.level for a in prepared.parameter_assessment.assessments}
         options: dict[str, object] = {}
         for field in (
             "temperature", "top_p", "top_k", "max_output_tokens",
@@ -77,6 +79,8 @@ def encode_ollama_request(prepared: PreparedInvocation) -> bytes:
             native = _OPTION_NAMES.get(field)
             if native is None:
                 raise InvocationPortError("unsupported_generation_parameter")
+            if levels.get(field) is not SupportLevel.NATIVE:
+                raise InvocationPortError("unknown_generation_parameter")
             options[native] = value
         if options:
             payload["options"] = options
