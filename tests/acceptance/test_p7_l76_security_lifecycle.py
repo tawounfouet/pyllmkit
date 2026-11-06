@@ -9,10 +9,6 @@ import json
 import httpx
 import pytest
 
-from pyllmkit.adapters.inference import NativeProviderStreamingAdapter
-from pyllmkit.adapters.inference.native_stream_mapping import NativeStreamDecoder
-from pyllmkit.domain.streaming import ResponseCompleted, ResponseFailed
-
 from test_p7_l76_native_streaming import (
     ALIASES,
     PROVIDERS,
@@ -21,6 +17,11 @@ from test_p7_l76_native_streaming import (
     service,
     wire,
 )
+
+from pyllmkit.adapters.inference import NativeProviderStreamingAdapter
+from pyllmkit.adapters.inference.native_stream_mapping import NativeStreamDecoder
+from pyllmkit.application.inference import InvocationPortError
+from pyllmkit.domain.streaming import ResponseCompleted, ResponseFailed
 
 
 @pytest.mark.parametrize("provider", ("openai", "xai"))
@@ -139,7 +140,7 @@ def test_ollama_rejects_hidden_error_or_message_data(hidden: dict[str, object]) 
         "message": {"role": "assistant", "content": "x"},
         **hidden,
     }
-    with pytest.raises(Exception):
+    with pytest.raises(InvocationPortError):
         decoder.push("json", frame)
 
 
