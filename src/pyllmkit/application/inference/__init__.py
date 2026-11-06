@@ -23,13 +23,6 @@ __all__ = [
     "AsyncInferenceService",
 ]
 
-from .streaming import (
-    AsyncStreamingInferenceService,
-    AsyncStreamingSession,
-    StreamingInferenceService,
-    StreamingSession,
-)
-
 __all__ += [
     "StreamingInferenceService",
     "AsyncStreamingInferenceService",

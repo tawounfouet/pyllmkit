@@ -451,7 +451,7 @@ def test_p7_ac048_early_async_close_does_not_consume_remaining_frames() -> None:
     async def run() -> None:
         stream = aiter(session)
         assert isinstance(await anext(stream), ResponseStarted)
-        assert isinstance(await anext(stream), TextDelta) or True
+        assert isinstance(await anext(stream), TextDelta)
         await stream.aclose()
 
     asyncio.run(run())
