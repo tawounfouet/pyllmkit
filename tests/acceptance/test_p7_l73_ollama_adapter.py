@@ -413,3 +413,176 @@ def test_p7_ac024_unsafe_adapter_flags_rejected_and_no_network_on_import() -> No
         OllamaAdapter(_CONN, allow_live="yes")  # type: ignore[arg-type]
     with pytest.raises(InvocationPortError, match="adapter_connection_invalid"):
         OllamaAdapter(ProviderConnectionConfig.openai(CredentialRef("cloud")), allow_live=True)
+
+
+def test_ollama_missing_optional_transport_is_a_safe_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    import builtins
+
+    from pyllmkit.adapters.inference.ollama import _import_httpx
+
+    original = builtins.__import__
+
+    def deny_httpx(name: str, *args: object, **kwargs: object) -> object:
+        if name == "httpx":
+            raise ImportError("private installed package path")
+        return original(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", deny_httpx)
+    with pytest.raises(InvocationPortError, match="optional_dependency_missing") as exc:
+        _import_httpx()
+    assert "private installed" not in str(exc.value)
+
+
+def test_ollama_rejects_large_request_before_transport() -> None:
+    large = "x" * 1_048_577
+    prepared = _prepared(messages=(Message(
+        Role.USER, Content((TextContent(large),)),
+    ),))
+    touched: list[httpx.Request] = []
+    adapter = OllamaAdapter(
+        _CONN, allow_live=True,
+        _test_transport=httpx.MockTransport(
+            lambda request: (touched.append(request) or _reply()),
+        ),
+    )
+    with pytest.raises(InvocationPortError, match="request_too_large"):
+        adapter.invoke(prepared)
+    assert not touched
+
+
+def test_ollama_defense_in_depth_rejects_tampered_destination() -> None:
+    from pyllmkit.adapters.inference.ollama import _preflight
+
+    prepared = _prepared()
+    for attribute, bad in (
+        ("allow_local", False),
+        ("follow_redirects", True),
+        ("endpoint_url", "http://example.com/api/chat"),
+        ("endpoint_url", "http://127.0.0.1:11434/api/generate"),
+    ):
+        cfg = ProviderConnectionConfig.ollama_local()
+        object.__setattr__(cfg, attribute, bad)
+        with pytest.raises(InvocationPortError, match="adapter_connection_invalid"):
+            _preflight(prepared, cfg)
+
+
+def test_ollama_mapper_rejects_invalid_alias_and_bad_types() -> None:
+    prepared = _prepared()
+    with pytest.raises(InvocationPortError, match="adapter_protocol_error"):
+        encode_ollama_request("not_prepared")  # type: ignore[arg-type]
+    with pytest.raises(InvocationPortError, match="invalid_model_alias"):
+        encode_ollama_request(replace(prepared, native_model_alias="bad\nname"))
+    with pytest.raises(InvocationPortError, match="provider_protocol_error"):
+        decode_ollama_response(None, prepared)  # type: ignore[arg-type]
+    with pytest.raises(InvocationPortError, match="provider_protocol_error"):
+        decode_ollama_response(b"{}", "invalid")  # type: ignore[arg-type]
+    with pytest.raises(InvocationPortError, match="provider_protocol_error"):
+        decode_ollama_response(b"[]", prepared)
+    bad = _native()
+    bad["done_reason"] = 42
+    with pytest.raises(InvocationPortError, match="provider_protocol_error"):
+        decode_ollama_response(json.dumps(bad).encode(), prepared)
+
+
+def test_ollama_mapper_rejects_nontext_part_even_if_application_is_bypassed() -> None:
+    from pyllmkit.domain.interactions import ImageContent, MediaSourceRef
+
+    prepared = _prepared()
+    bad_request = InferenceRequest(
+        prepared.request.target,
+        (Message(Role.USER, Content((ImageContent(MediaSourceRef("asset", "demo")),))),),
+    )
+    with pytest.raises(InvocationPortError, match="unsupported_input_modality"):
+        encode_ollama_request(replace(prepared, request=bad_request))
+
+
+def test_ollama_native_cached_usage_is_observed_without_inventing_total() -> None:
+    prepared = _prepared()
+    raw = _native(prompt_count=None, output_count=None)
+    raw["prompt_eval_cached_count"] = 3
+    result = decode_ollama_response(json.dumps(raw).encode(), prepared)
+    assert result.usage is not None
+    assert result.usage.input_tokens is None
+    assert result.usage.output_tokens is None
+    assert result.usage.cached_input_tokens == 3
+    assert result.usage.total_tokens is None
+
+
+def test_ollama_sync_protocol_exception_is_sanitized() -> None:
+    prepared = _prepared()
+
+    def unexpected(_: httpx.Request) -> httpx.Response:
+        raise httpx.RemoteProtocolError("bearer: FORBIDDEN-TOKEN")
+
+    adapter = OllamaAdapter(
+        _CONN, allow_live=True,
+        _test_transport=httpx.MockTransport(unexpected),
+    )
+    with pytest.raises(InvocationPortError, match="provider_protocol_error") as exc:
+        adapter.invoke(prepared)
+    assert "FORBIDDEN-TOKEN" not in str(exc.value)
+
+
+def test_ollama_async_live_disabled_without_any_request() -> None:
+    prepared = _prepared()
+    touched: list[httpx.Request] = []
+    adapter = AsyncOllamaAdapter(
+        _CONN, _test_transport=httpx.MockTransport(
+            lambda request: (touched.append(request) or _reply()),
+        ),
+    )
+    with pytest.raises(InvocationPortError, match="live_authorization_required"):
+        asyncio.run(adapter.ainvoke(prepared))
+    assert touched == []
+
+
+@pytest.mark.parametrize("error,code", (
+    (httpx.ReadTimeout("SECRET_TOKEN"), "provider_timeout"),
+    (httpx.ConnectError("SECRET_TOKEN"), "connection_failure"),
+    (httpx.RemoteProtocolError("SECRET_TOKEN"), "provider_protocol_error"),
+    (TimeoutError("SECRET_TOKEN"), "provider_timeout"),
+))
+def test_ollama_async_transport_failures_are_sanitized(
+    error: Exception, code: str,
+) -> None:
+    prepared = _prepared()
+
+    async def fail(_: httpx.Request) -> httpx.Response:
+        raise error
+
+    adapter = AsyncOllamaAdapter(
+        _CONN, allow_live=True, _test_transport=httpx.MockTransport(fail),
+    )
+    with pytest.raises(InvocationPortError, match=code) as exc:
+        asyncio.run(adapter.ainvoke(prepared))
+    assert "SECRET_TOKEN" not in str(exc.value)
+
+
+def test_ollama_async_oversized_payload_and_bad_content_type() -> None:
+    prepared = _prepared()
+    for response, code in (
+        (
+            httpx.Response(200, content=b"x" * 2_097_153,
+                           headers={"content-type": "application/json"}),
+            "response_too_large",
+        ),
+        (_reply(content_type="text/html"), "provider_protocol_error"),
+    ):
+        adapter = AsyncOllamaAdapter(
+            _CONN, allow_live=True,
+            _test_transport=httpx.MockTransport(
+                lambda _, expected=response: expected,
+            ),
+        )
+        with pytest.raises(InvocationPortError, match=code):
+            asyncio.run(adapter.ainvoke(prepared))
+
+
+def test_ollama_async_constructor_rejects_wrong_profile_or_boolean() -> None:
+    with pytest.raises(InvocationPortError, match="adapter_connection_invalid"):
+        AsyncOllamaAdapter(
+            ProviderConnectionConfig.openai(CredentialRef("cloud")),
+            allow_live=True,
+        )
+    with pytest.raises(InvocationPortError, match="live_authorization_invalid"):
+        AsyncOllamaAdapter(_CONN, allow_live=1)  # type: ignore[arg-type]
