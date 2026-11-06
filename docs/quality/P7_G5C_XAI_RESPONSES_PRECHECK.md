@@ -33,3 +33,7 @@ credential différée. Les tests utilisent MockTransport et fausse clé.
 
 Aucune vraie invocation xAI, aucun coût, aucune release. G1-G5b et
 revues humaines restent bloquants avant toute fusion sur main.
+
+## Préqualification CI sur HEAD `880b9e5`
+
+CI GitHub Actions #42199344012 (push) et #42199415279 (PR), 3 versions Python qualifiées. Les jobs ont relevé 1 584 tests généraux réussis, 49 tests ciblés xAI réussis et 98,51 % de couverture avec branches pour `xai_responses.py` et `xai_responses_mapping.py` sur Python 3.13. Le présent commit relève le seuil CI xAI à 95 %. Il doit repasser en CI sur le SHA final avant GO technique pour revue. Aucun appel réel ni budget autorisé.

@@ -51,7 +51,7 @@ jobs:
           python -m pytest -q tests/acceptance/test_p7_l75b_google_gemini.py --cov=pyllmkit.adapters.inference.google_gemini --cov=pyllmkit.adapters.inference.google_gemini_mapping --cov=pyllmkit.adapters.inference.cloud_http --cov-branch --cov-report=term-missing --cov-fail-under=95
       - name: P7 L7.5c xAI Responses mapping and adapter branch coverage
         run: |
-          python -m pytest -q tests/acceptance/test_p7_l75c_xai_responses.py --cov=pyllmkit.adapters.inference.xai_responses --cov=pyllmkit.adapters.inference.xai_responses_mapping --cov-branch --cov-report=term-missing --cov-fail-under=85
+          python -m pytest -q tests/acceptance/test_p7_l75c_xai_responses.py --cov=pyllmkit.adapters.inference.xai_responses --cov=pyllmkit.adapters.inference.xai_responses_mapping --cov-branch --cov-report=term-missing --cov-fail-under=95
       - name: Offline examples
         run: |
           python examples/01_define_model.py
