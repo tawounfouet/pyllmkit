@@ -1,5 +1,12 @@
 """P7 executable composition contracts, fake adapters and guarded endpoints."""
 
+from pyllmkit.protocols.credentials import (
+    CredentialRef,
+    CredentialResolutionError,
+    SecretValue,
+    SecurityConfigurationError,
+)
+
 from .errors import normalize_http_failure
 from .fake import AsyncFakeInferenceAdapter, FakeInferenceAdapter
 from .registry import (
@@ -9,13 +16,6 @@ from .registry import (
     AdapterRegistryError,
 )
 from .routing import RegisteredAsyncInferencePort, RegisteredInferencePort
-from pyllmkit.protocols.credentials import (
-    CredentialRef,
-    CredentialResolutionError,
-    SecretValue,
-    SecurityConfigurationError,
-)
-
 from .security import EnvCredentialResolver, ProviderConnectionConfig, ProviderProfile
 
 __all__ = [
