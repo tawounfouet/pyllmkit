@@ -30,15 +30,6 @@ _MAX_DELTA_BYTES = 1_048_576
 _MAX_NATIVE_EVENTS = 100_000
 
 
-def _object_pairs(pairs: list[tuple[str, object]]) -> dict[str, object]:
-    obj: dict[str, object] = {}
-    for key, value in pairs:
-        if key in obj:
-            raise InvocationPortError("provider_protocol_error")
-        obj[key] = value
-    return obj
-
-
 def decode_native_json(raw: str) -> dict[str, object]:
     if type(raw) is not str or len(raw.encode("utf-8")) > 262_144:
         raise InvocationPortError("provider_protocol_error")
