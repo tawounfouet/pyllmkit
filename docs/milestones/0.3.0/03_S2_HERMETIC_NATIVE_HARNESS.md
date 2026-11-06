@@ -22,13 +22,24 @@
 |---|---|---|
 | S2-ERR-001..009 | 9 statuts x 6 providers x 2 modes = 108 | Codes HTTP normalises sans fuite |
 | S2-SEC-001 | 6 providers x 2 modes = 12 | `allow_live=False` bloque avant toute connexion |
-| Total | **120 cas parametres** | Zero socket externe, 0/1 appel mock |
+| S2-RESP-001 | 6 providers x 2 modes x usage present/absent = 24 | Unicode, RunId, FinishReason, Usage canonique |\n| Total | **144 cas parametres** | Zero socket externe, 0/1 appel mock |
 
 Les statuts HTTP : 400, 401, 403, 404, 408, 429, 500, 503 et
 504. Chaque execution doit constater `InvocationPortError(code)`,
 pas de `exception` native ni de corps de reponse. Le nombre de
 requêtes mock doit etre **exactement un** lors d'un echec HTTP et
 **zero** avec `allow_live=False`.
+
+## Preuves CI sur PR
+
+- Commit initial avec tests de reponse : `87f39bb66f84fa7f1943e3ae0f89482b307cc8b0`.
+- [CI PR #42216215663](https://github.com/tawounfouet/pyllmkit/actions/runs/42216215663) : `validate (3.11/3.12/3.13)` SUCCESS.
+- **2 091 tests generaux** sur chaque version Python (baseline 1 890,
+  S0 +39, S1 +18, S2 +144). Ruff, mypy, wheels et sdist inclus.
+- Couverture P7 L7.6 preservee a **90,87 %**.
+- Les cas nominaux reprennent des structures natives **synthetiques**
+  deja utilisables par les codecs P7 ; aucune attestation de
+  compatibilite avec une API distante actuelle.
 
 ## Preuves et limites
 
@@ -44,7 +55,7 @@ requêtes mock doit etre **exactement un** lors d'un echec HTTP et
 
 - [x] Structure `tests/conformance` et factories explicites.
 - [x] Scenarios partages contre six vrais adapters sync et async.
-- [ ] CI HEAD Python 3.11/3.12/3.13 et audit codes de sortie.
+- [x] Premiere CI complete sur `87f39bb` et Python 3.11/3.12/3.13 : 2 091 tests, trois jobs SUCCESS. Reverification du HEAD final requise.
 - [ ] Fixtures de reponse nominale pour six providers et projections
   de `InferenceResponse`.
 - [ ] Reporter JSON/Markdown par SHA/Python/fixture.
