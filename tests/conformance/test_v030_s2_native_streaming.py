@@ -74,7 +74,7 @@ def _collect(provider: str, scenario: str, *, async_mode: bool) -> tuple[
             )
         if scenario == "bad_mime":
             return httpx.Response(
-                200, headers={"content-type": "application/json"},
+                200, headers={"content-type": "text/plain"},
                 content=stream_wire(provider),
             )
         if scenario == "malformed":
