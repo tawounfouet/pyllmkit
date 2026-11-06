@@ -79,7 +79,7 @@ version once qualified.
 - [x] Independent test parametrization across all six native encoders.
 - [x] Red cases observed before fix in OpenAI/Ollama.
 - [x] Provider adapter validations tightened without changing domain.
-- [ ] Exact-head CI Python 3.11/3.12/3.13 and 542-case report PASS.
+- [x] CI for implementation HEAD `279e8708aaaa94ebf285bb07a274c240f56aa33f`: [GitHub Actions #42222092277](https://github.com/tawounfouet/pyllmkit/actions/runs/42222092277), Python 3.11, 3.12, 3.13 successful, 2 506 general tests, 542-case PASS conformance matrix, three nonempty evidence artifacts. Revalidate the documentation-only final HEAD.
 - [ ] Human/independent technical review of provider native parameter claims.
 - [ ] Tests of entire multi-turn role histories, usage and finish reasons.
 - [ ] No version bump, no live provider execution, no release, no merge.
