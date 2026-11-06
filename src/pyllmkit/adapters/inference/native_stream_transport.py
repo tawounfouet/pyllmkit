@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import asyncio
 import json
-from collections.abc import AsyncIterator, Iterator
+from collections.abc import AsyncGenerator, AsyncIterator, Generator, Iterator
 from dataclasses import dataclass, field
 
 from pyllmkit.adapters.inference.anthropic_messages_mapping import (
@@ -245,12 +245,12 @@ class NativeProviderStreamingAdapter:
                     raise InvocationPortError("adapter_connection_invalid")
             else:
                 _validate_destination(self.config.profile, base, target)
-            key = _secret(self.config, self.credentials)
+            if self.credentials is None:\n                raise InvocationPortError("credential_resolver_invalid")\n            key = _secret(self.config, self.credentials)
         return target, body, _stream_headers(self.config.profile, key), _timeout(
             prepared, self.config,
         )
 
-    def _frames(self, prepared: PreparedInvocation) -> Iterator[tuple[str, str]]:
+    def _frames(self, prepared: PreparedInvocation) -> Generator[tuple[str, str], None, None]:
         target, body, headers, timeout = self._request(prepared)
         httpx = _httpx()
         try:

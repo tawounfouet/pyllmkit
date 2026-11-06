@@ -175,7 +175,7 @@ class NativeStreamDecoder:
             raise InvocationPortError("unsupported_provider_output")
         if frame.get("model") not in (None, self.prepared.native_model_alias):
             raise InvocationPortError("provider_model_mismatch")
-        delta = self._append(msg["content"])
+        delta = self._append(_str(msg["content"]))
         if frame.get("done") is True:
             final = dict(frame)
             final["message"] = {"role": "assistant", "content": self._text()}
