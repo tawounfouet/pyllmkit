@@ -29,6 +29,8 @@ _REQUIRED: dict[str, int] = {
     "test_native_stream_conformance": 84,
     "test_pre_cancelled_native_session_never_contacts_transport": 12,
     "test_ollama_json_content_type_is_explicitly_supported": 2,
+    "test_native_transport_error_is_sanitized_and_nonretryable": 48,
+    "test_native_response_failure_is_strict_and_nonleaking": 72,
 }
 _ALLOWED = ("PASS", "FAIL", "NOT_APPLICABLE", "UNSUPPORTED", "BLOCKED")
 _FAILURE_TYPE = re.compile(r"[A-Za-z0-9_.]{1,100}\Z")
