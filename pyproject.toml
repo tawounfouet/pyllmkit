@@ -30,6 +30,7 @@ Issues = "https://github.com/tawounfouet/pyllmkit/issues"
 anthropic = ["httpx>=0.27,<1"]
 google = ["httpx>=0.27,<1"]
 xai = ["httpx>=0.27,<1"]
+mistral = ["httpx>=0.27,<1"]
 openai = ["httpx>=0.27,<1"]
 ollama = ["httpx>=0.27,<1"]
 providers = ["httpx>=0.27,<1"]
