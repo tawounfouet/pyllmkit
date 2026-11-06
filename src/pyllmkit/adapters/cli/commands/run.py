@@ -114,9 +114,11 @@ def run_command(
         console.print(build_response_panel(execution, model))
         console.print(build_usage_panel(execution))
 
-        # Enregistrement silencieux dans l'historique local
+        # Enregistrement silencieux dans l'historique local pour FinOps / Evals / Observabilité
         try:
             from datetime import UTC, datetime
+
+            from pyllmkit.domain.inference import DeploymentId
 
             store = SqliteRunStore()
             dur_ms = None
@@ -126,6 +128,9 @@ def run_command(
                 ).total_seconds() * 1000
             in_tok = None
             out_tok = None
+            tot_tok = None
+            cached_tok = None
+            reas_tok = None
             finish = None
             resp_text = None
             if execution.response:
@@ -135,15 +140,26 @@ def run_command(
                 if execution.response.usage:
                     in_tok = execution.response.usage.input_tokens
                     out_tok = execution.response.usage.output_tokens
+                    tot_tok = execution.response.usage.total_tokens
+                    cached_tok = execution.response.usage.cached_input_tokens
+                    reas_tok = execution.response.usage.reasoning_tokens
             created = (
                 execution.run.started_at
                 or execution.run.finished_at
                 or datetime.now(UTC)
             ).isoformat()
+
+            deployment = catalog.deployments.get(DeploymentId(f"dep-{model}"))
+            prov_name = (
+                deployment.provider_id.value
+                if deployment and deployment.provider_id
+                else ("ollama" if "llama" in model else "openai")
+            )
+
             rec = RunRecord(
                 run_id=execution.run.run_id.value,
                 model_id=model,
-                provider="offline" if mock else "live",
+                provider=f"{prov_name} (mock)" if mock else prov_name,
                 prompt=prompt,
                 response_text=resp_text,
                 state=execution.run.state.value,
@@ -152,6 +168,14 @@ def run_command(
                 output_tokens=out_tok,
                 duration_ms=dur_ms,
                 created_at=created,
+                total_tokens=tot_tok,
+                cached_tokens=cached_tok,
+                reasoning_tokens=reas_tok,
+                ttft_ms=None,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                system_prompt=system,
+                mode="run",
             )
             store.record_run(rec)
         except Exception:

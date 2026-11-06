@@ -89,3 +89,64 @@ def test_cli_runs_inspect_unknown(tmp_path: Path, monkeypatch: pytest.MonkeyPatc
     assert res.exit_code == 1
     assert "run_not_found" in res.output
 
+
+def test_sqlite_run_store_finops_evals_metadata(tmp_path: Path) -> None:
+    """Verify enriched FinOps, Evals and streaming metadata persistence and retrieval."""
+    db_file = tmp_path / "finops_history.db"
+    store = SqliteRunStore(db_file)
+
+    record = RunRecord(
+        run_id="run_finops_123",
+        model_id="gpt-4o",
+        provider="openai",
+        prompt="Exécute un audit de coût",
+        response_text="Audit complété",
+        state="completed",
+        finish_reason="stop",
+        input_tokens=100,
+        output_tokens=50,
+        duration_ms=250.5,
+        created_at="2026-11-06T18:30:00Z",
+        total_tokens=150,
+        cached_tokens=40,
+        reasoning_tokens=10,
+        ttft_ms=75.2,
+        temperature=0.2,
+        max_tokens=200,
+        system_prompt="Tu es un auditeur FinOps.",
+        mode="stream",
+    )
+    store.record_run(record)
+
+    fetched = store.get_run("run_finops_123")
+    assert fetched is not None
+    assert fetched.run_id == "run_finops_123"
+    assert fetched.cached_tokens == 40
+    assert fetched.reasoning_tokens == 10
+    assert fetched.total_tokens == 150
+    assert fetched.ttft_ms == 75.2
+    assert fetched.temperature == 0.2
+    assert fetched.max_tokens == 200
+    assert fetched.system_prompt == "Tu es un auditeur FinOps."
+    assert fetched.mode == "stream"
+
+
+def test_cli_stream_records_to_history(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Stream command automatically persists run with mode='stream'."""
+    db_file = tmp_path / "stream_history.db"
+    monkeypatch.setenv("PYLLMKIT_HISTORY_DB", str(db_file))
+
+    res = runner.invoke(
+        app,
+        ["stream", "Bonjour stream", "--temperature", "0.5", "--max-tokens", "100"],
+    )
+    assert res.exit_code == 0
+
+    store = SqliteRunStore(db_file)
+    runs = store.list_runs()
+    assert len(runs) == 1
+    assert runs[0].mode == "stream"
+    assert runs[0].temperature == 0.5
+    assert runs[0].max_tokens == 100
+
+

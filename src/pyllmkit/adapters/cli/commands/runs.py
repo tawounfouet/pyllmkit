@@ -36,6 +36,7 @@ def runs_list(
     table.add_column("Run ID", style="cyan", no_wrap=True)
     table.add_column("Modèle", style="magenta", no_wrap=True)
     table.add_column("Fournisseur", style="green")
+    table.add_column("Mode", style="blue")
     table.add_column("Statut", style="bold", no_wrap=True)
     table.add_column("Finish", style="yellow")
     table.add_column("Durée (ms)", justify="right")
@@ -53,6 +54,7 @@ def runs_list(
             rec.run_id[:12] + "...",
             rec.model_id,
             rec.provider,
+            rec.mode,
             f"[{status_style}]{rec.state}[/{status_style}]",
             rec.finish_reason or "-",
             dur_str,
@@ -93,14 +95,38 @@ def runs_inspect(
         f"[bold]Run ID        :[/bold] {record.run_id}",
         f"[bold]Modèle        :[/bold] {record.model_id}",
         f"[bold]Fournisseur   :[/bold] {record.provider}",
+        f"[bold]Mode          :[/bold] [bold blue]{record.mode}[/bold blue]",
         f"[bold]Statut        :[/bold] {record.state}",
         f"[bold]Finish Reason :[/bold] {record.finish_reason or '-'}",
-        f"[bold]Durée         :[/bold] {record.duration_ms:.1f} ms" if record.duration_ms else "[bold]Durée         :[/bold] -",
-        f"[bold]Tokens        :[/bold] In: {record.input_tokens or '-'} / Out: {record.output_tokens or '-'}",
-        f"[bold]Date (UTC)    :[/bold] {record.created_at}",
+        f"[bold]Durée         :[/bold] {record.duration_ms:.1f} ms" if record.duration_ms is not None else "[bold]Durée         :[/bold] -",
     ]
+    if record.ttft_ms is not None:
+        details.append(f"[bold]TTFT (1st tok):[/bold] {record.ttft_ms:.1f} ms")
+
+    # Section FinOps Tokens
+    tok_info = f"In: {record.input_tokens if record.input_tokens is not None else '-'} / Out: {record.output_tokens if record.output_tokens is not None else '-'}"
+    if record.total_tokens is not None:
+        tok_info += f" (Total: {record.total_tokens})"
+    details.append(f"[bold]Tokens        :[/bold] {tok_info}")
+    if record.cached_tokens is not None:
+        details.append(f"[bold]Cached Tokens :[/bold] [green]{record.cached_tokens}[/green]")
+    if record.reasoning_tokens is not None:
+        details.append(f"[bold]Reasoning Tok.:[/bold] [magenta]{record.reasoning_tokens}[/magenta]")
+
+    # Section Hyperparamètres (Evals)
+    gen_parts = []
+    if record.temperature is not None:
+        gen_parts.append(f"temp={record.temperature}")
+    if record.max_tokens is not None:
+        gen_parts.append(f"max_tokens={record.max_tokens}")
+    if gen_parts:
+        details.append(f"[bold]Configuration :[/bold] {', '.join(gen_parts)}")
+
+    details.append(f"[bold]Date (UTC)    :[/bold] {record.created_at}")
 
     console.print(Panel("\n".join(details), title="Métadonnées du Run", border_style="cyan"))
+    if record.system_prompt:
+        console.print(Panel(record.system_prompt, title="Instruction Système", border_style="yellow"))
     console.print(Panel(record.prompt, title="Invite (Prompt)", border_style="blue"))
     if record.response_text:
         console.print(Panel(record.response_text, title="Réponse", border_style="green"))

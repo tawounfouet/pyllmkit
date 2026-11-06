@@ -102,9 +102,54 @@ def stream_command(
     try:
         snapshot = _build_support_snapshot(request)
         session = service.open_astream(request, support_snapshot=snapshot)
-        exit_code = asyncio.run(aconsume_and_render_stream(session, model, console))
-        if exit_code != 0:
-            raise typer.Exit(code=exit_code)
+        summary = asyncio.run(aconsume_and_render_stream(session, model, console))
+
+        # Enregistrement dans l'historique local pour FinOps / Evals / Observabilité
+        try:
+            from datetime import UTC, datetime
+
+            from ..storage import RunRecord, SqliteRunStore
+
+            store = SqliteRunStore()
+            deployment = catalog.deployments.get(session.prepared.resolution.deployment.id)
+            prov_name = (
+                deployment.provider_id.value
+                if deployment and deployment.provider_id
+                else ("ollama" if "llama" in model else "openai")
+            )
+            in_tok = summary.usage.input_tokens if summary.usage else None
+            out_tok = summary.usage.output_tokens if summary.usage else None
+            tot_tok = summary.usage.total_tokens if summary.usage else None
+            cached_tok = summary.usage.cached_input_tokens if summary.usage else None
+            reas_tok = summary.usage.reasoning_tokens if summary.usage else None
+
+            rec = RunRecord(
+                run_id=session.run_id.value,
+                model_id=model,
+                provider=f"{prov_name} (mock)" if mock else prov_name,
+                prompt=prompt,
+                response_text=summary.text,
+                state="completed" if summary.exit_code == 0 else "failed",
+                finish_reason=summary.finish_reason,
+                input_tokens=in_tok,
+                output_tokens=out_tok,
+                duration_ms=summary.duration_ms,
+                created_at=datetime.now(UTC).isoformat(),
+                total_tokens=tot_tok,
+                cached_tokens=cached_tok,
+                reasoning_tokens=reas_tok,
+                ttft_ms=summary.ttft_ms,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                system_prompt=system,
+                mode="stream",
+            )
+            store.record_run(rec)
+        except Exception:
+            pass
+
+        if summary.exit_code != 0:
+            raise typer.Exit(code=summary.exit_code)
 
     except (InvocationPortError, InvocationPreconditionError) as exc:
         panel = build_error_panel(exc.code)

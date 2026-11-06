@@ -24,6 +24,14 @@ class RunRecord:
     output_tokens: int | None
     duration_ms: float | None
     created_at: str
+    total_tokens: int | None = None
+    cached_tokens: int | None = None
+    reasoning_tokens: int | None = None
+    ttft_ms: float | None = None
+    temperature: float | None = None
+    max_tokens: int | None = None
+    system_prompt: str | None = None
+    mode: str = "run"
 
 
 class SqliteRunStore:
@@ -61,10 +69,35 @@ class SqliteRunStore:
                         input_tokens INTEGER,
                         output_tokens INTEGER,
                         duration_ms REAL,
-                        created_at TEXT NOT NULL
+                        created_at TEXT NOT NULL,
+                        total_tokens INTEGER,
+                        cached_tokens INTEGER,
+                        reasoning_tokens INTEGER,
+                        ttft_ms REAL,
+                        temperature REAL,
+                        max_tokens INTEGER,
+                        system_prompt TEXT,
+                        mode TEXT NOT NULL DEFAULT 'run'
                     )
                     """
                 )
+                # Migration de schéma pour tables existantes
+                cursor = conn.cursor()
+                cursor.execute("PRAGMA table_info(runs)")
+                existing_cols = {col[1] for col in cursor.fetchall()}
+                additions = [
+                    ("total_tokens", "INTEGER"),
+                    ("cached_tokens", "INTEGER"),
+                    ("reasoning_tokens", "INTEGER"),
+                    ("ttft_ms", "REAL"),
+                    ("temperature", "REAL"),
+                    ("max_tokens", "INTEGER"),
+                    ("system_prompt", "TEXT"),
+                    ("mode", "TEXT NOT NULL DEFAULT 'run'"),
+                ]
+                for col_name, col_type in additions:
+                    if col_name not in existing_cols:
+                        conn.execute(f"ALTER TABLE runs ADD COLUMN {col_name} {col_type}")
 
     def record_run(self, record: RunRecord) -> None:
         """Persist or update an execution record."""
@@ -75,8 +108,10 @@ class SqliteRunStore:
                     INSERT OR REPLACE INTO runs (
                         run_id, model_id, provider, prompt, response_text,
                         state, finish_reason, input_tokens, output_tokens,
-                        duration_ms, created_at
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        duration_ms, created_at, total_tokens, cached_tokens,
+                        reasoning_tokens, ttft_ms, temperature, max_tokens,
+                        system_prompt, mode
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         record.run_id,
@@ -90,6 +125,14 @@ class SqliteRunStore:
                         record.output_tokens,
                         record.duration_ms,
                         record.created_at,
+                        record.total_tokens,
+                        record.cached_tokens,
+                        record.reasoning_tokens,
+                        record.ttft_ms,
+                        record.temperature,
+                        record.max_tokens,
+                        record.system_prompt,
+                        record.mode,
                     ),
                 )
 
@@ -101,7 +144,9 @@ class SqliteRunStore:
                 """
                 SELECT run_id, model_id, provider, prompt, response_text,
                        state, finish_reason, input_tokens, output_tokens,
-                       duration_ms, created_at
+                       duration_ms, created_at, total_tokens, cached_tokens,
+                       reasoning_tokens, ttft_ms, temperature, max_tokens,
+                       system_prompt, mode
                 FROM runs
                 ORDER BY created_at DESC
                 LIMIT ?
@@ -122,6 +167,14 @@ class SqliteRunStore:
                     output_tokens=row[8],
                     duration_ms=row[9],
                     created_at=row[10],
+                    total_tokens=row[11],
+                    cached_tokens=row[12],
+                    reasoning_tokens=row[13],
+                    ttft_ms=row[14],
+                    temperature=row[15],
+                    max_tokens=row[16],
+                    system_prompt=row[17],
+                    mode=row[18] if len(row) > 18 and row[18] else "run",
                 )
                 for row in rows
             ]
@@ -134,7 +187,9 @@ class SqliteRunStore:
                 """
                 SELECT run_id, model_id, provider, prompt, response_text,
                        state, finish_reason, input_tokens, output_tokens,
-                       duration_ms, created_at
+                       duration_ms, created_at, total_tokens, cached_tokens,
+                       reasoning_tokens, ttft_ms, temperature, max_tokens,
+                       system_prompt, mode
                 FROM runs
                 WHERE run_id = ?
                 """,
@@ -155,4 +210,12 @@ class SqliteRunStore:
                 output_tokens=row[8],
                 duration_ms=row[9],
                 created_at=row[10],
+                total_tokens=row[11],
+                cached_tokens=row[12],
+                reasoning_tokens=row[13],
+                ttft_ms=row[14],
+                temperature=row[15],
+                max_tokens=row[16],
+                system_prompt=row[17],
+                mode=row[18] if len(row) > 18 and row[18] else "run",
             )
