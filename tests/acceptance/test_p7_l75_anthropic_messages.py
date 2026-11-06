@@ -489,3 +489,254 @@ def test_p7_ac040_native_http_errors_sanitized(
     with pytest.raises(InvocationPortError, match=code) as exc:
         adapter.invoke(prepared)
     assert "NATIVE-SECRET" not in str(exc.value)
+
+
+def test_anthropic_optional_http_dependency_is_imported_lazily(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import builtins
+
+    from pyllmkit.adapters.inference.anthropic_messages import _httpx
+
+    real_import = builtins.__import__
+
+    def blocked(name: str, *args: object, **kwargs: object) -> object:
+        if name == "httpx":
+            raise ImportError("sensitive local path")
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", blocked)
+    with pytest.raises(InvocationPortError, match="optional_dependency_missing") as err:
+        _httpx()
+    assert "sensitive" not in str(err.value)
+
+
+def test_anthropic_config_requires_expected_provider_and_resolver() -> None:
+    with pytest.raises(InvocationPortError, match="adapter_connection_invalid"):
+        AnthropicMessagesAdapter(
+            ProviderConnectionConfig.openai(CredentialRef("openai")),
+            _credentials(),
+        )
+    with pytest.raises(InvocationPortError, match="adapter_connection_invalid"):
+        AsyncAnthropicMessagesAdapter(
+            ProviderConnectionConfig.ollama_local(), _credentials(),
+        )
+    with pytest.raises(InvocationPortError, match="credential_resolver_invalid"):
+        AnthropicMessagesAdapter(_CONFIG, object())  # type: ignore[arg-type]
+    with pytest.raises(InvocationPortError, match="live_authorization_invalid"):
+        AnthropicMessagesAdapter(_CONFIG, _credentials(), allow_live="yes")  # type: ignore[arg-type]
+    with pytest.raises(InvocationPortError, match="live_authorization_invalid"):
+        AsyncAnthropicMessagesAdapter(_CONFIG, _credentials(), allow_live=1)  # type: ignore[arg-type]
+
+
+def test_anthropic_tampered_config_fails_closed() -> None:
+    from pyllmkit.adapters.inference.anthropic_messages import _validate
+
+    for name, bad in (
+        ("endpoint_url", "https://example.com/v1/messages"),
+        ("credential_ref", None),
+        ("verify_tls", False),
+        ("follow_redirects", True),
+        ("allow_local", True),
+    ):
+        config = ProviderConnectionConfig.anthropic(_REF)
+        object.__setattr__(config, name, bad)
+        with pytest.raises(InvocationPortError, match="adapter_connection_invalid"):
+            _validate(config, _credentials())
+
+
+def test_anthropic_credential_failures_are_sanitized() -> None:
+    from pyllmkit.adapters.inference.anthropic_messages import _secret
+
+    class RawCredentials:
+        def resolve(self, reference: CredentialRef) -> str:
+            return _SECRET
+
+    class RaisingCredentials:
+        def resolve(self, reference: CredentialRef) -> object:
+            raise RuntimeError("NATIVE-SECRET-ERROR")
+
+    with pytest.raises(InvocationPortError, match="credential_unavailable"):
+        _secret(_CONFIG, RawCredentials())  # type: ignore[arg-type]
+    with pytest.raises(InvocationPortError, match="credential_unavailable") as exc:
+        _secret(_CONFIG, RaisingCredentials())  # type: ignore[arg-type]
+    assert "NATIVE-SECRET" not in str(exc.value)
+
+    broken = ProviderConnectionConfig.anthropic(_REF)
+    object.__setattr__(broken, "credential_ref", None)
+    with pytest.raises(InvocationPortError, match="credential_unavailable"):
+        _secret(broken, _credentials())
+
+
+def test_anthropic_request_limit_applies_before_credentials_or_http() -> None:
+    from pyllmkit.adapters.inference.anthropic_messages import _body
+
+    prepared = _prepared(messages=(Message(
+        Role.USER, Content((TextContent("x" * 1_048_577),)),
+    ),))
+    with pytest.raises(InvocationPortError, match="request_too_large"):
+        _body(prepared)
+
+
+def test_anthropic_invalid_alias_and_mapper_types_are_rejected() -> None:
+    prepared = _prepared()
+    with pytest.raises(InvocationPortError, match="adapter_protocol_error"):
+        encode_anthropic_messages_request(None)  # type: ignore[arg-type]
+    with pytest.raises(InvocationPortError, match="invalid_model_alias"):
+        encode_anthropic_messages_request(replace(
+            prepared, native_model_alias="model\nSECRET",
+        ))
+    with pytest.raises(InvocationPortError, match="provider_protocol_error"):
+        decode_anthropic_messages_response(None, prepared)  # type: ignore[arg-type]
+    with pytest.raises(InvocationPortError, match="provider_protocol_error"):
+        decode_anthropic_messages_response(b"{}", "wrong")  # type: ignore[arg-type]
+    with pytest.raises(InvocationPortError, match="provider_protocol_error"):
+        decode_anthropic_messages_response(b"{not-json}", prepared)
+    with pytest.raises(InvocationPortError, match="provider_protocol_error"):
+        decode_anthropic_messages_response(b"[]", prepared)
+    with pytest.raises(InvocationPortError, match="provider_protocol_error"):
+        decode_anthropic_messages_response(
+            b'{"type":"message","type":"message"}', prepared,
+        )
+
+
+def test_anthropic_native_requirement_checks_every_parameter_not_only_max() -> None:
+    config = GenerationConfig(max_output_tokens=25, temperature=0.3)
+    prepared = _prepared(config=config)
+    only_max = tuple(
+        a for a in prepared.parameter_assessment.assessments if a.name == "max_output_tokens"
+    )
+    altered = replace(
+        prepared, parameter_assessment=replace(
+            prepared.parameter_assessment, assessments=only_max,
+        ),
+    )
+    with pytest.raises(InvocationPortError, match="unknown_generation_parameter"):
+        encode_anthropic_messages_request(altered)
+
+
+def test_anthropic_mapper_rejects_multimodal_part_if_preflight_bypassed() -> None:
+    from pyllmkit.domain.interactions import ImageContent, MediaSourceRef
+
+    prepared = _prepared()
+    request = InferenceRequest(
+        prepared.request.target,
+        (Message(Role.USER, Content((ImageContent(MediaSourceRef("asset", "x")),))),),
+        prepared.request.generation_config,
+    )
+    with pytest.raises(InvocationPortError, match="unsupported_input_modality"):
+        encode_anthropic_messages_request(replace(prepared, request=request))
+
+
+def test_anthropic_usage_details_are_not_invented() -> None:
+    data = _native(usage={
+        "output_tokens_details": {"thinking_tokens": 2},
+    })
+    response = decode_anthropic_messages_response(
+        json.dumps(data).encode(), _prepared(),
+    )
+    assert response.usage is not None
+    assert response.usage.reasoning_tokens == 2
+    assert response.usage.input_tokens is None
+    assert response.usage.total_tokens is None
+    data = _native(usage={})
+    response = decode_anthropic_messages_response(
+        json.dumps(data).encode(), _prepared(),
+    )
+    assert response.usage is None
+
+
+def test_anthropic_unknown_stop_reason_is_sanitized() -> None:
+    raw = _native(stop="strange\nNATIVE-SECRET")
+    response = decode_anthropic_messages_response(
+        json.dumps(raw).encode(), _prepared(),
+    )
+    assert response.finish_reason is not None
+    assert response.finish_reason.code is FinishReasonCode.UNKNOWN
+    assert response.finish_reason.native_reason is None
+
+
+def test_anthropic_bad_envelope_and_missing_stop_are_rejected() -> None:
+    for changed, code in (
+        ({"type": "error"}, "provider_protocol_error"),
+        ({"role": "tool"}, "provider_protocol_error"),
+        ({"model": "another-model"}, "provider_model_mismatch"),
+        ({"stop_reason": None}, "provider_protocol_error"),
+        ({"content": "not-list"}, "unsupported_provider_output"),
+        ({"content": [7]}, "unsupported_provider_output"),
+    ):
+        payload = _native()
+        payload.update(changed)
+        with pytest.raises(InvocationPortError, match=code):
+            decode_anthropic_messages_response(
+                json.dumps(payload).encode(), _prepared(),
+            )
+
+
+def test_anthropic_invalid_200_content_type_is_refused() -> None:
+    svc, request = _service(httpx.MockTransport(
+        lambda _: _http_response(content_type="text/html"),
+    ))
+    result = svc.invoke(request, _snapshot(request))
+    assert result.run.failure is not None
+    assert result.run.failure.code == "provider_protocol_error"
+
+
+def test_anthropic_async_oversized_reply_and_non_json_type() -> None:
+    prepared = _prepared()
+    for response, code in (
+        (httpx.Response(
+            200, content=b"x" * 2_097_153,
+            headers={"content-type": "application/json"},
+        ), "response_too_large"),
+        (_http_response(content_type="text/html"), "provider_protocol_error"),
+        (_http_response(status=429), "rate_limited"),
+    ):
+        adapter = AsyncAnthropicMessagesAdapter(
+            _CONFIG, _credentials(), allow_live=True,
+            _test_transport=httpx.MockTransport(
+                lambda _, expected=response: expected,
+            ),
+        )
+        with pytest.raises(InvocationPortError, match=code):
+            asyncio.run(adapter.ainvoke(prepared))
+
+
+@pytest.mark.parametrize("native_error,code", (
+    (httpx.ReadTimeout("SECRET-CLOUD"), "provider_timeout"),
+    (httpx.ConnectError("SECRET-CLOUD"), "connection_failure"),
+    (httpx.RemoteProtocolError("SECRET-CLOUD"), "provider_protocol_error"),
+    (TimeoutError("SECRET-CLOUD"), "provider_timeout"),
+))
+def test_anthropic_async_transport_failures_are_sanitized(
+    native_error: Exception, code: str,
+) -> None:
+    prepared = _prepared()
+
+    async def fail(_: httpx.Request) -> httpx.Response:
+        raise native_error
+
+    adapter = AsyncAnthropicMessagesAdapter(
+        _CONFIG, _credentials(), allow_live=True,
+        _test_transport=httpx.MockTransport(fail),
+    )
+    with pytest.raises(InvocationPortError, match=code) as error:
+        asyncio.run(adapter.ainvoke(prepared))
+    assert "SECRET-CLOUD" not in str(error.value)
+
+
+def test_anthropic_async_deadline_expired_never_calls_provider() -> None:
+    prepared = _prepared()
+    expired = replace(prepared, context=replace(
+        prepared.context, deadline=datetime(2000, 1, 1, tzinfo=UTC),
+    ))
+    touched: list[httpx.Request] = []
+    adapter = AsyncAnthropicMessagesAdapter(
+        _CONFIG, _credentials(), allow_live=True,
+        _test_transport=httpx.MockTransport(
+            lambda req: (touched.append(req) or _http_response()),
+        ),
+    )
+    with pytest.raises(InvocationPortError, match="provider_timeout"):
+        asyncio.run(adapter.ainvoke(expired))
+    assert touched == []
