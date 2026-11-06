@@ -33,7 +33,7 @@ jobs:
           python -m pytest -q --cov=pyllmkit.domain --cov-branch --cov-report=term-missing --cov-report=xml --cov-fail-under=95
       - name: P7 L7.1 application and fake adapter branch coverage
         run: |
-          python -m pytest -q tests/acceptance/test_p7_l71_inference_kernel.py --cov=pyllmkit.application.inference --cov=pyllmkit.adapters.inference.fake --cov-branch --cov-report=term-missing --cov-fail-under=85
+          python -m pytest -q tests/acceptance/test_p7_l71_inference_kernel.py --cov=pyllmkit.application.inference.contracts --cov=pyllmkit.application.inference.service --cov=pyllmkit.adapters.inference.fake --cov-branch --cov-report=term-missing --cov-fail-under=85
       - name: P7 L7.2 security and adapter composition coverage
         run: |
           python -m pytest -q tests/acceptance/test_p7_l72_secure_adapter_registry.py --cov=pyllmkit.adapters.inference.security --cov=pyllmkit.adapters.inference.registry --cov=pyllmkit.adapters.inference.routing --cov=pyllmkit.adapters.inference.errors --cov=pyllmkit.protocols.credentials --cov-branch --cov-report=term-missing --cov-fail-under=95
