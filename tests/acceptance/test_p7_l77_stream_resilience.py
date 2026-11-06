@@ -10,6 +10,7 @@ from test_p7_l76_native_streaming import PROVIDERS, service
 
 from pyllmkit.adapters.inference import NativeProviderStreamingAdapter
 from pyllmkit.adapters.inference import native_stream_transport as transport_module
+from pyllmkit.application.inference import InvocationPortError
 from pyllmkit.application.inference.streaming_resilience import (
     StreamCancellationSignal,
     aiter_resilient,
@@ -165,7 +166,7 @@ def test_sync_monotonic_budget_stops_trickle_frames(monkeypatch: pytest.MonkeyPa
     sync, _, request, snapshot = service("ollama")
     prepared = sync.open_stream(request, snapshot).prepared
     monkeypatch.setattr(transport_module, "monotonic", lambda: 101.0)
-    with pytest.raises(Exception, match="provider_timeout"):
+    with pytest.raises(InvocationPortError, match="provider_timeout"):
         list(transport_module._sync_budget_lines(
             iter(("safe",)), started_at=100.0, budget_seconds=1.0,
             prepared=prepared,
