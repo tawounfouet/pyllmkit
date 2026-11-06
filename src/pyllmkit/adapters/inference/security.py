@@ -65,11 +65,17 @@ class ProviderProfile(StrEnum):
 
     OPENAI = "openai"
     ANTHROPIC = "anthropic"
+    GOOGLE = "google"
+    XAI = "xai"
+    MISTRAL = "mistral"
     OLLAMA = "ollama"
 
 
 _OPENAI_URL = "https://api.openai.com/v1/responses"
 _ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
+_GOOGLE_URL = "https://generativelanguage.googleapis.com/v1beta/models"
+_XAI_URL = "https://api.x.ai/v1/responses"
+_MISTRAL_URL = "https://api.mistral.ai/v1/chat/completions"
 
 
 @dataclass(frozen=True, slots=True)
@@ -123,6 +129,18 @@ class ProviderConnectionConfig:
                 raise SecurityConfigurationError("credential_reference_required")
             if self.allow_local:
                 raise SecurityConfigurationError("local_authorization_invalid")
+        elif self.profile in (ProviderProfile.GOOGLE, ProviderProfile.XAI, ProviderProfile.MISTRAL):
+            approved = {
+                ProviderProfile.GOOGLE: _GOOGLE_URL,
+                ProviderProfile.XAI: _XAI_URL,
+                ProviderProfile.MISTRAL: _MISTRAL_URL,
+            }
+            if self.endpoint_url != approved[self.profile]:
+                raise SecurityConfigurationError("endpoint_not_approved")
+            if self.credential_ref is None:
+                raise SecurityConfigurationError("credential_reference_required")
+            if self.allow_local:
+                raise SecurityConfigurationError("local_authorization_invalid")
         else:
             if not self.allow_local:
                 raise SecurityConfigurationError("local_opt_in_required")
@@ -166,6 +184,18 @@ class ProviderConnectionConfig:
     @classmethod
     def anthropic(cls, credential_ref: CredentialRef) -> ProviderConnectionConfig:
         return cls(ProviderProfile.ANTHROPIC, _ANTHROPIC_URL, credential_ref)
+
+    @classmethod
+    def google(cls, credential_ref: CredentialRef) -> ProviderConnectionConfig:
+        return cls(ProviderProfile.GOOGLE, _GOOGLE_URL, credential_ref)
+
+    @classmethod
+    def xai(cls, credential_ref: CredentialRef) -> ProviderConnectionConfig:
+        return cls(ProviderProfile.XAI, _XAI_URL, credential_ref)
+
+    @classmethod
+    def mistral(cls, credential_ref: CredentialRef) -> ProviderConnectionConfig:
+        return cls(ProviderProfile.MISTRAL, _MISTRAL_URL, credential_ref)
 
     @classmethod
     def ollama_local(
