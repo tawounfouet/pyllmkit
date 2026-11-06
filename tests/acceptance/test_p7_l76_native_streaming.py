@@ -742,3 +742,213 @@ def test_stream_response_output_rejects_encrypted_reasoning_before_completion() 
             "type": "response.output_item.added",
             "item": {"type": "reasoning", "encrypted_content": "SECRET"},
         })
+
+def _fresh_decoder(name: str) -> NativeStreamDecoder:
+    sync, _, request, support = service(name)
+    return NativeStreamDecoder(
+        ProviderProfile(name), sync.open_stream(request, support).prepared,
+    )
+
+
+@pytest.mark.parametrize("name", ("openai", "xai"))
+@pytest.mark.parametrize("kind", (
+    "response.created", "response.in_progress",
+    "response.output_item.added", "response.output_item.done",
+    "response.content_part.added", "response.content_part.done",
+))
+def test_responses_known_nontext_lifecycle_frames_are_validated(
+    name: str, kind: str,
+) -> None:
+    decoder = _fresh_decoder(name)
+    body: dict[str, object] = {"type": kind}
+    if kind in ("response.created", "response.in_progress"):
+        body["response"] = {"status": "in_progress"}
+    elif kind in ("response.output_item.added", "response.output_item.done"):
+        body["item"] = {"type": "message", "role": "assistant"}
+    else:
+        body["part"] = {"type": "output_text", "annotations": []}
+    assert decoder.push(kind, body) == ""
+    assert decoder._completed is False
+
+
+@pytest.mark.parametrize("name", ("openai", "xai"))
+def test_responses_incremental_text_done_consistency(name: str) -> None:
+    decoder = _fresh_decoder(name)
+    assert decoder.push("response.output_text.delta", {
+        "type": "response.output_text.delta",
+        "output_index": 0, "content_index": 0, "delta": "Hello",
+    }) == "Hello"
+    assert decoder.push("response.output_text.done", {
+        "type": "response.output_text.done",
+        "output_index": 0, "content_index": 0, "text": "Hello",
+    }) == ""
+    with pytest.raises(Exception, match="provider_not_completed"):
+        decoder.finish()
+
+
+def test_native_text_limit_and_reassembly_are_bounded_in_bytes() -> None:
+    decoder = _fresh_decoder("ollama")
+    assert decoder._append("é") == "é"
+    assert decoder._text() == "é"
+    assert decoder._text_bytes == 2
+    decoder._text_bytes = 8 * 1024 * 1024
+    with pytest.raises(Exception, match="stream_text_limit"):
+        decoder._append("x")
+    with pytest.raises(Exception, match="unsupported_provider_output"):
+        decoder._append(None)  # type: ignore[arg-type]
+
+
+@pytest.mark.parametrize("kind,frame,code", (
+    ("content_block_start", {
+        "type": "content_block_start", "index": 0,
+        "content_block": {"type": "text", "text": "x"},
+    }, "provider_protocol_error"),
+    ("ping", {"type": "pong"}, "provider_protocol_error"),
+    ("error", {"type": "error", "error": {"message": "SECRET"}}, "provider_protocol_error"),
+))
+def test_anthropic_stream_start_phase_fail_closed(
+    kind: str, frame: dict[str, object], code: str,
+) -> None:
+    with pytest.raises(Exception, match=code):
+        _fresh_decoder("anthropic").push(kind, frame)
+
+
+def test_anthropic_stream_uses_native_initial_text_and_cumulative_usage() -> None:
+    decoder = _fresh_decoder("anthropic")
+    assert decoder.push("message_start", {
+        "type": "message_start", "message": {
+            "type": "message", "role": "assistant",
+            "model": ALIASES["anthropic"], "content": [],
+            "usage": {"input_tokens": 5},
+        },
+    }) == ""
+    assert decoder.push("ping", {"type": "ping"}) == ""
+    assert decoder.push("content_block_start", {
+        "type": "content_block_start", "index": 0,
+        "content_block": {"type": "text", "text": "Hello"},
+    }) == "Hello"
+    assert decoder.push("content_block_stop", {
+        "type": "content_block_stop", "index": 0,
+    }) == ""
+    assert decoder.push("message_delta", {
+        "type": "message_delta", "delta": {"stop_reason": "end_turn"},
+        "usage": {"output_tokens": 4},
+    }) == ""
+    assert decoder.push("message_stop", {"type": "message_stop"}) == ""
+    response = decoder.finish()
+    assert response.output.text == "Hello"
+    assert response.usage is not None
+    assert response.usage.input_tokens == 5
+    assert response.usage.output_tokens == 4
+    with pytest.raises(Exception, match="provider_protocol_error"):
+        decoder.push("ping", {"type": "ping"})
+
+
+def test_mistral_stream_rejects_missing_usage_after_end() -> None:
+    decoder = _fresh_decoder("mistral")
+    base = {
+        "object": "chat.completion.chunk",
+        "model": ALIASES["mistral"],
+    }
+    assert decoder.push("message", {
+        **base, "choices": [{"index": 0, "delta": {"content": "Hi"}, "finish_reason": "stop"}],
+    }) == "Hi"
+    with pytest.raises(Exception, match="provider_protocol_error"):
+        decoder.push("message", {**base, "choices": [], "usage": None})
+
+
+def test_mistral_stream_rejects_second_usage_and_delta_after_reason() -> None:
+    decoder = _fresh_decoder("mistral")
+    base = {"object": "chat.completion.chunk", "model": ALIASES["mistral"]}
+    decoder.push("message", {
+        **base, "choices": [{
+            "index": 0, "delta": {"content": "Hi"}, "finish_reason": "stop",
+        }],
+    })
+    decoder.push("message", {**base, "choices": [], "usage": {"prompt_tokens": 1}})
+    with pytest.raises(Exception, match="provider_protocol_error"):
+        decoder.push("message", {**base, "choices": [], "usage": {"prompt_tokens": 1}})
+    with pytest.raises(Exception, match="provider_protocol_error"):
+        decoder.push("message", {**base, "choices": [{
+            "index": 0, "delta": {"content": "after"},
+        }]})
+
+
+@pytest.mark.parametrize("name", ("ollama", "openai", "anthropic", "google", "xai", "mistral"))
+def test_native_stream_request_never_reuses_completed_decoder(name: str) -> None:
+    decoder = _fresh_decoder(name)
+    decoder._completed = True
+    with pytest.raises(Exception, match="provider_protocol_error"):
+        decoder.push("irrelevant", {})
+    with pytest.raises(Exception, match="provider_not_completed"):
+        decoder.finish()
+
+
+def test_transport_sync_http_stream_closes_on_early_consumer_break() -> None:
+    class Tracked(httpx.SyncByteStream):
+        def __init__(self) -> None:
+            self.closed = False
+
+        def __iter__(self):  # type: ignore[no-untyped-def]
+            yield wire("ollama")
+            raise AssertionError("body must not be consumed after early close")
+
+        def close(self) -> None:
+            self.closed = True
+
+    tracked = Tracked()
+    sync, _, request, snapshot = service("ollama")
+    source = sync.open_stream(request, snapshot)
+    adapter = NativeProviderStreamingAdapter(
+        source.adapter.config,
+        source.adapter.credentials,
+        allow_live=True,
+        _test_transport=httpx.MockTransport(
+            lambda _: httpx.Response(
+                200, stream=tracked,
+                headers={"content-type": "application/x-ndjson"},
+            ),
+        ),
+    )
+    events = adapter.stream_prepared(source.prepared)
+    assert isinstance(next(events), ResponseStarted)
+    assert isinstance(next(events), TextDelta)
+    events.close()
+    assert tracked.closed is True
+
+
+def test_transport_async_http_stream_closes_on_early_consumer_break() -> None:
+    class Tracked(httpx.AsyncByteStream):
+        def __init__(self) -> None:
+            self.closed = False
+
+        async def __aiter__(self):  # type: ignore[no-untyped-def]
+            yield wire("anthropic")
+            raise AssertionError("body must not be consumed after early close")
+
+        async def aclose(self) -> None:
+            self.closed = True
+
+    tracked = Tracked()
+    _, service_async, request, snapshot = service("anthropic")
+    session = service_async.open_astream(request, snapshot)
+    adapter = NativeProviderStreamingAdapter(
+        session.adapter.config,
+        session.adapter.credentials,
+        allow_live=True,
+        _test_transport=httpx.MockTransport(
+            lambda _: httpx.Response(
+                200, stream=tracked,
+                headers={"content-type": "text/event-stream"},
+            ),
+        ),
+    )
+
+    async def close() -> None:
+        events = adapter.astream_prepared(session.prepared)
+        assert isinstance(await anext(events), ResponseStarted)
+        assert isinstance(await anext(events), TextDelta)
+        await events.aclose()
+
+    asyncio.run(close())
+    assert tracked.closed is True
