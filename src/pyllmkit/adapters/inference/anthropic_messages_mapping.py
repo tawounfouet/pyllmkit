@@ -102,15 +102,6 @@ def encode_anthropic_messages_request(prepared: PreparedInvocation) -> bytes:
     return json.dumps(payload, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
 
 
-def _unique_json_fields(pairs: list[tuple[str, object]]) -> dict[str, object]:
-    result: dict[str, object] = {}
-    for key, value in pairs:
-        if key in result:
-            raise InvocationPortError("provider_protocol_error")
-        result[key] = value
-    return result
-
-
 def _count(value: object) -> int | None:
     if value is None:
         return None
