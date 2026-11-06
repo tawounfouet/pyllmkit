@@ -13,10 +13,10 @@ from pyllmkit.adapters.inference import (
     AdapterRegistration,
     AdapterRegistry,
     AsyncOllamaAdapter,
+    CredentialRef,
     FakeInferenceAdapter,
     OllamaAdapter,
     ProviderConnectionConfig,
-    CredentialRef,
     RegisteredAsyncInferencePort,
     RegisteredInferencePort,
 )
@@ -314,7 +314,7 @@ def test_p7_ac022_bad_content_type_and_invalid_json_fail() -> None:
         _reply(content_type="text/html"),
         httpx.Response(200, content=b"broken", headers={"content-type": "application/json"}),
     ):
-        svc, request = _service(httpx.MockTransport(lambda _: response))
+        svc, request = _service(httpx.MockTransport(lambda _, expected=response: expected))
         outcome = svc.invoke(request)
         assert outcome.run.failure is not None
         assert outcome.run.failure.code == "provider_protocol_error"
