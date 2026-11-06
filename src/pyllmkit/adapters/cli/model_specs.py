@@ -180,6 +180,15 @@ def get_model_spec(model_id: str) -> ModelSpec | None:
     return None
 
 
+def pricing_provenance(model_name: str | None) -> str:
+    """Local catalog snapshot provenance, never a real-time tariff claim."""
+    spec = get_model_spec(model_name) if model_name else None
+    if spec is None:
+        return "tarif inconnu (aucune vérification en temps réel)"
+    date = spec.last_verified or "date de relevé inconnue"
+    return f"catalogue local, relevé déclaré {date}, non vérifié en temps réel"
+
+
 def compute_run_cost(
     model_name: str | None,
     input_tokens: int | None,
