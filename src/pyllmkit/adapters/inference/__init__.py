@@ -9,15 +9,14 @@ from .registry import (
     AdapterRegistryError,
 )
 from .routing import RegisteredAsyncInferencePort, RegisteredInferencePort
-from .security import (
+from pyllmkit.protocols.credentials import (
     CredentialRef,
     CredentialResolutionError,
-    EnvCredentialResolver,
-    ProviderConnectionConfig,
-    ProviderProfile,
     SecretValue,
     SecurityConfigurationError,
 )
+
+from .security import EnvCredentialResolver, ProviderConnectionConfig, ProviderProfile
 
 __all__ = [
     "AsyncFakeInferenceAdapter",
