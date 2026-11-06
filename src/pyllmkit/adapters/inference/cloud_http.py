@@ -195,6 +195,7 @@ async def cloud_post_async(
 ) -> bytes:
     """Single async request, bounded additionally by a wall-clock deadline."""
     validate_cloud_connection(config, credentials, profile=profile, base_url=base_url)
+    _validate_destination(profile, base_url, url)
     payload = require_body_limit(body)
     timeout = _timeout(prepared, config)
     key = _secret(config, credentials)
