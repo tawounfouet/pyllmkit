@@ -16,7 +16,21 @@ from pyllmkit.protocols.inference import AsyncInferencePort, InferencePort
 
 
 class AdapterRegistryError(LookupError):
-    """Code-only registry and composition failure, with no SDK error details."""
+    """Allowlisted safe error, no arbitrary adapter exception text."""
+
+    _CODES = frozenset((
+        "adapter_key_empty", "adapter_key_invalid", "deployment_invalid",
+        "connection_invalid", "adapter_factory_missing", "adapter_factory_invalid",
+        "adapter_profile_mismatch", "registration_invalid", "adapter_already_registered",
+        "adapter_not_registered", "sync_adapter_unavailable", "async_adapter_unavailable",
+        "adapter_initialization_failed",
+    ))
+
+    def __init__(self, code: str) -> None:
+        if type(code) is not str or code not in self._CODES:
+            raise ValueError("invalid_adapter_error_code")
+        self.code = code
+        super().__init__(code)
 
 
 @dataclass(frozen=True, slots=True)
@@ -69,9 +83,18 @@ class AdapterRegistration:
         if self.async_factory is not None and not callable(self.async_factory):
             raise AdapterRegistryError("adapter_factory_invalid")
         if self.connection.profile is ProviderProfile.OLLAMA:
-            if self.key.runtime != "ollama":
+            if (
+                self.key.runtime != "ollama"
+                or (
+                    self.key.provider_id is not None
+                    and self.key.provider_id.value != "ollama"
+                )
+            ):
                 raise AdapterRegistryError("adapter_profile_mismatch")
-        elif self.key.provider_id is None:
+        elif (
+            self.key.provider_id is None
+            or self.key.provider_id.value != self.connection.profile.value
+        ):
             raise AdapterRegistryError("adapter_profile_mismatch")
 
 

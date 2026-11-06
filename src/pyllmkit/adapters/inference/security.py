@@ -1,8 +1,4 @@
-"""Offline, fail-closed provider connection and credential contracts (P7 L7.2).
-
-This module validates configuration but NEVER creates network connections.
-Actual DNS/IP pinning, TLS and redirect enforcement belong to L7.3+ transports.
-"""
+"""Offline, fail-closed connection configuration; no sockets opened (P7 L7.2)."""
 
 from __future__ import annotations
 
@@ -14,48 +10,12 @@ from enum import StrEnum
 from math import isfinite
 from urllib.parse import urlsplit
 
-
-class SecurityConfigurationError(ValueError):
-    """A sanitized code; never embed untrusted URLs or credentials."""
-
-
-class CredentialResolutionError(ValueError):
-    """A sanitized code for missing or inaccessible credential values."""
-
-
-@dataclass(frozen=True, slots=True, repr=False)
-class CredentialRef:
-    """Opaque key to a separately configured secret store, not a credential."""
-
-    name: str = field(repr=False)
-
-    def __post_init__(self) -> None:
-        if type(self.name) is not str or re.fullmatch(r"[A-Za-z][A-Za-z0-9_.-]{0,79}", self.name) is None:
-            raise SecurityConfigurationError("invalid_credential_reference")
-
-    def __repr__(self) -> str:
-        return "CredentialRef(<redacted>)"
-
-
-@dataclass(frozen=True, slots=True, repr=False, eq=False)
-class SecretValue:
-    """Secret retained only in infrastructure; explicit reveal by a trusted adapter."""
-
-    value: str = field(repr=False, compare=False)
-
-    def __post_init__(self) -> None:
-        if type(self.value) is not str or not self.value:
-            raise CredentialResolutionError("credential_unavailable")
-
-    def __repr__(self) -> str:
-        return "SecretValue(<redacted>)"
-
-    def __str__(self) -> str:
-        return "<redacted>"
-
-    def reveal(self) -> str:
-        """Restricted by convention to the trusted transport implementation."""
-        return self.value
+from pyllmkit.protocols.credentials import (
+    CredentialRef,
+    CredentialResolutionError,
+    SecretValue,
+    SecurityConfigurationError,
+)
 
 
 class EnvCredentialResolver:

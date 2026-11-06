@@ -112,7 +112,7 @@ def test_p7_ac009_provider_catalog_does_not_auto_register_adapter() -> None:
     result = _service(catalog, dep_id, registered).invoke(request)
     assert result.run.state is InferenceRunState.FAILED
     assert result.run.failure is not None
-    assert result.run.failure.code == "adapter_unexpected_error"
+    assert result.run.failure.code == "adapter_not_registered"
 
 
 def test_p7_ac010_duplicate_and_exact_keys_are_rejected_or_deterministic() -> None:
@@ -182,6 +182,7 @@ def test_p7_ac012_explicit_credential_reference_no_secret_in_repr() -> None:
     assert "<redacted>" in repr(value)
     assert "<redacted>" in str(value)
     assert "OPENAI_API_KEY" not in repr(resolver)
+    assert SecretValue("a") is not SecretValue("b")
     with pytest.raises(CredentialResolutionError, match="credential_reference_unknown"):
         resolver.resolve(CredentialRef("other"))
     missing = EnvCredentialResolver({ref: "OPENAI_API_KEY"}, environ={})
@@ -370,7 +371,7 @@ def test_factory_side_effects_not_executed_at_registration_and_raw_errors_redact
     catalog, dep_id, req = _fixture()
     result = _service(catalog, dep_id, registry).invoke(req)
     assert result.run.failure is not None
-    assert result.run.failure.code == "adapter_unexpected_error"
+    assert result.run.failure.code == "adapter_initialization_failed"
     assert fake_errors not in repr(result)
     assert fake_errors not in str(result.run.failure)
     deployment = catalog.deployments.get(dep_id)
@@ -381,15 +382,13 @@ def test_factory_side_effects_not_executed_at_registration_and_raw_errors_redact
 
 def test_provider_keys_sort_stably_and_factories_validate_ports() -> None:
     registry = AdapterRegistry()
-    for provider in ("zeta", "alpha"):
+    for runtime in ("zeta", "alpha"):
         registry.register(AdapterRegistration(
-            AdapterKey(ProviderId(provider)),
+            AdapterKey(ProviderId("openai"), runtime=runtime),
             ProviderConnectionConfig.openai(CredentialRef("k")),
             sync_factory=lambda _: FakeInferenceAdapter(),
         ))
-    assert tuple(k.provider_id.value for k in registry.list_keys() if k.provider_id) == (
-        "alpha", "zeta",
-    )
+    assert tuple(k.runtime for k in registry.list_keys()) == ("alpha", "zeta")
     invalid_registry = AdapterRegistry()
     invalid_registry.register(AdapterRegistration(
         AdapterKey(runtime="ollama"),
@@ -419,7 +418,7 @@ def test_async_missing_factory_does_not_fallback_to_sync() -> None:
     )
     failed = asyncio.run(async_service.ainvoke(request))
     assert failed.run.failure is not None
-    assert failed.run.failure.code == "adapter_unexpected_error"
+    assert failed.run.failure.code == "async_adapter_unavailable"
 
 
 def test_registry_is_separate_from_catalog_and_does_not_autoload_env() -> None:
@@ -444,7 +443,7 @@ def test_unknown_routes_do_not_resolve_or_invoke_adapter() -> None:
     registry.register(_registration(fake))
     result = _service(catalog, dep_id, registry).invoke(request)
     assert result.run.failure is not None
-    assert result.run.failure.code == "adapter_unexpected_error"
+    assert result.run.failure.code == "adapter_not_registered"
     assert fake.calls == []
 
 
@@ -471,3 +470,37 @@ def test_explicit_endpoint_target_still_rejected_before_registry_factory() -> No
     with pytest.raises(InvocationPreconditionError, match="target_not_routable"):
         _service(catalog, dep_id, registry).invoke(request)
     assert called == []
+
+def test_provider_profile_identity_must_be_explicit_and_consistent() -> None:
+    with pytest.raises(AdapterRegistryError, match="adapter_profile_mismatch"):
+        AdapterRegistration(
+            AdapterKey(ProviderId("anthropic")),
+            ProviderConnectionConfig.openai(CredentialRef("k")),
+            sync_factory=lambda _: FakeInferenceAdapter(),
+        )
+    with pytest.raises(AdapterRegistryError, match="adapter_profile_mismatch"):
+        AdapterRegistration(
+            AdapterKey(ProviderId("openai"), runtime="ollama"),
+            ProviderConnectionConfig.ollama_local(),
+            sync_factory=lambda _: FakeInferenceAdapter(),
+        )
+    assert AdapterRegistration(
+        AdapterKey(ProviderId("anthropic")),
+        ProviderConnectionConfig.anthropic(CredentialRef("a")),
+        sync_factory=lambda _: FakeInferenceAdapter(),
+    ).key.provider_id == ProviderId("anthropic")
+
+
+def test_adapter_error_codes_are_strictly_allowlisted() -> None:
+    for bad in ("raw-secret-from-provider", "error with newline", "Bad_Code", "", "missing"):
+        with pytest.raises(ValueError, match="invalid_adapter_error_code"):
+            AdapterRegistryError(bad)
+
+
+def test_registered_ports_refuse_raw_non_prepared_input() -> None:
+    sync = RegisteredInferencePort(AdapterRegistry())
+    async_port = RegisteredAsyncInferencePort(AdapterRegistry())
+    with pytest.raises(TypeError, match="prepared_invocation_required"):
+        sync.invoke("raw")  # type: ignore[arg-type]
+    with pytest.raises(TypeError, match="prepared_invocation_required"):
+        asyncio.run(async_port.ainvoke("raw"))  # type: ignore[arg-type]

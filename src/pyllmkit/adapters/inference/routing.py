@@ -2,8 +2,8 @@
 
 from dataclasses import dataclass, field
 
-from pyllmkit.adapters.inference.registry import AdapterRegistry
-from pyllmkit.application.inference.contracts import PreparedInvocation
+from pyllmkit.adapters.inference.registry import AdapterRegistry, AdapterRegistryError
+from pyllmkit.application.inference.contracts import InvocationPortError, PreparedInvocation
 from pyllmkit.domain.inference import InferenceResponse
 
 
@@ -16,7 +16,11 @@ class RegisteredInferencePort:
     def invoke(self, prepared: PreparedInvocation) -> InferenceResponse:
         if type(prepared) is not PreparedInvocation:
             raise TypeError("prepared_invocation_required")
-        return self.registry.resolve_sync(prepared.resolution.deployment).invoke(prepared)
+        try:
+            adapter = self.registry.resolve_sync(prepared.resolution.deployment)
+        except AdapterRegistryError as error:
+            raise InvocationPortError(error.code) from None
+        return adapter.invoke(prepared)
 
 
 @dataclass(frozen=True, slots=True)
@@ -28,5 +32,8 @@ class RegisteredAsyncInferencePort:
     async def ainvoke(self, prepared: PreparedInvocation) -> InferenceResponse:
         if type(prepared) is not PreparedInvocation:
             raise TypeError("prepared_invocation_required")
-        port = self.registry.resolve_async(prepared.resolution.deployment)
-        return await port.ainvoke(prepared)
+        try:
+            adapter = self.registry.resolve_async(prepared.resolution.deployment)
+        except AdapterRegistryError as error:
+            raise InvocationPortError(error.code) from None
+        return await adapter.ainvoke(prepared)
