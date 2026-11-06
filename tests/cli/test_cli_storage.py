@@ -14,7 +14,7 @@ runner = CliRunner()
 def test_sqlite_run_store_lifecycle(tmp_path: Path) -> None:
     """CLI-AC-024: SqliteRunStore records, lists and retrieves runs."""
     db_file = tmp_path / "test_history.db"
-    store = SqliteRunStore(db_file)
+    store = SqliteRunStore(db_file, store_content=True)
 
     assert store.list_runs() == []
 
@@ -58,7 +58,7 @@ def test_cli_runs_list_and_inspect(tmp_path: Path, monkeypatch: pytest.MonkeyPat
     assert "Aucune exécution enregistrée" in res_empty.output
 
     # Run inference which records to DB
-    res_run = runner.invoke(app, ["run", "Bonjour pour l'historique"])
+    res_run = runner.invoke(app, ["run", "Bonjour pour l'historique", "--store-content"])
     assert res_run.exit_code == 0
 
     # List shows recorded run
@@ -68,7 +68,7 @@ def test_cli_runs_list_and_inspect(tmp_path: Path, monkeypatch: pytest.MonkeyPat
     assert "completed" in res_list.output
 
     # Inspect the run
-    store = SqliteRunStore(db_file)
+    store = SqliteRunStore(db_file, store_content=True)
     runs = store.list_runs()
     assert len(runs) >= 1
     run_id = runs[0].run_id
@@ -93,7 +93,7 @@ def test_cli_runs_inspect_unknown(tmp_path: Path, monkeypatch: pytest.MonkeyPatc
 def test_sqlite_run_store_finops_evals_metadata(tmp_path: Path) -> None:
     """Verify enriched FinOps, Evals and streaming metadata persistence and retrieval."""
     db_file = tmp_path / "finops_history.db"
-    store = SqliteRunStore(db_file)
+    store = SqliteRunStore(db_file, store_content=True)
 
     record = RunRecord(
         run_id="run_finops_123",
@@ -142,7 +142,7 @@ def test_cli_stream_records_to_history(tmp_path: Path, monkeypatch: pytest.Monke
     )
     assert res.exit_code == 0
 
-    store = SqliteRunStore(db_file)
+    store = SqliteRunStore(db_file, store_content=True)
     runs = store.list_runs()
     assert len(runs) == 1
     assert runs[0].mode == "stream"
@@ -158,11 +158,11 @@ def test_cli_runs_inspect_json_and_export(tmp_path: Path, monkeypatch: pytest.Mo
     # Run one inference with system prompt
     res_run = runner.invoke(
         app,
-        ["run", "Quelle heure est-il ?", "--system", "Tu es une horloge suisse."],
+        ["run", "Quelle heure est-il ?", "--system", "Tu es une horloge suisse.", "--store-content"],
     )
     assert res_run.exit_code == 0
 
-    store = SqliteRunStore(db_file)
+    store = SqliteRunStore(db_file, store_content=True)
     runs = store.list_runs()
     assert len(runs) == 1
     run_id = runs[0].run_id
@@ -176,13 +176,13 @@ def test_cli_runs_inspect_json_and_export(tmp_path: Path, monkeypatch: pytest.Mo
     assert '"role": "assistant"' in res_json.output
 
     # Test export to stdout
-    res_exp_stdout = runner.invoke(app, ["runs", "export"])
+    res_exp_stdout = runner.invoke(app, ["runs", "export", "--allow-content-export"])
     assert res_exp_stdout.exit_code == 0
     assert '{"messages":' in res_exp_stdout.output
 
     # Test export to file
     out_file = tmp_path / "dataset.jsonl"
-    res_exp_file = runner.invoke(app, ["runs", "export", "-o", str(out_file)])
+    res_exp_file = runner.invoke(app, ["runs", "export", "-o", str(out_file), "--allow-content-export"])
     assert res_exp_file.exit_code == 0
     assert out_file.exists()
     content = out_file.read_text(encoding="utf-8")
@@ -190,8 +190,8 @@ def test_cli_runs_inspect_json_and_export(tmp_path: Path, monkeypatch: pytest.Mo
     assert "Tu es une horloge suisse." in content
 
 
-def test_cli_finish_reason_normalization(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """Verify that a completed run with UNKNOWN finish reason is normalized to stop in panel and database."""
+def test_cli_finish_reason_preservation(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """UNKNOWN must remain UNKNOWN in the panel and persisted history."""
     from unittest.mock import MagicMock
 
     from pyllmkit.domain.inference import (
@@ -230,12 +230,12 @@ def test_cli_finish_reason_normalization(tmp_path: Path, monkeypatch: pytest.Mon
 
     res = runner.invoke(app, ["run", "Test normalisation"])
     assert res.exit_code == 0
-    assert "Finish Reason : stop" in res.output
+    assert "Finish Reason : unknown" in res.output
 
-    store = SqliteRunStore(db_file)
+    store = SqliteRunStore(db_file, store_content=True)
     runs = store.list_runs()
     assert len(runs) == 1
-    assert runs[0].finish_reason == "stop"
+    assert runs[0].finish_reason == "unknown"
 
 
 
