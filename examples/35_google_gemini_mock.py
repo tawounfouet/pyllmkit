@@ -5,8 +5,12 @@ import json
 import httpx
 
 from pyllmkit.adapters.inference import (
-    AdapterKey, AdapterRegistration, AdapterRegistry, CredentialRef,
-    EnvCredentialResolver, RegisteredInferencePort,
+    AdapterKey,
+    AdapterRegistration,
+    AdapterRegistry,
+    CredentialRef,
+    EnvCredentialResolver,
+    RegisteredInferencePort,
 )
 from pyllmkit.adapters.inference.google_gemini import GoogleGeminiAdapter
 from pyllmkit.adapters.inference.security import ProviderConnectionConfig

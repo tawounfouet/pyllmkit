@@ -9,32 +9,53 @@ import httpx
 import pytest
 
 from pyllmkit.adapters.inference import (
-    AdapterKey, AdapterRegistration, AdapterRegistry, CredentialRef,
-    EnvCredentialResolver, FakeInferenceAdapter, RegisteredAsyncInferencePort,
+    AdapterKey,
+    AdapterRegistration,
+    AdapterRegistry,
+    CredentialRef,
+    EnvCredentialResolver,
+    FakeInferenceAdapter,
+    RegisteredAsyncInferencePort,
     RegisteredInferencePort,
 )
 from pyllmkit.adapters.inference.cloud_http import (
-    _headers, _httpx, _timeout, cloud_post_sync, require_body_limit,
+    _headers,
+    _httpx,
+    _timeout,
+    require_body_limit,
 )
 from pyllmkit.adapters.inference.google_gemini import (
-    AsyncGoogleGeminiAdapter, GoogleGeminiAdapter,
+    AsyncGoogleGeminiAdapter,
+    GoogleGeminiAdapter,
 )
 from pyllmkit.adapters.inference.google_gemini_mapping import (
-    decode_gemini_response, encode_gemini_request, gemini_model_alias,
+    decode_gemini_response,
+    encode_gemini_request,
+    gemini_model_alias,
 )
 from pyllmkit.adapters.inference.security import (
-    ProviderConnectionConfig, ProviderProfile, SecurityConfigurationError,
+    ProviderConnectionConfig,
+    ProviderProfile,
+    SecurityConfigurationError,
 )
 from pyllmkit.adapters.registry import InMemoryCatalog
 from pyllmkit.application.inference import (
-    AsyncInferenceService, InferenceService, InvocationPortError,
+    AsyncInferenceService,
+    InferenceService,
+    InvocationPortError,
 )
 from pyllmkit.application.registry import DeploymentResolver
 from pyllmkit.domain.capabilities import CapabilitySupport, SupportLevel
 from pyllmkit.domain.deployments import Deployment, DeploymentStatus
 from pyllmkit.domain.inference import (
-    DeploymentId, DeploymentTarget, FinishReasonCode, GenerationConfig,
-    GenerationSupportSnapshot, InferenceRequest, InferenceRunState, ParameterSupport,
+    DeploymentId,
+    DeploymentTarget,
+    FinishReasonCode,
+    GenerationConfig,
+    GenerationSupportSnapshot,
+    InferenceRequest,
+    InferenceRunState,
+    ParameterSupport,
 )
 from pyllmkit.domain.interactions import Content, Message, Role, TextContent
 from pyllmkit.domain.modalities import Modality, ModalitySet
