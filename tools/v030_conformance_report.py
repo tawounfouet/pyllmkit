@@ -36,6 +36,8 @@ _SHA = re.compile(r"[0-9a-fA-F]{40}\Z")
 
 
 def _provider(test_name: str) -> str | None:
+    if test_name.startswith("test_ollama_json_content_type_is_explicitly_supported["):
+        return "ollama"
     if "[" not in test_name or not test_name.endswith("]"):
         return None
     parameter = test_name.rsplit("[", 1)[-1][:-1]
