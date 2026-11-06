@@ -61,6 +61,16 @@ jobs:
       - name: P7 L7.7 stream resilience and cancellation branch coverage
         run: |
           python -m pytest -q tests/acceptance/test_p7_l77_stream_resilience.py --cov=pyllmkit.application.inference.streaming_resilience --cov-branch --cov-report=term-missing --cov-fail-under=95
+      - name: v0.3.0 S2 offline conformance evidence
+        run: |
+          python tools/v030_conformance_report.py --output-dir artifacts/v030-conformance --head-sha "${{ github.event.pull_request.head.sha || github.sha }}" --tested-sha "${{ github.sha }}"
+      - name: Upload v0.3.0 conformance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v030-conformance-${{ matrix.python-version }}
+          path: artifacts/v030-conformance/
+          if-no-files-found: ignore
       - name: Offline examples
         run: |
           python examples/01_define_model.py
