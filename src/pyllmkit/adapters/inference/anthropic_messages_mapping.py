@@ -144,15 +144,8 @@ def decode_anthropic_messages_response(
     """Require a single typed text block; preserve partial usage and native stop."""
     if type(raw) is not bytes or type(prepared) is not PreparedInvocation:
         raise InvocationPortError("provider_protocol_error")
-    try:
-        response = decode_provider_json_object(raw)
-    except (UnicodeError, ValueError, TypeError, RecursionError):
-        raise InvocationPortError("provider_protocol_error") from None
-    if (
-        type(response) is not dict
-        or response.get("type") != "message"
-        or response.get("role") != "assistant"
-    ):
+    response = decode_provider_json_object(raw)
+    if (response.get("type") != "message" or response.get("role") != "assistant"):
         raise InvocationPortError("provider_protocol_error")
     if response.get("model") != prepared.native_model_alias:
         raise InvocationPortError("provider_model_mismatch")
