@@ -37,6 +37,9 @@ jobs:
       - name: P7 L7.2 security and adapter composition coverage
         run: |
           python -m pytest -q tests/acceptance/test_p7_l72_secure_adapter_registry.py --cov=pyllmkit.adapters.inference.security --cov=pyllmkit.adapters.inference.registry --cov=pyllmkit.adapters.inference.routing --cov=pyllmkit.adapters.inference.errors --cov=pyllmkit.protocols.credentials --cov-branch --cov-report=term-missing --cov-fail-under=95
+      - name: P7 L7.3 Ollama mapping and transport branch coverage
+        run: |
+          python -m pytest -q tests/acceptance/test_p7_l73_ollama_adapter.py --cov=pyllmkit.adapters.inference.ollama --cov=pyllmkit.adapters.inference.ollama_mapping --cov-branch --cov-report=term-missing --cov-fail-under=85
       - name: Offline examples
         run: |
           python examples/01_define_model.py
@@ -69,6 +72,7 @@ jobs:
           python examples/28_full_registry_walkthrough.py
           python examples/29_offline_inference_kernel.py
           python examples/30_secure_registry_fake.py
+          python examples/31_ollama_mock_transport.py
       - name: Build wheel and sdist
         run: python -m build
       - name: Wheel clean environment smoke
