@@ -10,7 +10,6 @@ import asyncio
 import json
 from collections.abc import AsyncIterator, Iterator
 from dataclasses import dataclass, field
-from typing import Any
 
 from pyllmkit.adapters.inference.anthropic_messages_mapping import (
     encode_anthropic_messages_request,

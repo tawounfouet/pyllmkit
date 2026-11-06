@@ -5,8 +5,6 @@ Frames are *incremental wire bytes*; no real provider, secrets or billing.
 
 import asyncio
 import json
-from dataclasses import replace
-from datetime import UTC, datetime
 
 import httpx
 import pytest
@@ -52,7 +50,6 @@ from pyllmkit.domain.streaming import (
     StreamStatus,
     StreamingPort,
     TextDelta,
-    consume_async_stream,
     consume_stream,
 )
 
