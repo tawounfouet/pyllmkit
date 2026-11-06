@@ -168,7 +168,11 @@ class NativeStreamDecoder:
         return self._last_response
 
     def _ollama(self, frame: dict[str, object]) -> str:
+        if frame.get("error") is not None:
+            raise InvocationPortError("provider_protocol_error")
         msg = _dict(frame.get("message"))
+        if set(msg) - {"role", "content", "thinking", "tool_calls", "images"}:
+            raise InvocationPortError("unsupported_provider_output")
         if msg.get("role") != "assistant" or type(msg.get("content")) is not str:
             raise InvocationPortError("unsupported_provider_output")
         if any(msg.get(k) not in (None, [], {}, "") for k in ("thinking", "tool_calls", "images")):
@@ -188,6 +192,8 @@ class NativeStreamDecoder:
         return delta
 
     def _gemini(self, frame: dict[str, object]) -> str:
+        if frame.get("error") is not None:
+            raise InvocationPortError("provider_protocol_error")
         feedback = frame.get("promptFeedback")
         if feedback is not None and _dict(feedback).get("blockReason") is not None:
             raise InvocationPortError("provider_content_filtered")
@@ -223,21 +229,71 @@ class NativeStreamDecoder:
             raise InvocationPortError("provider_protocol_error")
         if kind in ("response.created", "response.in_progress"):
             response = _dict(frame.get("response"))
-            if response.get("status") not in ("in_progress", "queued", None):
+            if (
+                response.get("status") not in ("in_progress", "queued", None)
+                or response.get("output") not in (None, [])
+                or response.get("tools") not in (None, [])
+                or response.get("error") is not None
+                or response.get("store") is True
+                or response.get("model") not in (None, self.prepared.native_model_alias)
+            ):
                 raise InvocationPortError("provider_protocol_error")
             return ""
         if kind in ("response.output_item.added", "response.output_item.done"):
             item = _dict(frame.get("item"))
-            if item.get("type") != "message" or item.get("role") != "assistant":
+            if (
+                frame.get("output_index", 0) != 0
+                or set(item) - {"id", "type", "status", "role", "content"}
+                or item.get("type") != "message"
+                or item.get("role") != "assistant"
+            ):
                 raise InvocationPortError("unsupported_provider_output")
+            content = item.get("content")
+            if content not in (None, []):
+                if type(content) is not list or len(content) != 1:
+                    raise InvocationPortError("unsupported_provider_output")
+                part = _dict(content[0])
+                if (
+                    set(part) - {"type", "text", "annotations", "logprobs"}
+                    or part.get("type") != "output_text"
+                    or part.get("annotations") not in (None, [])
+                    or part.get("logprobs") not in (None, [])
+                ):
+                    raise InvocationPortError("unsupported_provider_output")
+                text = part.get("text")
+                if kind == "response.output_item.done":
+                    if text != self._text():
+                        raise InvocationPortError("provider_stream_mismatch")
+                elif text not in (None, ""):
+                    raise InvocationPortError("unsupported_provider_output")
             return ""
         if kind in ("response.content_part.added", "response.content_part.done"):
             part = _dict(frame.get("part"))
-            if part.get("type") != "output_text" or part.get("annotations") not in (None, []):
+            if (
+                frame.get("output_index", 0) != 0
+                or frame.get("content_index", 0) != 0
+                or set(part) - {"type", "text", "annotations", "logprobs"}
+                or part.get("type") != "output_text"
+                or part.get("annotations") not in (None, [])
+                or part.get("logprobs") not in (None, [])
+            ):
+                raise InvocationPortError("unsupported_provider_output")
+            text = part.get("text")
+            if kind == "response.content_part.done":
+                if text is not None and text != self._text():
+                    raise InvocationPortError("provider_stream_mismatch")
+            elif text not in (None, ""):
                 raise InvocationPortError("unsupported_provider_output")
             return ""
         if kind == "response.output_text.delta":
-            if frame.get("output_index") != 0 or frame.get("content_index") != 0:
+            if (
+                frame.get("output_index") != 0
+                or frame.get("content_index") != 0
+                or set(frame) - {
+                    "type", "sequence_number", "output_index", "content_index",
+                    "item_id", "delta", "logprobs", "obfuscation",
+                }
+            ):
                 raise InvocationPortError("unsupported_provider_output")
             if frame.get("logprobs") not in (None, []):
                 raise InvocationPortError("unsupported_provider_output")
@@ -268,6 +324,8 @@ class NativeStreamDecoder:
         if frame.get("type") != kind:
             raise InvocationPortError("provider_protocol_error")
         if kind == "ping":
+            if set(frame) != {"type"}:
+                raise InvocationPortError("provider_protocol_error")
             return ""
         if kind == "message_start":
             if self._anthropic_started:
@@ -292,6 +350,7 @@ class NativeStreamDecoder:
             if (
                 self._anthropic_block or self._anthropic_block_closed
                 or frame.get("index") != 0 or block.get("type") != "text"
+                or set(block) - {"type", "text"}
             ):
                 raise InvocationPortError("unsupported_provider_output")
             self._anthropic_block = True
@@ -301,6 +360,7 @@ class NativeStreamDecoder:
             if (
                 not self._anthropic_block or self._anthropic_block_closed
                 or frame.get("index") != 0 or delta.get("type") != "text_delta"
+                or set(delta) - {"type", "text"}
             ):
                 raise InvocationPortError("unsupported_provider_output")
             return self._append(_str(delta.get("text")))
@@ -313,7 +373,13 @@ class NativeStreamDecoder:
         if kind == "message_delta":
             if not self._anthropic_block_closed or self._anthropic_stop is not None:
                 raise InvocationPortError("provider_protocol_error")
-            self._anthropic_stop = _str(_dict(frame.get("delta")).get("stop_reason"))
+            stop_delta = _dict(frame.get("delta"))
+            if (
+                set(stop_delta) - {"stop_reason", "stop_sequence"}
+                or stop_delta.get("stop_sequence") not in (None, "")
+            ):
+                raise InvocationPortError("unsupported_provider_output")
+            self._anthropic_stop = _str(stop_delta.get("stop_reason"))
             usage = frame.get("usage")
             if usage is not None:
                 self._anthropic_usage.update(_dict(usage))
@@ -338,6 +404,8 @@ class NativeStreamDecoder:
         raise InvocationPortError("unsupported_provider_output")
 
     def _mistral(self, frame: dict[str, object]) -> str:
+        if frame.get("error") is not None:
+            raise InvocationPortError("provider_protocol_error")
         if frame.get("object") != "chat.completion.chunk":
             raise InvocationPortError("provider_protocol_error")
         if frame.get("model") != self.prepared.native_model_alias:
@@ -352,6 +420,10 @@ class NativeStreamDecoder:
         if choice.get("index") != 0 or self._mistral_reason is not None:
             raise InvocationPortError("provider_protocol_error")
         delta = _dict(choice.get("delta"))
+        if set(delta) - {
+            "role", "content", "tool_calls", "reasoning_content", "refusal", "audio",
+        }:
+            raise InvocationPortError("unsupported_provider_output")
         if any(delta.get(k) not in (None, [], {}, "") for k in (
             "tool_calls", "reasoning_content", "refusal", "audio",
         )):
