@@ -421,3 +421,246 @@ def test_p7_ac032_transport_timeout_and_connection_error_redacted() -> None:
         with pytest.raises(InvocationPortError, match=code) as exc:
             adapter.invoke(prepared)
         assert "APIKEY_SECRET" not in str(exc.value)
+
+
+def test_openai_optional_http_dependency_missing_is_safe(monkeypatch: pytest.MonkeyPatch) -> None:
+    import builtins
+
+    from pyllmkit.adapters.inference.openai_responses import _httpx
+
+    real_import = builtins.__import__
+
+    def import_override(name: str, *args: object, **kwargs: object) -> object:
+        if name == "httpx":
+            raise ImportError("LOCAL_SECRET_IN_PATH")
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", import_override)
+    with pytest.raises(InvocationPortError, match="optional_dependency_missing") as exc:
+        _httpx()
+    assert "LOCAL_SECRET" not in str(exc.value)
+
+
+def test_openai_rejects_bad_configuration_and_resolver_before_network() -> None:
+    with pytest.raises(InvocationPortError, match="adapter_connection_invalid"):
+        OpenAIResponsesAdapter(
+            ProviderConnectionConfig.ollama_local(), _resolver(), allow_live=True,
+        )
+    with pytest.raises(InvocationPortError, match="credential_resolver_invalid"):
+        OpenAIResponsesAdapter(_CONFIG, object())  # type: ignore[arg-type]
+    with pytest.raises(InvocationPortError, match="live_authorization_invalid"):
+        OpenAIResponsesAdapter(_CONFIG, _resolver(), allow_live="yes")  # type: ignore[arg-type]
+    with pytest.raises(InvocationPortError, match="live_authorization_invalid"):
+        AsyncOpenAIResponsesAdapter(_CONFIG, _resolver(), allow_live=1)  # type: ignore[arg-type]
+    with pytest.raises(InvocationPortError, match="adapter_connection_invalid"):
+        AsyncOpenAIResponsesAdapter(
+            ProviderConnectionConfig.ollama_local(), _resolver(),
+        )
+
+
+def test_openai_guarded_connection_catches_tampering() -> None:
+    from pyllmkit.adapters.inference.openai_responses import _validate
+
+    for field_name, value in (
+        ("endpoint_url", "https://evil.example/v1/responses"),
+        ("credential_ref", None),
+        ("verify_tls", False),
+        ("follow_redirects", True),
+        ("allow_local", True),
+    ):
+        config = ProviderConnectionConfig.openai(_REF)
+        object.__setattr__(config, field_name, value)
+        with pytest.raises(InvocationPortError, match="adapter_connection_invalid"):
+            _validate(config, _resolver())
+
+
+def test_openai_secret_resolver_cannot_return_raw_or_unvalidated_data() -> None:
+    from pyllmkit.adapters.inference.openai_responses import _authorize_secret
+
+    class RawResolver:
+        def resolve(self, reference: CredentialRef) -> str:
+            return _SECRET
+
+    class Raises:
+        def resolve(self, reference: CredentialRef) -> object:
+            raise RuntimeError("SECRET_ALREADY_LEAKED")
+
+    with pytest.raises(InvocationPortError, match="credential_unavailable"):
+        _authorize_secret(_CONFIG, RawResolver())  # type: ignore[arg-type]
+    with pytest.raises(InvocationPortError, match="credential_unavailable") as exc:
+        _authorize_secret(_CONFIG, Raises())  # type: ignore[arg-type]
+    assert "SECRET_ALREADY_LEAKED" not in str(exc.value)
+
+    wrong_config = ProviderConnectionConfig.openai(_REF)
+    object.__setattr__(wrong_config, "credential_ref", None)
+    with pytest.raises(InvocationPortError, match="credential_unavailable"):
+        _authorize_secret(wrong_config, _resolver())
+
+
+def test_openai_rejects_invalid_mapper_inputs_and_untrusted_model_alias() -> None:
+    prepared = _prepared()
+    with pytest.raises(InvocationPortError, match="adapter_protocol_error"):
+        encode_openai_responses_request(None)  # type: ignore[arg-type]
+    with pytest.raises(InvocationPortError, match="invalid_model_alias"):
+        encode_openai_responses_request(replace(prepared, native_model_alias="bad\nmodel"))
+    with pytest.raises(InvocationPortError, match="provider_protocol_error"):
+        decode_openai_responses_response(None, prepared)  # type: ignore[arg-type]
+    with pytest.raises(InvocationPortError, match="provider_protocol_error"):
+        decode_openai_responses_response(b"{}", "wrong")  # type: ignore[arg-type]
+    with pytest.raises(InvocationPortError, match="provider_protocol_error"):
+        decode_openai_responses_response(b"{not json}", prepared)
+    with pytest.raises(InvocationPortError, match="provider_protocol_error"):
+        decode_openai_responses_response(b"[]", prepared)
+    with pytest.raises(InvocationPortError, match="provider_protocol_error"):
+        decode_openai_responses_response(
+            b'{"status":"completed","status":"completed"}', prepared,
+        )
+
+
+def test_openai_refuses_nontext_content_at_wire_boundary() -> None:
+    from pyllmkit.domain.interactions import ImageContent, MediaSourceRef
+
+    original = _prepared()
+    request = InferenceRequest(
+        original.request.target,
+        (Message(Role.USER, Content((ImageContent(MediaSourceRef("asset", "pic")),))),),
+    )
+    with pytest.raises(InvocationPortError, match="unsupported_input_modality"):
+        encode_openai_responses_request(replace(original, request=request))
+
+
+@pytest.mark.parametrize("usage", (
+    {"input_tokens": -1},
+    {"output_tokens": True},
+    {"total_tokens": "3"},
+    {"input_tokens_details": 7},
+    {"output_tokens_details": {"reasoning_tokens": -1}},
+))
+def test_openai_refuses_invalid_native_usage(usage: dict[str, object]) -> None:
+    with pytest.raises(InvocationPortError, match="provider_protocol_error"):
+        decode_openai_responses_response(
+            json.dumps(_native(usage=usage)).encode(), _prepared(),
+        )
+
+
+def test_openai_non_object_usage_or_output_status_is_rejected() -> None:
+    bad = _native()
+    bad["usage"] = []
+    with pytest.raises(InvocationPortError, match="provider_protocol_error"):
+        decode_openai_responses_response(json.dumps(bad).encode(), _prepared())
+    bad = _native()
+    bad["status"] = "future_status"
+    with pytest.raises(InvocationPortError, match="provider_protocol_error"):
+        decode_openai_responses_response(json.dumps(bad).encode(), _prepared())
+    for change in (
+        {"output": [{"type": "message", "role": "user", "status": "completed", "content": []}]},
+        {"output": [{"type": "message", "role": "assistant", "status": "incomplete", "content": []}]},
+        {"output": [{"type": "message", "role": "assistant", "status": "completed", "content": "x"}]},
+    ):
+        bad = _native()
+        bad.update(change)
+        with pytest.raises(InvocationPortError, match="unsupported_provider_output"):
+            decode_openai_responses_response(json.dumps(bad).encode(), _prepared())
+
+
+def test_openai_request_size_is_enforced_before_secret_lookup_or_network() -> None:
+    original = _prepared()
+    huge = "x" * 1_048_577
+    request = InferenceRequest(
+        original.request.target, (Message(Role.USER, Content((TextContent(huge),))),),
+    )
+    oversized = replace(original, request=request)
+    contacted: list[httpx.Request] = []
+    adapter = OpenAIResponsesAdapter(
+        _CONFIG, _resolver(), allow_live=True,
+        _test_transport=httpx.MockTransport(
+            lambda req: (contacted.append(req) or _response()),
+        ),
+    )
+    with pytest.raises(InvocationPortError, match="request_too_large"):
+        adapter.invoke(oversized)
+    assert contacted == []
+
+
+def test_openai_invalid_content_type_prevents_payload_deserialization() -> None:
+    service, request = _service(httpx.MockTransport(
+        lambda _: httpx.Response(
+            200, content=b'{"secret":"HIDDEN"}',
+            headers={"content-type": "text/html"},
+        ),
+    ))
+    run = service.invoke(request).run
+    assert run.failure is not None
+    assert run.failure.code == "provider_protocol_error"
+
+
+def test_openai_async_missing_credential_is_no_network_error() -> None:
+    prepared = _prepared()
+    seen: list[httpx.Request] = []
+    missing = EnvCredentialResolver({_REF: "OPENAI_API_KEY"}, environ={})
+    adapter = AsyncOpenAIResponsesAdapter(
+        _CONFIG, missing, allow_live=True,
+        _test_transport=httpx.MockTransport(
+            lambda req: (seen.append(req) or _response()),
+        ),
+    )
+    with pytest.raises(InvocationPortError, match="credential_unavailable"):
+        asyncio.run(adapter.ainvoke(prepared))
+    assert seen == []
+
+
+@pytest.mark.parametrize("error,code", (
+    (httpx.ReadTimeout("SECRET_NATIVE_TIMEOUT"), "provider_timeout"),
+    (httpx.ConnectError("SECRET_NATIVE_CONNECT"), "connection_failure"),
+    (httpx.RemoteProtocolError("SECRET_NATIVE_HTTP"), "provider_protocol_error"),
+    (TimeoutError("SECRET_NATIVE_TIMER"), "provider_timeout"),
+))
+def test_openai_async_errors_sanitized(error: Exception, code: str) -> None:
+    prepared = _prepared()
+
+    async def fail(_: httpx.Request) -> httpx.Response:
+        raise error
+
+    adapter = AsyncOpenAIResponsesAdapter(
+        _CONFIG, _resolver(), allow_live=True,
+        _test_transport=httpx.MockTransport(fail),
+    )
+    with pytest.raises(InvocationPortError, match=code) as exc:
+        asyncio.run(adapter.ainvoke(prepared))
+    assert "SECRET_NATIVE" not in str(exc.value)
+
+
+def test_openai_async_rejects_oversized_and_non_json_responses() -> None:
+    prepared = _prepared()
+    for response, code in (
+        (httpx.Response(200, content=b"x" * 2_097_153,
+                        headers={"content-type": "application/json"}), "response_too_large"),
+        (httpx.Response(200, content=b"invalid",
+                        headers={"content-type": "text/html"}), "provider_protocol_error"),
+        (_response(status=429), "rate_limited"),
+    ):
+        adapter = AsyncOpenAIResponsesAdapter(
+            _CONFIG, _resolver(), allow_live=True,
+            _test_transport=httpx.MockTransport(lambda _, expected=response: expected),
+        )
+        with pytest.raises(InvocationPortError, match=code):
+            asyncio.run(adapter.ainvoke(prepared))
+
+
+def test_openai_async_request_expiry_does_not_contact_mock() -> None:
+    original = _prepared()
+    expired = replace(
+        original, context=replace(
+            original.context, deadline=datetime(2000, 1, 1, tzinfo=UTC),
+        ),
+    )
+    seen: list[object] = []
+    adapter = AsyncOpenAIResponsesAdapter(
+        _CONFIG, _resolver(), allow_live=True,
+        _test_transport=httpx.MockTransport(
+            lambda req: (seen.append(req) or _response()),
+        ),
+    )
+    with pytest.raises(InvocationPortError, match="provider_timeout"):
+        asyncio.run(adapter.ainvoke(expired))
+    assert not seen
