@@ -285,7 +285,7 @@ class NativeProviderStreamingAdapter:
 
     async def _aframes(
         self, prepared: PreparedInvocation,
-    ) -> AsyncIterator[tuple[str, str]]:
+    ) -> AsyncGenerator[tuple[str, str], None]:
         target, body, headers, timeout = self._request(prepared)
         httpx = _httpx()
         try:
