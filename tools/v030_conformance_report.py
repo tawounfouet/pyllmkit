@@ -42,6 +42,10 @@ _REQUIRED: dict[str, int] = {
     "test_single_use_stream_session_rejects_replay_without_second_call": 12,
     "test_external_async_task_cancel_propagates_and_closes_native_mock_socket": 6,
     "test_cancel_after_completed_stream_has_no_second_terminal": 12,
+    "test_cloud_rejects_any_unapproved_endpoint_before_secret_and_transport": 40,
+    "test_cloud_valid_endpoint_still_works_with_synthetic_credential": 10,
+    "test_openai_config_mutated_after_construction_is_rejected_at_call": 2,
+    "test_ollama_mutated_destination_is_rejected_as_noncanonical": 8,
 }
 _ALLOWED = ("PASS", "FAIL", "NOT_APPLICABLE", "UNSUPPORTED", "BLOCKED")
 _FAILURE_TYPE = re.compile(r"[A-Za-z0-9_.]{1,100}\Z")
@@ -49,8 +53,11 @@ _SHA = re.compile(r"[0-9a-fA-F]{40}\Z")
 
 
 def _provider(test_name: str) -> str | None:
-    if test_name.startswith("test_ollama_json_content_type_is_explicitly_supported["):
+    if test_name.startswith(("test_ollama_json_content_type_is_explicitly_supported[",
+                             "test_ollama_mutated_destination_is_rejected_as_noncanonical[")):
         return "ollama"
+    if test_name.startswith("test_openai_config_mutated_after_construction_is_rejected_at_call["):
+        return "openai"
     if "[" not in test_name or not test_name.endswith("]"):
         return None
     parameter = test_name.rsplit("[", 1)[-1][:-1]
@@ -72,6 +79,10 @@ def _mode(test_name: str) -> str:
 
 
 def _operation(method: str, mode: str) -> str:
+    if method.startswith("test_cloud_"):
+        return "cloud_post_async" if mode == "async" else "cloud_post_sync"
+    if method.startswith(("test_openai_config_mutated", "test_ollama_mutated_destination")):
+        return "ainvoke" if mode == "async" else "invoke"
     if method.startswith(("test_cancel_after_first_delta", "test_external_async_task_cancel", "test_cancel_after_completed_stream")):
         return "astream_prepared" if mode == "async" else "stream_prepared"
     if method.startswith("test_single_use_stream_session"):
@@ -123,6 +134,9 @@ def _records(xml_file: Path) -> list[dict[str, object]]:
                     "test_native_stream_conformance",
                     "test_pre_cancelled_native_session_never_contacts_transport",
                 }
+                else "v030-s6-egress-synthetic-v1"
+                if method.startswith(("test_cloud_", "test_openai_config_mutated",
+                                      "test_ollama_mutated_destination"))
                 else "v030-s2-http-synthetic-v1"
             ),
             "status": status,
@@ -151,8 +165,15 @@ def _verify(records: list[dict[str, object]], process_status: int) -> list[str]:
         }
         required_providers = (
             {"ollama"}
-            if scenario == "test_ollama_json_content_type_is_explicitly_supported"
+            if scenario in {
+                "test_ollama_json_content_type_is_explicitly_supported",
+                "test_ollama_mutated_destination_is_rejected_as_noncanonical",
+            }
+            else {"openai"}
+            if scenario == "test_openai_config_mutated_after_construction_is_rejected_at_call"
             else set(_PROVIDERS)
+            if not scenario.startswith("test_cloud_")
+            else set(_PROVIDERS) - {"ollama"}
         )
         if providers != required_providers:
             errors.append(f"incomplete_provider_axis:{scenario}")
