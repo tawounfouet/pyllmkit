@@ -93,11 +93,8 @@ def decode_xai_responses_response(
 ) -> InferenceResponse:
     if type(raw) is not bytes or type(prepared) is not PreparedInvocation:
         raise InvocationPortError("provider_protocol_error")
-    try:
-        data = decode_provider_json_object(raw)
-    except (UnicodeError, ValueError, TypeError, RecursionError):
-        raise InvocationPortError("provider_protocol_error") from None
-    if type(data) is not dict or data.get("object") != "response":
+    data = decode_provider_json_object(raw)
+    if data.get("object") != "response":
         raise InvocationPortError("provider_protocol_error")
     if data.get("status") != "completed":
         if data.get("status") in ("incomplete", "in_progress", "queued", "failed"):
