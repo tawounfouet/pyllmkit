@@ -87,8 +87,8 @@ la presence et l'integrite des artefacts.
 - [x] Tests de completion, EOF, MIME, JSON, HTTP 429, trames post-terminal,
   limites de lignes et pre-annulation (98 cas).
 - [x] Reporter de resultats hors ligne (code et workflow).
-- [ ] Verifier CI HEAD final et trois artefacts JSON/MD non vides (campagne en cours).
-- [ ] Verifier la coherence `tested_sha` / `head_sha` / matrix Python.
+- [x] Premier SHA technique `c9f3a0191bf0157f6fa511c96d090c423fdfe623` : CI PR [#42219182124](https://github.com/tawounfouet/pyllmkit/actions/runs/42219182124), trois jobs SUCCESS, 2 204 tests generaux par version Python, rapport PASS pour 260 cas et trois artefacts JSON/MD non vides. Revalider le SHA documentaire final.
+- [x] Logs du reporter : `conformance verdict=PASS cases=260` pour Python 3.11, 3.12 et 3.13 ; artefacts `v030-conformance-3.11/3.12/3.13` presents. Verification du SHA apres mise a jour documentaire encore a faire.
 - [ ] Ajouter les scenarios de cancellation pendant stream et
   `Task.cancel()` en conditions de transport simulées.
 - [ ] Attester les seuils taille/frames et redaction cross-provider.
