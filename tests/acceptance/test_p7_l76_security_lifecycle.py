@@ -8,7 +8,6 @@ import json
 
 import httpx
 import pytest
-
 from test_p7_l76_native_streaming import (
     ALIASES,
     PROVIDERS,
@@ -17,6 +16,7 @@ from test_p7_l76_native_streaming import (
     service,
     wire,
 )
+
 from pyllmkit.adapters.inference import NativeProviderStreamingAdapter
 from pyllmkit.adapters.inference.native_stream_mapping import NativeStreamDecoder
 from pyllmkit.application.inference import InvocationPortError
