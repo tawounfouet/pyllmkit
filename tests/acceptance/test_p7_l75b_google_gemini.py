@@ -516,6 +516,7 @@ def test_gemini_parser_does_not_echo_bad_json_or_duplicate_fields() -> None:
 
 def test_gemini_httpx_optional_and_secret_errors_sanitized(monkeypatch: pytest.MonkeyPatch) -> None:
     import builtins
+
     from pyllmkit.adapters.inference.cloud_http import _secret
     actual = builtins.__import__
     def missing(name: str,*args: object,**kwargs: object) -> object:
