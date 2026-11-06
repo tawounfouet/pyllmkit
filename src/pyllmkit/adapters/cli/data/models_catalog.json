@@ -1,0 +1,3928 @@
+{
+  "gpt-6-astra": {
+    "id": "gpt-6-astra",
+    "name": "GPT-6 Astra",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 1000000,
+    "max_output_tokens": 32768,
+    "modalities_in": [
+      "text",
+      "image",
+      "audio"
+    ],
+    "modalities_out": [
+      "text",
+      "audio"
+    ],
+    "pricing": {
+      "input_cost": 10.0,
+      "output_cost": 50.0,
+      "cache_read": 1.0,
+      "cache_write": 12.5,
+      "unit": "1M tokens",
+      "cache_write_12h": 25.0
+    },
+    "features": [
+      "web_search",
+      "code_execution",
+      "deep_reasoning",
+      "tools"
+    ],
+    "description": "Modèle frontière multimodal ultra-performant d'OpenAI pour le raisonnement complexe et l'agentique.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-6.1-sol": {
+    "id": "gpt-6.1-sol",
+    "name": "GPT-6.1 Sol",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 1000000,
+    "max_output_tokens": 16384,
+    "modalities_in": [
+      "text",
+      "image",
+      "audio"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 2.0,
+      "output_cost": 10.0,
+      "cache_read": 0.1,
+      "cache_write": 2.5,
+      "unit": "1M tokens",
+      "cache_write_12h": 5.0
+    },
+    "features": [
+      "web_search",
+      "code_execution",
+      "fast_reasoning",
+      "tools"
+    ],
+    "description": "Équilibre idéal entre puissance de calcul, latence et coût pour le développement agentique quotidien.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-6.1-terra": {
+    "id": "gpt-6.1-terra",
+    "name": "GPT-6.1 Terra",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 256000,
+    "max_output_tokens": 16384,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 1.0,
+      "output_cost": 5.0,
+      "cache_read": 0.05,
+      "cache_write": 1.25,
+      "unit": "1M tokens",
+      "cache_write_12h": 2.5
+    },
+    "features": [
+      "code_execution",
+      "fast_inference",
+      "tools"
+    ],
+    "description": "Optimisé pour les flux de travail logiciels, la refactorisation et l'exécution de code.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-6-luna": {
+    "id": "gpt-6-luna",
+    "name": "GPT-6 Luna",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.1,
+      "output_cost": 0.5,
+      "cache_read": 0.01,
+      "cache_write": 0.125,
+      "unit": "1M tokens",
+      "cache_write_12h": 0.25
+    },
+    "features": [
+      "ultra_fast",
+      "streaming",
+      "tools"
+    ],
+    "description": "Modèle ultra-léger et économique pour les tâches haute fréquence et la classification.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-realtime-2.1": {
+    "id": "gpt-realtime-2.1",
+    "name": "GPT Realtime 2.1",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 128000,
+    "max_output_tokens": 4096,
+    "modalities_in": [
+      "text",
+      "image",
+      "audio"
+    ],
+    "modalities_out": [
+      "text",
+      "audio"
+    ],
+    "pricing": {
+      "input_cost": 4.0,
+      "output_cost": 24.0,
+      "cache_read": 0.4,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "realtime",
+      "audio_streaming",
+      "low_latency",
+      "multimodal"
+    ],
+    "description": "Modèle conversationnel voix et texte en temps réel à très faible latence.",
+    "source_url": "https://openai.com/api/pricing/#realtime",
+    "last_verified": "2026-11-06",
+    "pricing_modalities": {
+      "audio": {
+        "input_cost": 32.0,
+        "output_cost": 64.0,
+        "cache_read": 0.4
+      },
+      "text": {
+        "input_cost": 4.0,
+        "output_cost": 24.0,
+        "cache_read": 0.4
+      },
+      "image": {
+        "input_cost": 5.0,
+        "output_cost": null,
+        "cache_read": 0.5
+      }
+    }
+  },
+  "gpt-realtime-2.1-mini": {
+    "id": "gpt-realtime-2.1-mini",
+    "name": "GPT Realtime 2.1 Mini",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 128000,
+    "max_output_tokens": 4096,
+    "modalities_in": [
+      "text",
+      "image",
+      "audio"
+    ],
+    "modalities_out": [
+      "text",
+      "audio"
+    ],
+    "pricing": {
+      "input_cost": 0.6,
+      "output_cost": 2.4,
+      "cache_read": 0.06,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "realtime",
+      "audio_streaming",
+      "low_latency",
+      "economy"
+    ],
+    "description": "Version compacte et économique du modèle temps réel voix et texte.",
+    "source_url": "https://openai.com/api/pricing/#realtime",
+    "last_verified": "2026-11-06",
+    "pricing_modalities": {
+      "audio": {
+        "input_cost": 10.0,
+        "output_cost": 20.0,
+        "cache_read": 0.3
+      },
+      "text": {
+        "input_cost": 0.6,
+        "output_cost": 2.4,
+        "cache_read": 0.06
+      },
+      "image": {
+        "input_cost": 0.8,
+        "output_cost": null,
+        "cache_read": 0.08
+      }
+    }
+  },
+  "gpt-5.6-sol": {
+    "id": "gpt-5.6-sol",
+    "name": "GPT-5.6 Sol",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 512000,
+    "max_output_tokens": 16384,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 4.0,
+      "output_cost": 20.0,
+      "cache_read": 0.4,
+      "cache_write": 5.0,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "reasoning",
+      "tools"
+    ],
+    "description": "Génération 5.6 d'OpenAI pour le raisonnement soutenu.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-5.6-terra": {
+    "id": "gpt-5.6-terra",
+    "name": "GPT-5.6 Terra",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 256000,
+    "max_output_tokens": 16384,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 2.0,
+      "output_cost": 12.0,
+      "cache_read": 0.2,
+      "cache_write": 2.5,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "coding",
+      "tools"
+    ],
+    "description": "Génération 5.6 pour la programmation et l'analyse.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-5.6-luna": {
+    "id": "gpt-5.6-luna",
+    "name": "GPT-5.6 Luna",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.2,
+      "output_cost": 1.2,
+      "cache_read": 0.02,
+      "cache_write": 0.25,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "fast_inference"
+    ],
+    "description": "Modèle compact et économique pour le parsing et le routing.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-5.4-pro": {
+    "id": "gpt-5.4-pro",
+    "name": "GPT-5.4 Pro",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 512000,
+    "max_output_tokens": 32768,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 30.0,
+      "output_cost": 180.0,
+      "cache_read": 30.0,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "extreme_reasoning",
+      "deep_research"
+    ],
+    "description": "Capacités de recherche et démonstration de théorèmes mathématiques.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-4o": {
+    "id": "gpt-4o",
+    "name": "GPT-4o",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 128000,
+    "max_output_tokens": 16384,
+    "modalities_in": [
+      "text",
+      "image",
+      "audio"
+    ],
+    "modalities_out": [
+      "text",
+      "audio"
+    ],
+    "pricing": {
+      "input_cost": 2.5,
+      "output_cost": 10.0,
+      "cache_read": 1.25,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "multimodal",
+      "tools",
+      "vision"
+    ],
+    "description": "Modèle omni multimodal d'OpenAI standard de production.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-4o-mini": {
+    "id": "gpt-4o-mini",
+    "name": "GPT-4o Mini",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 128000,
+    "max_output_tokens": 16384,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.15,
+      "output_cost": 0.6,
+      "cache_read": 0.075,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "fast",
+      "tools",
+      "vision"
+    ],
+    "description": "Modèle compact, rapide et économique.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-4-turbo": {
+    "id": "gpt-4-turbo",
+    "name": "GPT-4 Turbo",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 128000,
+    "max_output_tokens": 4096,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 10.0,
+      "output_cost": 30.0,
+      "cache_read": 5.0,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "vision",
+      "tools",
+      "json_mode"
+    ],
+    "description": "Version Turbo historique de GPT-4 avec support de vision.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-4": {
+    "id": "gpt-4",
+    "name": "GPT-4",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 8192,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 30.0,
+      "output_cost": 60.0,
+      "cache_read": null,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "reasoning"
+    ],
+    "description": "Modèle GPT-4 original de haute précision.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-3.5-turbo": {
+    "id": "gpt-3.5-turbo",
+    "name": "GPT-3.5 Turbo",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 16384,
+    "max_output_tokens": 4096,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.5,
+      "output_cost": 1.5,
+      "cache_read": null,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "legacy",
+      "fast"
+    ],
+    "description": "Modèle historique conversationnel économique.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "o1": {
+    "id": "o1",
+    "name": "OpenAI o1",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 200000,
+    "max_output_tokens": 100000,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 15.0,
+      "output_cost": 60.0,
+      "cache_read": 7.5,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "deep_reasoning",
+      "chain_of_thought",
+      "math",
+      "code"
+    ],
+    "description": "Modèle de raisonnement avancé pour les problèmes scientifiques et mathématiques complexes.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "o1-preview": {
+    "id": "o1-preview",
+    "name": "OpenAI o1-preview",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 128000,
+    "max_output_tokens": 32768,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 15.0,
+      "output_cost": 60.0,
+      "cache_read": 7.5,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "deep_reasoning",
+      "chain_of_thought"
+    ],
+    "description": "Aperçu initial de la famille de raisonnement o1.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "o1-mini": {
+    "id": "o1-mini",
+    "name": "OpenAI o1-mini",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 128000,
+    "max_output_tokens": 65536,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 1.1,
+      "output_cost": 4.4,
+      "cache_read": 0.55,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "fast_reasoning",
+      "code_math"
+    ],
+    "description": "Modèle de raisonnement compact et rapide spécialisé dans le code.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "o3-mini": {
+    "id": "o3-mini",
+    "name": "OpenAI o3-mini",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 200000,
+    "max_output_tokens": 100000,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 1.1,
+      "output_cost": 4.4,
+      "cache_read": 0.55,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "advanced_reasoning",
+      "code",
+      "math",
+      "tools"
+    ],
+    "description": "Nouvelle génération o3 compacte avec raisonnement configurable.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "claude-fable-5-1": {
+    "id": "claude-fable-5-1",
+    "name": "Claude Fable 5.1",
+    "family": "anthropic",
+    "provider": "anthropic",
+    "context_window": 500000,
+    "max_output_tokens": 32768,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 10.0,
+      "output_cost": 50.0,
+      "cache_read": 0.25,
+      "cache_write": 12.5,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "web_search",
+      "code_execution",
+      "deep_thinking",
+      "tools"
+    ],
+    "description": "Modèle frontière créatif et analytique d'Anthropic avec réflexion étendue.",
+    "source_url": "https://www.anthropic.com/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "claude-fable-5": {
+    "id": "claude-fable-5",
+    "name": "Claude Fable 5",
+    "family": "anthropic",
+    "provider": "anthropic",
+    "context_window": 500000,
+    "max_output_tokens": 32768,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 10.0,
+      "output_cost": 50.0,
+      "cache_read": 1.0,
+      "cache_write": 12.5,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "deep_thinking",
+      "tools"
+    ],
+    "description": "Modèle frontière Anthropic de génération 5.",
+    "source_url": "https://www.anthropic.com/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "claude-opus-5-5": {
+    "id": "claude-opus-5-5",
+    "name": "Claude Opus 5.5",
+    "family": "anthropic",
+    "provider": "anthropic",
+    "context_window": 500000,
+    "max_output_tokens": 16384,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 4.0,
+      "output_cost": 20.0,
+      "cache_read": 0.2,
+      "cache_write": 5.0,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "frontier_reasoning",
+      "code_execution",
+      "tools"
+    ],
+    "description": "Capacités analytiques ultimes pour les flux de travail critiques.",
+    "source_url": "https://www.anthropic.com/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "claude-opus-4-5": {
+    "id": "claude-opus-4-5",
+    "name": "Claude Opus 4.5",
+    "family": "anthropic",
+    "provider": "anthropic",
+    "context_window": 200000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 5.0,
+      "output_cost": 25.0,
+      "cache_read": 0.5,
+      "cache_write": 6.25,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "deep_analysis",
+      "tools"
+    ],
+    "description": "Version 4.5 de la famille Opus.",
+    "source_url": "https://www.anthropic.com/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "claude-sonnet-5-5": {
+    "id": "claude-sonnet-5-5",
+    "name": "Claude Sonnet 5.5",
+    "family": "anthropic",
+    "provider": "anthropic",
+    "context_window": 500000,
+    "max_output_tokens": 16384,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 2.0,
+      "output_cost": 10.0,
+      "cache_read": 0.2,
+      "cache_write": 2.5,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "coding_benchmark_leader",
+      "tools",
+      "vision"
+    ],
+    "description": "Référence absolue pour le codage et les agents autonomes.",
+    "source_url": "https://www.anthropic.com/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "claude-sonnet-4-5": {
+    "id": "claude-sonnet-4-5",
+    "name": "Claude Sonnet 4.5",
+    "family": "anthropic",
+    "provider": "anthropic",
+    "context_window": 200000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 3.0,
+      "output_cost": 15.0,
+      "cache_read": 0.3,
+      "cache_write": 3.75,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "coding",
+      "tools",
+      "vision"
+    ],
+    "description": "Standard de référence pour l'ingénierie logicielle.",
+    "source_url": "https://www.anthropic.com/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "claude-haiku-5-5": {
+    "id": "claude-haiku-5-5",
+    "name": "Claude Haiku 5.5",
+    "family": "anthropic",
+    "provider": "anthropic",
+    "context_window": 200000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.1,
+      "output_cost": 0.5,
+      "cache_read": 0.01,
+      "cache_write": 0.125,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "ultra_fast",
+      "low_cost"
+    ],
+    "description": "Modèle temps réel d'Anthropic à prix ultra-compétitif.",
+    "source_url": "https://www.anthropic.com/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "claude-haiku-4-5": {
+    "id": "claude-haiku-4-5",
+    "name": "Claude Haiku 4.5",
+    "family": "anthropic",
+    "provider": "anthropic",
+    "context_window": 200000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 1.0,
+      "output_cost": 5.0,
+      "cache_read": 0.1,
+      "cache_write": 1.25,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "fast",
+      "tools"
+    ],
+    "description": "Modèle réactif de génération 4.5.",
+    "source_url": "https://www.anthropic.com/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "claude-3-5-sonnet": {
+    "id": "claude-3-5-sonnet",
+    "name": "Claude 3.5 Sonnet",
+    "family": "anthropic",
+    "provider": "anthropic",
+    "context_window": 200000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 3.0,
+      "output_cost": 15.0,
+      "cache_read": 0.3,
+      "cache_write": 3.75,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "code",
+      "vision",
+      "reasoning",
+      "tools"
+    ],
+    "description": "Référence industrielle pour la programmation et l'analyse de vision.",
+    "source_url": "https://www.anthropic.com/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "claude-3-5-haiku": {
+    "id": "claude-3-5-haiku",
+    "name": "Claude 3.5 Haiku",
+    "family": "anthropic",
+    "provider": "anthropic",
+    "context_window": 200000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.8,
+      "output_cost": 4.0,
+      "cache_read": 0.08,
+      "cache_write": 1.0,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "ultra_fast",
+      "code",
+      "tools"
+    ],
+    "description": "Modèle compact ultra-rapide avec d'excellentes capacités en code.",
+    "source_url": "https://www.anthropic.com/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "claude-3-opus": {
+    "id": "claude-3-opus",
+    "name": "Claude 3 Opus",
+    "family": "anthropic",
+    "provider": "anthropic",
+    "context_window": 200000,
+    "max_output_tokens": 4096,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 15.0,
+      "output_cost": 75.0,
+      "cache_read": 1.5,
+      "cache_write": 18.75,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "complex_analysis",
+      "vision",
+      "writing"
+    ],
+    "description": "Modèle haut de gamme original de génération Claude 3.",
+    "source_url": "https://www.anthropic.com/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "claude-3-sonnet": {
+    "id": "claude-3-sonnet",
+    "name": "Claude 3 Sonnet",
+    "family": "anthropic",
+    "provider": "anthropic",
+    "context_window": 200000,
+    "max_output_tokens": 4096,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 3.0,
+      "output_cost": 15.0,
+      "cache_read": 0.3,
+      "cache_write": 3.75,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "balanced",
+      "vision",
+      "tools"
+    ],
+    "description": "Modèle intermédiaire équilibré de génération 3.",
+    "source_url": "https://www.anthropic.com/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "claude-3-haiku": {
+    "id": "claude-3-haiku",
+    "name": "Claude 3 Haiku",
+    "family": "anthropic",
+    "provider": "anthropic",
+    "context_window": 200000,
+    "max_output_tokens": 4096,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.25,
+      "output_cost": 1.25,
+      "cache_read": 0.03,
+      "cache_write": 0.3,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "fast",
+      "vision"
+    ],
+    "description": "Modèle rapide et abordable pour les interactions quotidiennes.",
+    "source_url": "https://www.anthropic.com/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "gemini-4-argon": {
+    "id": "gemini-4-argon",
+    "name": "Gemini 4 Argon",
+    "family": "google",
+    "provider": "google",
+    "context_window": 2097152,
+    "max_output_tokens": 65536,
+    "modalities_in": [
+      "text",
+      "image",
+      "audio",
+      "video"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 2.0,
+      "output_cost": 10.0,
+      "cache_read": 0.1,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "2m_context",
+      "multimodal_native",
+      "batch_support",
+      "tools"
+    ],
+    "description": "Modèle Google de 4ème génération avec fenêtre de contexte géante de 2M tokens.",
+    "source_url": "https://ai.google.dev/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "gemini-3.8-flash": {
+    "id": "gemini-3.8-flash",
+    "name": "Gemini 3.8 Flash",
+    "family": "google",
+    "provider": "google",
+    "context_window": 1048576,
+    "max_output_tokens": 32768,
+    "modalities_in": [
+      "text",
+      "image",
+      "audio",
+      "video"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 1.5,
+      "output_cost": 7.5,
+      "cache_read": 0.15,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "thought_signature",
+      "1m_context",
+      "multimodal",
+      "fast",
+      "tools"
+    ],
+    "description": "Modèle haute vitesse avec signature de réflexion native et 1 million de tokens de contexte.",
+    "source_url": "https://ai.google.dev/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "gemini-3.7-flash": {
+    "id": "gemini-3.7-flash",
+    "name": "Gemini 3.7 Flash",
+    "family": "google",
+    "provider": "google",
+    "context_window": 1048576,
+    "max_output_tokens": 32768,
+    "modalities_in": [
+      "text",
+      "image",
+      "audio"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 1.5,
+      "output_cost": 7.5,
+      "cache_read": 0.15,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "1m_context",
+      "fast",
+      "tools"
+    ],
+    "description": "Version Flash 3.7 pour flux multimodaux rapides.",
+    "source_url": "https://ai.google.dev/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "gemini-3.5-flash": {
+    "id": "gemini-3.5-flash",
+    "name": "Gemini 3.5 Flash",
+    "family": "google",
+    "provider": "google",
+    "context_window": 1048576,
+    "max_output_tokens": 16384,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 1.5,
+      "output_cost": 9.0,
+      "cache_read": 0.15,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "1m_context",
+      "tools"
+    ],
+    "description": "Inférence rapide et stable avec grand contexte.",
+    "source_url": "https://ai.google.dev/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "gemini-3.5-flash-lite": {
+    "id": "gemini-3.5-flash-lite",
+    "name": "Gemini 3.5 Flash Lite",
+    "family": "google",
+    "provider": "google",
+    "context_window": 1048576,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.3,
+      "output_cost": 2.5,
+      "cache_read": 0.03,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "ultra_low_cost",
+      "1m_context"
+    ],
+    "description": "Traitement de masse ultra-économique.",
+    "source_url": "https://ai.google.dev/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "gemini-3.1-pro": {
+    "id": "gemini-3.1-pro",
+    "name": "Gemini 3.1 Pro",
+    "family": "google",
+    "provider": "google",
+    "context_window": 2097152,
+    "max_output_tokens": 32768,
+    "modalities_in": [
+      "text",
+      "image",
+      "audio",
+      "video"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 2.0,
+      "output_cost": 12.0,
+      "cache_read": 0.2,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "2m_context",
+      "reasoning",
+      "multimodal"
+    ],
+    "description": "Modèle pro polyvalent pour analyses documentaires massives.",
+    "source_url": "https://ai.google.dev/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "gemini-3-flash": {
+    "id": "gemini-3-flash",
+    "name": "Gemini 3 Flash",
+    "family": "google",
+    "provider": "google",
+    "context_window": 1048576,
+    "max_output_tokens": 16384,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.5,
+      "output_cost": 3.0,
+      "cache_read": 0.05,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "1m_context",
+      "fast"
+    ],
+    "description": "Génération initiale de la série Gemini 3.",
+    "source_url": "https://ai.google.dev/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "gemini-1.5-pro": {
+    "id": "gemini-1.5-pro",
+    "name": "Gemini 1.5 Pro",
+    "family": "google",
+    "provider": "google",
+    "context_window": 2000000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image",
+      "audio",
+      "video"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 1.25,
+      "output_cost": 5.0,
+      "cache_read": 0.3,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "2m_context",
+      "multimodal",
+      "audio",
+      "video"
+    ],
+    "description": "Modèle historique pionnier du contexte 2 millions de tokens.",
+    "source_url": "https://ai.google.dev/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "gemini-1.5-flash": {
+    "id": "gemini-1.5-flash",
+    "name": "Gemini 1.5 Flash",
+    "family": "google",
+    "provider": "google",
+    "context_window": 1000000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image",
+      "audio",
+      "video"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.075,
+      "output_cost": 0.3,
+      "cache_read": 0.01875,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "1m_context",
+      "fast",
+      "multimodal"
+    ],
+    "description": "Modèle multimodal agile et économique de première génération.",
+    "source_url": "https://ai.google.dev/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "gemini-1.5-flash-8b": {
+    "id": "gemini-1.5-flash-8b",
+    "name": "Gemini 1.5 Flash 8B",
+    "family": "google",
+    "provider": "google",
+    "context_window": 1000000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image",
+      "audio",
+      "video"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.0375,
+      "output_cost": 0.15,
+      "cache_read": 0.01,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "ultra_light",
+      "1m_context"
+    ],
+    "description": "Modèle ultra-compact 8B pour flux haute fréquence.",
+    "source_url": "https://ai.google.dev/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "gemini-2.0-flash": {
+    "id": "gemini-2.0-flash",
+    "name": "Gemini 2.0 Flash",
+    "family": "google",
+    "provider": "google",
+    "context_window": 1048576,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image",
+      "audio",
+      "video"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.1,
+      "output_cost": 0.4,
+      "cache_read": 0.025,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "multimodal_live",
+      "realtime",
+      "tools"
+    ],
+    "description": "Génération 2.0 optimisée pour la vitesse et l'interactivité en temps réel.",
+    "source_url": "https://ai.google.dev/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "gemini-2.0-flash-exp": {
+    "id": "gemini-2.0-flash-exp",
+    "name": "Gemini 2.0 Flash Exp",
+    "family": "google",
+    "provider": "google",
+    "context_window": 1048576,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image",
+      "audio",
+      "video"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.0,
+      "output_cost": 0.0,
+      "cache_read": 0.0,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "experimental",
+      "free_preview"
+    ],
+    "description": "Aperçu expérimental gratuit de Gemini 2.0 Flash.",
+    "source_url": "https://ai.google.dev/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "grok-4.7": {
+    "id": "grok-4.7",
+    "name": "Grok 4.7",
+    "family": "xai",
+    "provider": "xai",
+    "context_window": 256000,
+    "max_output_tokens": 16384,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 2.0,
+      "output_cost": 6.0,
+      "cache_read": 0.5,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "realtime_search",
+      "code_execution",
+      "reasoning"
+    ],
+    "description": "Modèle frontière de xAI avec recherche temps réel intégrée.",
+    "source_url": "https://docs.x.ai/docs/overview#pricing",
+    "last_verified": "2026-11-06"
+  },
+  "grok-4.6": {
+    "id": "grok-4.6",
+    "name": "Grok 4.6",
+    "family": "xai",
+    "provider": "xai",
+    "context_window": 256000,
+    "max_output_tokens": 16384,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 2.0,
+      "output_cost": 6.0,
+      "cache_read": 0.5,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "realtime_search",
+      "reasoning"
+    ],
+    "description": "Raisonnement soutenu avec fraîcheur d'information maximale.",
+    "source_url": "https://docs.x.ai/docs/overview#pricing",
+    "last_verified": "2026-11-06"
+  },
+  "grok-4.5": {
+    "id": "grok-4.5",
+    "name": "Grok 4.5",
+    "family": "xai",
+    "provider": "xai",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 2.0,
+      "output_cost": 6.0,
+      "cache_read": 0.3,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "realtime_search"
+    ],
+    "description": "Génération 4.5 de Grok.",
+    "source_url": "https://docs.x.ai/docs/overview#pricing",
+    "last_verified": "2026-11-06"
+  },
+  "grok-build-0.1": {
+    "id": "grok-build-0.1",
+    "name": "Grok Build 0.1",
+    "family": "xai",
+    "provider": "xai",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 1.0,
+      "output_cost": 2.0,
+      "cache_read": 0.2,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "code_synthesis",
+      "dev_ops"
+    ],
+    "description": "Modèle spécialisé dans l'automatisation de builds et scripts.",
+    "source_url": "https://docs.x.ai/docs/overview#pricing",
+    "last_verified": "2026-11-06"
+  },
+  "grok-2": {
+    "id": "grok-2",
+    "name": "Grok 2",
+    "family": "xai",
+    "provider": "xai",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 2.0,
+      "output_cost": 10.0,
+      "cache_read": 0.2,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "vision",
+      "search",
+      "reasoning"
+    ],
+    "description": "Modèle frontière multimodal de génération 2 de xAI.",
+    "source_url": "https://docs.x.ai/docs/overview#pricing",
+    "last_verified": "2026-11-06"
+  },
+  "grok-2-mini": {
+    "id": "grok-2-mini",
+    "name": "Grok 2 Mini",
+    "family": "xai",
+    "provider": "xai",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.2,
+      "output_cost": 1.0,
+      "cache_read": 0.02,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "fast",
+      "search"
+    ],
+    "description": "Version compacte et rapide de Grok 2.",
+    "source_url": "https://docs.x.ai/docs/overview#pricing",
+    "last_verified": "2026-11-06"
+  },
+  "grok-beta": {
+    "id": "grok-beta",
+    "name": "Grok Beta",
+    "family": "xai",
+    "provider": "xai",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 5.0,
+      "output_cost": 15.0,
+      "cache_read": 0.5,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "legacy",
+      "preview"
+    ],
+    "description": "Version beta d'origine de Grok.",
+    "source_url": "https://docs.x.ai/docs/overview#pricing",
+    "last_verified": "2026-11-06"
+  },
+  "mistral-large-4": {
+    "id": "mistral-large-4",
+    "name": "Mistral Large 4",
+    "family": "mistral",
+    "provider": "mistral",
+    "context_window": 128000,
+    "max_output_tokens": 16384,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.68,
+      "output_cost": 2.09,
+      "cache_read": 0.07,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "multilingual_leader",
+      "european_sovereignty",
+      "reasoning",
+      "tools"
+    ],
+    "description": "Fleuron européen de Mistral AI avec excellent ratio coût/performance.",
+    "source_url": "https://mistral.ai/technology/#pricing",
+    "last_verified": "2026-11-06"
+  },
+  "mistral-small-latest": {
+    "id": "mistral-small-latest",
+    "name": "Mistral Small (Latest)",
+    "family": "mistral",
+    "provider": "mistral",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.2,
+      "output_cost": 0.6,
+      "cache_read": 0.05,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "fast",
+      "tools",
+      "low_latency"
+    ],
+    "description": "Modèle léger, ultra-rapide et économique de Mistral AI.",
+    "source_url": "https://mistral.ai/technology/#pricing",
+    "last_verified": "2026-11-06"
+  },
+  "codestral": {
+    "id": "codestral",
+    "name": "Codestral",
+    "family": "mistral",
+    "provider": "mistral",
+    "context_window": 256000,
+    "max_output_tokens": 16384,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.3,
+      "output_cost": 0.9,
+      "cache_read": 0.03,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "fill_in_the_middle",
+      "code_generation",
+      "80+_languages"
+    ],
+    "description": "Modèle d'excellence pour la complétion et la génération de code.",
+    "source_url": "https://mistral.ai/technology/#pricing",
+    "last_verified": "2026-11-06"
+  },
+  "mistral-large": {
+    "id": "mistral-large",
+    "name": "Mistral Large",
+    "family": "mistral",
+    "provider": "mistral",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 2.0,
+      "output_cost": 6.0,
+      "cache_read": 0.2,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "multilingual",
+      "reasoning",
+      "tools"
+    ],
+    "description": "Modèle haut de gamme original Mistral Large.",
+    "source_url": "https://mistral.ai/technology/#pricing",
+    "last_verified": "2026-11-06"
+  },
+  "mistral-small": {
+    "id": "mistral-small",
+    "name": "Mistral Small",
+    "family": "mistral",
+    "provider": "mistral",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.2,
+      "output_cost": 0.6,
+      "cache_read": 0.05,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "fast",
+      "tools",
+      "low_cost"
+    ],
+    "description": "Version légère économique pour flux fréquents.",
+    "source_url": "https://mistral.ai/technology/#pricing",
+    "last_verified": "2026-11-06"
+  },
+  "pixtral-12b": {
+    "id": "pixtral-12b",
+    "name": "Pixtral 12B",
+    "family": "mistral",
+    "provider": "mistral",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.15,
+      "output_cost": 0.15,
+      "cache_read": 0.03,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "vision",
+      "multimodal",
+      "fast"
+    ],
+    "description": "Modèle multimodal 12B de Mistral pour l'analyse d'images et graphiques.",
+    "source_url": "https://mistral.ai/technology/#pricing",
+    "last_verified": "2026-11-06"
+  },
+  "open-mistral-7b": {
+    "id": "open-mistral-7b",
+    "name": "Open Mistral 7B",
+    "family": "mistral",
+    "provider": "mistral",
+    "context_window": 32000,
+    "max_output_tokens": 4096,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.2,
+      "output_cost": 0.2,
+      "cache_read": null,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "open_weights",
+      "fast"
+    ],
+    "description": "Modèle 7B historique pionnier de Mistral AI.",
+    "source_url": "https://mistral.ai/technology/#pricing",
+    "last_verified": "2026-11-06"
+  },
+  "deepseek-v4-pro": {
+    "id": "deepseek-v4-pro",
+    "name": "DeepSeek V4 Pro",
+    "family": "deepseek",
+    "provider": "deepseek",
+    "context_window": 128000,
+    "max_output_tokens": 16384,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 1.74,
+      "output_cost": 3.48,
+      "cache_read": 0.145,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "deep_reasoning",
+      "math",
+      "code"
+    ],
+    "description": "Raisonnement poussé et mathématiques de haut niveau.",
+    "source_url": "https://api-docs.deepseek.com/quick_start/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "deepseek-v4.1-flash": {
+    "id": "deepseek-v4.1-flash",
+    "name": "DeepSeek V4.1 Flash",
+    "family": "deepseek",
+    "provider": "deepseek",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.3,
+      "output_cost": 1.2,
+      "cache_read": 0.006,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "fast",
+      "low_cost_cache"
+    ],
+    "description": "Modèle à très haute efficience énergétique et cache quasi-gratuit.",
+    "source_url": "https://api-docs.deepseek.com/quick_start/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "deepseek-v4.1-flash-free": {
+    "id": "deepseek-v4.1-flash-free",
+    "name": "DeepSeek V4.1 Flash (Free)",
+    "family": "deepseek",
+    "provider": "deepseek",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.0,
+      "output_cost": 0.0,
+      "cache_read": 0.0,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "free_tier",
+      "fast"
+    ],
+    "description": "Tier communautaire gratuit DeepSeek.",
+    "source_url": "https://api-docs.deepseek.com/quick_start/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "deepseek-r1": {
+    "id": "deepseek-r1",
+    "name": "DeepSeek R1",
+    "family": "deepseek",
+    "provider": "deepseek",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.55,
+      "output_cost": 2.19,
+      "cache_read": 0.14,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "reasoning",
+      "chain_of_thought",
+      "math",
+      "code"
+    ],
+    "description": "Modèle de raisonnement ouvert de premier plan avec réflexion visible.",
+    "source_url": "https://api-docs.deepseek.com/quick_start/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "qwen3.8-max": {
+    "id": "qwen3.8-max",
+    "name": "Qwen 3.8 Max",
+    "family": "alibaba",
+    "provider": "alibaba",
+    "context_window": 128000,
+    "max_output_tokens": 16384,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 2.0,
+      "output_cost": 6.0,
+      "cache_read": 0.25,
+      "cache_write": 2.5,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "coding",
+      "math",
+      "multimodal"
+    ],
+    "description": "Modèle grand format d'Alibaba pour les tâches complexes.",
+    "source_url": "https://www.alibabacloud.com/help/en/model-studio/developer-reference/what-is-qwen",
+    "last_verified": "2026-11-06"
+  },
+  "qwen3.8-flash": {
+    "id": "qwen3.8-flash",
+    "name": "Qwen 3.8 Flash",
+    "family": "alibaba",
+    "provider": "alibaba",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.15,
+      "output_cost": 0.47,
+      "cache_read": 0.016,
+      "cache_write": 0.2,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "fast",
+      "tools"
+    ],
+    "description": "Modèle haute vitesse optimisé pour le ratio performance/coût.",
+    "source_url": "https://www.alibabacloud.com/help/en/model-studio/developer-reference/what-is-qwen",
+    "last_verified": "2026-11-06"
+  },
+  "qwen3.6-plus": {
+    "id": "qwen3.6-plus",
+    "name": "Qwen 3.6 Plus",
+    "family": "alibaba",
+    "provider": "alibaba",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.5,
+      "output_cost": 3.0,
+      "cache_read": 0.05,
+      "cache_write": 0.625,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "tools",
+      "multimodal"
+    ],
+    "description": "Modèle polyvalent d'Alibaba Cloud.",
+    "source_url": "https://www.alibabacloud.com/help/en/model-studio/developer-reference/what-is-qwen",
+    "last_verified": "2026-11-06"
+  },
+  "qwen3.5-plus": {
+    "id": "qwen3.5-plus",
+    "name": "Qwen 3.5 Plus",
+    "family": "alibaba",
+    "provider": "alibaba",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.2,
+      "output_cost": 1.2,
+      "cache_read": 0.02,
+      "cache_write": 0.25,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "tools"
+    ],
+    "description": "Modèle éprouvé pour le traitement de texte et le code.",
+    "source_url": "https://www.alibabacloud.com/help/en/model-studio/developer-reference/what-is-qwen",
+    "last_verified": "2026-11-06"
+  },
+  "kimi-k3": {
+    "id": "kimi-k3",
+    "name": "Kimi K3",
+    "family": "moonshot",
+    "provider": "moonshot",
+    "context_window": 2000000,
+    "max_output_tokens": 32768,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 3.0,
+      "output_cost": 15.0,
+      "cache_read": 0.3,
+      "cache_write": 3.0,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "2m_context",
+      "long_context_analysis"
+    ],
+    "description": "Spécialiste de la lecture et analyse documentaire à contexte massif de 2 millions de tokens.",
+    "source_url": "https://platform.moonshot.cn/docs/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "kimi-k2.7-code": {
+    "id": "kimi-k2.7-code",
+    "name": "Kimi K2.7 Code",
+    "family": "moonshot",
+    "provider": "moonshot",
+    "context_window": 200000,
+    "max_output_tokens": 16384,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.95,
+      "output_cost": 4.0,
+      "cache_read": 0.19,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "coding",
+      "tools"
+    ],
+    "description": "Modèle expert en ingénierie de code et refactoring.",
+    "source_url": "https://platform.moonshot.cn/docs/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "glm-5.3": {
+    "id": "glm-5.3",
+    "name": "GLM 5.3",
+    "family": "zhipu",
+    "provider": "zhipu",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 1.4,
+      "output_cost": 4.4,
+      "cache_read": 0.26,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "bilingual",
+      "tools"
+    ],
+    "description": "Modèle bilingue anglais-chinois de référence.",
+    "source_url": "https://open.bigmodel.cn/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "glm-5.3-flash": {
+    "id": "glm-5.3-flash",
+    "name": "GLM 5.3 Flash",
+    "family": "zhipu",
+    "provider": "zhipu",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.15,
+      "output_cost": 0.5,
+      "cache_read": 0.03,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "fast",
+      "low_cost"
+    ],
+    "description": "Version Flash ultra-rapide de GLM.",
+    "source_url": "https://open.bigmodel.cn/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "minimax-m3": {
+    "id": "minimax-m3",
+    "name": "MiniMax M3",
+    "family": "minimax",
+    "provider": "minimax",
+    "context_window": 1000000,
+    "max_output_tokens": 16384,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.3,
+      "output_cost": 1.2,
+      "cache_read": 0.06,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "1m_context",
+      "multimodal"
+    ],
+    "description": "Grand contexte d'un million de tokens à coût très contenu.",
+    "source_url": "https://api.minimax.chat/document/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "beam-free": {
+    "id": "beam-free",
+    "name": "Beam (Free)",
+    "family": "community",
+    "provider": "community",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.0,
+      "output_cost": 0.0,
+      "cache_read": 0.0,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "web_search",
+      "terminal",
+      "text"
+    ],
+    "description": "Modèle communautaire gratuit avec capacités web et terminal.",
+    "source_url": "https://github.com/tawounfouet/pyllmkit",
+    "last_verified": "2026-11-06"
+  },
+  "big-pickle": {
+    "id": "big-pickle",
+    "name": "Big Pickle (Free)",
+    "family": "community",
+    "provider": "community",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.0,
+      "output_cost": 0.0,
+      "cache_read": 0.0,
+      "cache_write": 0.0,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "web_search",
+      "terminal",
+      "text"
+    ],
+    "description": "Modèle libre optimisé pour l'assistance en ligne de commande.",
+    "source_url": "https://github.com/tawounfouet/pyllmkit",
+    "last_verified": "2026-11-06"
+  },
+  "flint-40b-free": {
+    "id": "flint-40b-free",
+    "name": "Flint 40B (Free)",
+    "family": "community",
+    "provider": "community",
+    "context_window": 64000,
+    "max_output_tokens": 4096,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.0,
+      "output_cost": 0.0,
+      "cache_read": 0.0,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "free"
+    ],
+    "description": "Modèle open source 40B en accès libre.",
+    "source_url": "https://github.com/tawounfouet/pyllmkit",
+    "last_verified": "2026-11-06"
+  },
+  "nemotron-3.5-lightning-free": {
+    "id": "nemotron-3.5-lightning-free",
+    "name": "Nemotron 3.5 Lightning (Free)",
+    "family": "nvidia",
+    "provider": "nvidia",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.0,
+      "output_cost": 0.0,
+      "cache_read": 0.0,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "nvidia_accelerated",
+      "free"
+    ],
+    "description": "Modèle NVIDIA optimisé pour les inférences éclair.",
+    "source_url": "https://build.nvidia.com/explore/discover",
+    "last_verified": "2026-11-06"
+  },
+  "llama3.2": {
+    "id": "llama3.2",
+    "name": "Llama 3.2",
+    "family": "meta",
+    "provider": "ollama",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.0,
+      "output_cost": 0.0,
+      "cache_read": 0.0,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "local_execution",
+      "lightweight",
+      "vision",
+      "free"
+    ],
+    "description": "Modèle compact multimodal de Meta optimisé pour exécution locale.",
+    "source_url": "https://ollama.com/library",
+    "last_verified": "2026-11-06"
+  },
+  "llama3.1": {
+    "id": "llama3.1",
+    "name": "Llama 3.1",
+    "family": "meta",
+    "provider": "ollama",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.0,
+      "output_cost": 0.0,
+      "cache_read": 0.0,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "local_execution",
+      "multilingual",
+      "tools",
+      "free"
+    ],
+    "description": "Modèle généraliste de Meta avec fenêtre étendue de 128K tokens.",
+    "source_url": "https://ollama.com/library",
+    "last_verified": "2026-11-06"
+  },
+  "llama3": {
+    "id": "llama3",
+    "name": "Llama 3",
+    "family": "meta",
+    "provider": "ollama",
+    "context_window": 8192,
+    "max_output_tokens": 4096,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.0,
+      "output_cost": 0.0,
+      "cache_read": 0.0,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "local_execution",
+      "free"
+    ],
+    "description": "Modèle Meta Llama 3 original.",
+    "source_url": "https://ollama.com/library",
+    "last_verified": "2026-11-06"
+  },
+  "mistral": {
+    "id": "mistral",
+    "name": "Mistral 7B",
+    "family": "mistral",
+    "provider": "ollama",
+    "context_window": 32768,
+    "max_output_tokens": 4096,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.0,
+      "output_cost": 0.0,
+      "cache_read": 0.0,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "local_execution",
+      "fast",
+      "free"
+    ],
+    "description": "Modèle local 7B open source exécuté sur runtime Ollama.",
+    "source_url": "https://ollama.com/library",
+    "last_verified": "2026-11-06"
+  },
+  "qwen2.5": {
+    "id": "qwen2.5",
+    "name": "Qwen 2.5",
+    "family": "alibaba",
+    "provider": "ollama",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.0,
+      "output_cost": 0.0,
+      "cache_read": 0.0,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "local_execution",
+      "code",
+      "math",
+      "free"
+    ],
+    "description": "Excellence en code et logique pour exécution locale.",
+    "source_url": "https://ollama.com/library",
+    "last_verified": "2026-11-06"
+  },
+  "phi3": {
+    "id": "phi3",
+    "name": "Phi-3",
+    "family": "microsoft",
+    "provider": "ollama",
+    "context_window": 128000,
+    "max_output_tokens": 4096,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.0,
+      "output_cost": 0.0,
+      "cache_read": 0.0,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "local_execution",
+      "compact",
+      "free"
+    ],
+    "description": "Modèle compact haute performance de Microsoft.",
+    "source_url": "https://ollama.com/library",
+    "last_verified": "2026-11-06"
+  },
+  "claude-opus-4-6": {
+    "id": "claude-opus-4-6",
+    "name": "Claude Opus 4.6",
+    "family": "anthropic",
+    "provider": "anthropic",
+    "context_window": 200000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 5.0,
+      "output_cost": 25.0,
+      "cache_read": 0.5,
+      "cache_write": 6.25,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "reasoning",
+      "vision",
+      "tools",
+      "code"
+    ],
+    "description": "Modèle frontière haute précision d'Anthropic pour les analyses avancées.",
+    "source_url": "https://www.anthropic.com/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "claude-opus-4-7": {
+    "id": "claude-opus-4-7",
+    "name": "Claude Opus 4.7",
+    "family": "anthropic",
+    "provider": "anthropic",
+    "context_window": 200000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 5.0,
+      "output_cost": 25.0,
+      "cache_read": 0.5,
+      "cache_write": 6.25,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "reasoning",
+      "vision",
+      "tools",
+      "code"
+    ],
+    "description": "Modèle frontière itération 4.7 d'Anthropic.",
+    "source_url": "https://www.anthropic.com/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "claude-opus-4-8": {
+    "id": "claude-opus-4-8",
+    "name": "Claude Opus 4.8",
+    "family": "anthropic",
+    "provider": "anthropic",
+    "context_window": 200000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 5.0,
+      "output_cost": 25.0,
+      "cache_read": 0.5,
+      "cache_write": 6.25,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "reasoning",
+      "vision",
+      "tools",
+      "code"
+    ],
+    "description": "Modèle frontière itération 4.8 d'Anthropic.",
+    "source_url": "https://www.anthropic.com/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "claude-opus-5": {
+    "id": "claude-opus-5",
+    "name": "Claude Opus 5",
+    "family": "anthropic",
+    "provider": "anthropic",
+    "context_window": 500000,
+    "max_output_tokens": 16384,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 5.0,
+      "output_cost": 25.0,
+      "cache_read": 0.5,
+      "cache_write": 6.25,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "reasoning",
+      "vision",
+      "tools",
+      "code"
+    ],
+    "description": "Modèle de génération 5 d'Anthropic combinant haute puissance de raisonnement et rapidité.",
+    "source_url": "https://www.anthropic.com/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "claude-sonnet-4-6": {
+    "id": "claude-sonnet-4-6",
+    "name": "Claude Sonnet 4.6",
+    "family": "anthropic",
+    "provider": "anthropic",
+    "context_window": 200000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 3.0,
+      "output_cost": 15.0,
+      "cache_read": 0.3,
+      "cache_write": 3.75,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "code",
+      "vision",
+      "tools",
+      "reasoning"
+    ],
+    "description": "Modèle intermédiaire haute vélocité d'Anthropic optimisé pour le codage complexe.",
+    "source_url": "https://www.anthropic.com/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "claude-sonnet-5": {
+    "id": "claude-sonnet-5",
+    "name": "Claude Sonnet 5",
+    "family": "anthropic",
+    "provider": "anthropic",
+    "context_window": 500000,
+    "max_output_tokens": 16384,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 2.0,
+      "output_cost": 10.0,
+      "cache_read": 0.2,
+      "cache_write": 2.5,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "code",
+      "vision",
+      "tools",
+      "reasoning"
+    ],
+    "description": "Modèle Sonnet nouvelle génération à tarification économique et fenêtre étendue.",
+    "source_url": "https://www.anthropic.com/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "crouton-alpha-free": {
+    "id": "crouton-alpha-free",
+    "name": "Crouton Alpha",
+    "family": "open-source",
+    "provider": "opencode",
+    "context_window": 128000,
+    "max_output_tokens": 4096,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.0,
+      "output_cost": 0.0,
+      "cache_read": 0.0,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "free",
+      "text"
+    ],
+    "description": "Modèle léger gratuit communautaire fourni par OpenCode.",
+    "source_url": "https://opencode.ai/models",
+    "last_verified": "2026-11-06"
+  },
+  "pulse-alpha-free": {
+    "id": "pulse-alpha-free",
+    "name": "Pulse Alpha",
+    "family": "open-source",
+    "provider": "opencode",
+    "context_window": 128000,
+    "max_output_tokens": 4096,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.0,
+      "output_cost": 0.0,
+      "cache_read": 0.0,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "free",
+      "text"
+    ],
+    "description": "Modèle expérimental gratuit optimisé pour les interactions directes.",
+    "source_url": "https://opencode.ai/models",
+    "last_verified": "2026-11-06"
+  },
+  "mimo-v2.6-flash-free": {
+    "id": "mimo-v2.6-flash-free",
+    "name": "MiMo-V2.6-Flash",
+    "family": "mimo",
+    "provider": "opencode",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.0,
+      "output_cost": 0.0,
+      "cache_read": 0.0,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "free",
+      "flash",
+      "text"
+    ],
+    "description": "Modèle ultra rapide gratuit disponible via l'infrastructure OpenCode.",
+    "source_url": "https://opencode.ai/models",
+    "last_verified": "2026-11-06"
+  },
+  "nemotron-3.5-super-vl-free": {
+    "id": "nemotron-3.5-super-vl-free",
+    "name": "Nemotron 3.5 Super VL Free",
+    "family": "nvidia",
+    "provider": "nvidia",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.0,
+      "output_cost": 0.0,
+      "cache_read": 0.0,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "vision",
+      "free",
+      "multimodal"
+    ],
+    "description": "Modèle vision-langage gratuit haute résolution basé sur l'architecture NVIDIA Nemotron.",
+    "source_url": "https://build.nvidia.com",
+    "last_verified": "2026-11-06"
+  },
+  "jev-1.13": {
+    "id": "jev-1.13",
+    "name": "Jev 1.13",
+    "family": "open-source",
+    "provider": "opencode",
+    "context_window": 128000,
+    "max_output_tokens": 4096,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.042,
+      "output_cost": 0.0,
+      "cache_read": null,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "text",
+      "micro-cost"
+    ],
+    "description": "Modèle ultra-économique à coût d'entrée marginal.",
+    "source_url": "https://opencode.ai/models",
+    "last_verified": "2026-11-06"
+  },
+  "jev-1.13-free": {
+    "id": "jev-1.13-free",
+    "name": "Jev 1.13 Free",
+    "family": "open-source",
+    "provider": "opencode",
+    "context_window": 128000,
+    "max_output_tokens": 4096,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.0,
+      "output_cost": 0.0,
+      "cache_read": null,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "free",
+      "text"
+    ],
+    "description": "Version gratuite de Jev 1.13 mise à disposition par OpenCode.",
+    "source_url": "https://opencode.ai/models",
+    "last_verified": "2026-11-06"
+  },
+  "gemini-3.6-flash": {
+    "id": "gemini-3.6-flash",
+    "name": "Gemini 3.6 Flash",
+    "family": "google",
+    "provider": "google",
+    "context_window": 1000000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image",
+      "audio",
+      "video"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 1.5,
+      "output_cost": 7.5,
+      "cache_read": 0.15,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "multimodal",
+      "fast",
+      "tools",
+      "audio",
+      "video"
+    ],
+    "description": "Modèle Flash multimodal 1M tokens Google optimisé pour la latence et le débit.",
+    "source_url": "https://ai.google.dev/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "glm-5": {
+    "id": "glm-5",
+    "name": "GLM-5",
+    "family": "zhipu",
+    "provider": "zhipu",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 1.0,
+      "output_cost": 3.2,
+      "cache_read": 0.2,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "bilingual",
+      "tools",
+      "reasoning"
+    ],
+    "description": "Modèle frontière bilingue chinois/anglais de Zhipu AI.",
+    "source_url": "https://open.bigmodel.cn/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "glm-5.1": {
+    "id": "glm-5.1",
+    "name": "GLM-5.1",
+    "family": "zhipu",
+    "provider": "zhipu",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 1.4,
+      "output_cost": 4.4,
+      "cache_read": 0.26,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "bilingual",
+      "tools",
+      "reasoning"
+    ],
+    "description": "Modèle bilingue itération 5.1 de Zhipu AI.",
+    "source_url": "https://open.bigmodel.cn/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "glm-5.2": {
+    "id": "glm-5.2",
+    "name": "GLM-5.2",
+    "family": "zhipu",
+    "provider": "zhipu",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 1.4,
+      "output_cost": 4.4,
+      "cache_read": 0.26,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "bilingual",
+      "tools",
+      "reasoning"
+    ],
+    "description": "Modèle bilingue itération 5.2 de Zhipu AI.",
+    "source_url": "https://open.bigmodel.cn/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "glm-5.3-flash-free": {
+    "id": "glm-5.3-flash-free",
+    "name": "GLM-5.3-Flash Free",
+    "family": "zhipu",
+    "provider": "zhipu",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.0,
+      "output_cost": 0.0,
+      "cache_read": 0.0,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "free",
+      "flash",
+      "bilingual"
+    ],
+    "description": "Version gratuite du modèle Flash GLM-5.3 par Zhipu AI.",
+    "source_url": "https://open.bigmodel.cn/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-5": {
+    "id": "gpt-5",
+    "name": "GPT-5",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 500000,
+    "max_output_tokens": 16384,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 1.07,
+      "output_cost": 8.5,
+      "cache_read": 0.107,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "reasoning",
+      "multimodal",
+      "tools",
+      "coding"
+    ],
+    "description": "Modèle généraliste frontière GPT-5.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-5-codex": {
+    "id": "gpt-5-codex",
+    "name": "GPT-5 Codex",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 500000,
+    "max_output_tokens": 16384,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 1.07,
+      "output_cost": 8.5,
+      "cache_read": 0.107,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "code",
+      "agentic",
+      "tools"
+    ],
+    "description": "Modèle spécialisé en ingénierie logicielle et agents de codage.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-5-nano": {
+    "id": "gpt-5-nano",
+    "name": "GPT-5 Nano",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 128000,
+    "max_output_tokens": 4096,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.05,
+      "output_cost": 0.4,
+      "cache_read": 0.005,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "ultrafast",
+      "low_latency",
+      "tools"
+    ],
+    "description": "Modèle ultra-compact et économique pour les micro-tâches et classifications.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-5.1": {
+    "id": "gpt-5.1",
+    "name": "GPT-5.1",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 500000,
+    "max_output_tokens": 16384,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 1.07,
+      "output_cost": 8.5,
+      "cache_read": 0.107,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "reasoning",
+      "multimodal",
+      "tools"
+    ],
+    "description": "Itération optimisée de GPT-5 avec alignement renforcé.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-5.1-codex": {
+    "id": "gpt-5.1-codex",
+    "name": "GPT-5.1 Codex",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 500000,
+    "max_output_tokens": 16384,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 1.07,
+      "output_cost": 8.5,
+      "cache_read": 0.107,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "code",
+      "agentic",
+      "tools"
+    ],
+    "description": "Modèle de codage autonome 5.1.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-5.1-codex-max": {
+    "id": "gpt-5.1-codex-max",
+    "name": "GPT-5.1 Codex Max",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 1000000,
+    "max_output_tokens": 32768,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 1.25,
+      "output_cost": 10.0,
+      "cache_read": 0.125,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "code",
+      "large_context",
+      "tools"
+    ],
+    "description": "Version grand contexte 1M de Codex 5.1 pour les dépôts complets.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-5.1-codex-mini": {
+    "id": "gpt-5.1-codex-mini",
+    "name": "GPT-5.1 Codex Mini",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 128000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.25,
+      "output_cost": 2.0,
+      "cache_read": 0.025,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "code",
+      "fast",
+      "tools"
+    ],
+    "description": "Modèle de codage léger et rapide.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-5.2": {
+    "id": "gpt-5.2",
+    "name": "GPT-5.2",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 500000,
+    "max_output_tokens": 16384,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 1.75,
+      "output_cost": 14.0,
+      "cache_read": 0.175,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "reasoning",
+      "multimodal",
+      "tools"
+    ],
+    "description": "Version avancée de GPT-5 avec capacité de raisonnement accrue.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-5.2-codex": {
+    "id": "gpt-5.2-codex",
+    "name": "GPT-5.2 Codex",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 500000,
+    "max_output_tokens": 16384,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 1.75,
+      "output_cost": 14.0,
+      "cache_read": 0.175,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "code",
+      "agentic",
+      "tools"
+    ],
+    "description": "Modèle de génération de code haut niveau itération 5.2.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-5.3-codex": {
+    "id": "gpt-5.3-codex",
+    "name": "GPT-5.3 Codex",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 500000,
+    "max_output_tokens": 16384,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 1.75,
+      "output_cost": 14.0,
+      "cache_read": 0.175,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "code",
+      "agentic",
+      "tools"
+    ],
+    "description": "Modèle de codage 5.3 avec architecture de raisonnement pas-à-pas.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-5.3-codex-spark": {
+    "id": "gpt-5.3-codex-spark",
+    "name": "GPT-5.3 Codex Spark",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 256000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 1.75,
+      "output_cost": 14.0,
+      "cache_read": 0.175,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "code",
+      "instant_completion"
+    ],
+    "description": "Modèle réactif pour la complétion interactive en IDE.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-5.4": {
+    "id": "gpt-5.4",
+    "name": "GPT-5.4",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 1000000,
+    "max_output_tokens": 32768,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 2.5,
+      "output_cost": 15.0,
+      "cache_read": 0.25,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "reasoning",
+      "multimodal",
+      "tools"
+    ],
+    "description": "Modèle frontière multimodal GPT-5.4 grand contexte.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-5.4-mini": {
+    "id": "gpt-5.4-mini",
+    "name": "GPT-5.4 Mini",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 256000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.75,
+      "output_cost": 4.5,
+      "cache_read": 0.075,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "fast",
+      "multimodal",
+      "tools"
+    ],
+    "description": "Version équilibrée performance/coût de GPT-5.4.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-5.4-nano": {
+    "id": "gpt-5.4-nano",
+    "name": "GPT-5.4 Nano",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 128000,
+    "max_output_tokens": 4096,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.2,
+      "output_cost": 1.25,
+      "cache_read": 0.02,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "ultrafast",
+      "tools"
+    ],
+    "description": "Modèle compact haute vélocité pour workflows légers.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-5.5": {
+    "id": "gpt-5.5",
+    "name": "GPT-5.5",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 1000000,
+    "max_output_tokens": 32768,
+    "modalities_in": [
+      "text",
+      "image",
+      "audio"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 5.0,
+      "output_cost": 30.0,
+      "cache_read": 0.5,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "reasoning",
+      "multimodal",
+      "tools"
+    ],
+    "description": "Modèle frontière étendu GPT-5.5.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-5.5-pro": {
+    "id": "gpt-5.5-pro",
+    "name": "GPT-5.5 Pro",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 1000000,
+    "max_output_tokens": 32768,
+    "modalities_in": [
+      "text",
+      "image",
+      "audio"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 30.0,
+      "output_cost": 180.0,
+      "cache_read": 30.0,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "deep_reasoning",
+      "multimodal",
+      "complex_tasks"
+    ],
+    "description": "Version computing intensif pour problèmes scientifiques et logique critique.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-6-sol": {
+    "id": "gpt-6-sol",
+    "name": "GPT-6 Sol",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 1000000,
+    "max_output_tokens": 32768,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 2.0,
+      "output_cost": 10.0,
+      "cache_read": 0.2,
+      "cache_write": 2.5,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "reasoning",
+      "multimodal",
+      "tools"
+    ],
+    "description": "Modèle équilibré de la gamme GPT-6.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-06"
+  },
+  "gpt-live-1": {
+    "id": "gpt-live-1",
+    "name": "GPT-Live 1",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 128000,
+    "max_output_tokens": 4096,
+    "modalities_in": [
+      "audio",
+      "text"
+    ],
+    "modalities_out": [
+      "audio",
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.05,
+      "output_cost": 0.0,
+      "cache_read": null,
+      "cache_write": null,
+      "unit": "1 min"
+    },
+    "features": [
+      "live_audio",
+      "realtime",
+      "voice"
+    ],
+    "description": "Modèle audio bidirectionnel temps réel facturé à la minute (/bin/zsh.05/min).",
+    "source_url": "https://openai.com/api/pricing/#realtime",
+    "last_verified": "2026-11-06"
+  },
+  "kimi-k2.5": {
+    "id": "kimi-k2.5",
+    "name": "Kimi K2.5",
+    "family": "moonshot",
+    "provider": "moonshot",
+    "context_window": 256000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.6,
+      "output_cost": 3.0,
+      "cache_read": 0.1,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "long_context",
+      "tools"
+    ],
+    "description": "Modèle long contexte de Moonshot AI.",
+    "source_url": "https://platform.moonshot.cn/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "kimi-k2.6": {
+    "id": "kimi-k2.6",
+    "name": "Kimi K2.6",
+    "family": "moonshot",
+    "provider": "moonshot",
+    "context_window": 256000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.95,
+      "output_cost": 4.0,
+      "cache_read": 0.16,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "long_context",
+      "tools"
+    ],
+    "description": "Modèle long contexte amélioré de Moonshot AI.",
+    "source_url": "https://platform.moonshot.cn/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "minimax-m2.5": {
+    "id": "minimax-m2.5",
+    "name": "MiniMax-M2.5",
+    "family": "minimax",
+    "provider": "minimax",
+    "context_window": 256000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.3,
+      "output_cost": 1.2,
+      "cache_read": 0.06,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "tools",
+      "bilingual"
+    ],
+    "description": "Modèle haute performance économique de MiniMax.",
+    "source_url": "https://api.minimax.chat/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "minimax-m2.7": {
+    "id": "minimax-m2.7",
+    "name": "MiniMax-M2.7",
+    "family": "minimax",
+    "provider": "minimax",
+    "context_window": 256000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.3,
+      "output_cost": 1.2,
+      "cache_read": 0.06,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "tools",
+      "bilingual"
+    ],
+    "description": "Modèle optimisé en fluidité conversationnelle de MiniMax.",
+    "source_url": "https://api.minimax.chat/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "muse-spark-1.2": {
+    "id": "muse-spark-1.2",
+    "name": "Muse Spark 1.2",
+    "family": "muse",
+    "provider": "muse",
+    "context_window": 128000,
+    "max_output_tokens": 4096,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 1.25,
+      "output_cost": 4.25,
+      "cache_read": 0.15,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "fast",
+      "text"
+    ],
+    "description": "Modèle agile orienté créativité et rédaction Muse.",
+    "source_url": "https://muse.ai/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "muse-spark-1.3": {
+    "id": "muse-spark-1.3",
+    "name": "Muse Spark 1.3",
+    "family": "muse",
+    "provider": "muse",
+    "context_window": 128000,
+    "max_output_tokens": 4096,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 1.25,
+      "output_cost": 4.25,
+      "cache_read": 0.15,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "fast",
+      "text"
+    ],
+    "description": "Itération 1.3 de Muse Spark.",
+    "source_url": "https://muse.ai/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "muse-wonder-1.0": {
+    "id": "muse-wonder-1.0",
+    "name": "Muse Wonder",
+    "family": "muse",
+    "provider": "muse",
+    "context_window": 256000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 4.0,
+      "output_cost": 20.0,
+      "cache_read": 0.2,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "creative",
+      "reasoning",
+      "text"
+    ],
+    "description": "Modèle créatif approfondi Muse Wonder.",
+    "source_url": "https://muse.ai/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "grok-4": {
+    "id": "grok-4",
+    "name": "Grok 4",
+    "family": "xai",
+    "provider": "xai",
+    "context_window": 131072,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 2.0,
+      "output_cost": 6.0,
+      "cache_read": 0.5,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "code",
+      "reasoning",
+      "tools"
+    ],
+    "description": "Modèle frontière multimodal Grok 4 de xAI.",
+    "source_url": "https://docs.x.ai/docs/models",
+    "last_verified": "2026-11-06"
+  },
+  "grok-4.20": {
+    "id": "grok-4.20",
+    "name": "Grok 4.20",
+    "family": "xai",
+    "provider": "xai",
+    "context_window": 131072,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 2.0,
+      "output_cost": 6.0,
+      "cache_read": 0.5,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "fast",
+      "agentic",
+      "tools"
+    ],
+    "description": "Version agile de Grok 4.20 pour le streaming et les flux agentiques.",
+    "source_url": "https://docs.x.ai/docs/models",
+    "last_verified": "2026-11-06"
+  },
+  "grok-4.20-0309-non-reasoning": {
+    "id": "grok-4.20-0309-non-reasoning",
+    "name": "Grok 4.20 (Non-Reasoning)",
+    "family": "xai",
+    "provider": "xai",
+    "context_window": 131072,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 2.0,
+      "output_cost": 6.0,
+      "cache_read": 0.5,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "fast",
+      "direct_response",
+      "tools"
+    ],
+    "description": "Instantané Grok 4.20 sans étape de raisonnement pour faible latence.",
+    "source_url": "https://docs.x.ai/docs/models",
+    "last_verified": "2026-11-06"
+  },
+  "grok-4.20-0309-reasoning": {
+    "id": "grok-4.20-0309-reasoning",
+    "name": "Grok 4.20 (Reasoning)",
+    "family": "xai",
+    "provider": "xai",
+    "context_window": 131072,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 2.0,
+      "output_cost": 10.0,
+      "cache_read": 0.5,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "deep_reasoning",
+      "chain_of_thought",
+      "tools"
+    ],
+    "description": "Instantané Grok 4.20 avec raisonnement pas-à-pas et réflexion explicite.",
+    "source_url": "https://docs.x.ai/docs/models",
+    "last_verified": "2026-11-06"
+  },
+  "grok-3": {
+    "id": "grok-3",
+    "name": "Grok 3",
+    "family": "xai",
+    "provider": "xai",
+    "context_window": 131072,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 2.0,
+      "output_cost": 10.0,
+      "cache_read": 0.5,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "reasoning",
+      "tools"
+    ],
+    "description": "Modèle frontière de génération 3 xAI.",
+    "source_url": "https://docs.x.ai/docs/models",
+    "last_verified": "2026-11-06"
+  },
+  "gemini-2.5-flash": {
+    "id": "gemini-2.5-flash",
+    "name": "Gemini 2.5 Flash",
+    "family": "google",
+    "provider": "google",
+    "context_window": 1000000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image",
+      "audio",
+      "video"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.15,
+      "output_cost": 0.6,
+      "cache_read": 0.0375,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "multimodal",
+      "fast",
+      "audio",
+      "video",
+      "tools"
+    ],
+    "description": "Modèle Flash multimodal haute performance Google Gemini 2.5.",
+    "source_url": "https://ai.google.dev/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "gemini-2.5-pro": {
+    "id": "gemini-2.5-pro",
+    "name": "Gemini 2.5 Pro",
+    "family": "google",
+    "provider": "google",
+    "context_window": 2000000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image",
+      "audio",
+      "video"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 1.25,
+      "output_cost": 5.0,
+      "cache_read": 0.3125,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "multimodal",
+      "reasoning",
+      "2m_context",
+      "tools"
+    ],
+    "description": "Modèle avancé pour raisonnement complexe et fenêtre de 2 millions de tokens.",
+    "source_url": "https://ai.google.dev/pricing",
+    "last_verified": "2026-11-06"
+  },
+  "gemini-2.5-flash-lite": {
+    "id": "gemini-2.5-flash-lite",
+    "name": "Gemini 2.5 Flash Lite",
+    "family": "google",
+    "provider": "google",
+    "context_window": 1000000,
+    "max_output_tokens": 8192,
+    "modalities_in": [
+      "text",
+      "image",
+      "audio",
+      "video"
+    ],
+    "modalities_out": [
+      "text"
+    ],
+    "pricing": {
+      "input_cost": 0.075,
+      "output_cost": 0.3,
+      "cache_read": 0.01875,
+      "cache_write": null,
+      "unit": "1M tokens"
+    },
+    "features": [
+      "ultrafast",
+      "economic",
+      "multimodal",
+      "tools"
+    ],
+    "description": "Modèle ultra économique et rapide Gemini 2.5 Flash Lite.",
+    "source_url": "https://ai.google.dev/pricing",
+    "last_verified": "2026-11-06"
+  }
+}

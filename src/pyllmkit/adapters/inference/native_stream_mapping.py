@@ -192,7 +192,7 @@ class NativeStreamDecoder:
         delta = ""
         if contents is not None:
             part = _one(_dict(contents).get("parts"))
-            if _dict(contents).get("role") != "model" or set(part) != {"text"}:
+            if _dict(contents).get("role") != "model" or set(part) - {"text", "thoughtSignature"}:
                 raise InvocationPortError("unsupported_provider_output")
             delta = self._append(_str(part["text"]))
         if any(cand.get(k) not in (None, [], {}) for k in (
@@ -366,7 +366,7 @@ class NativeStreamDecoder:
                 raise InvocationPortError("provider_protocol_error")
             stop_delta = _dict(frame.get("delta"))
             if (
-                set(stop_delta) - {"stop_reason", "stop_sequence"}
+                set(stop_delta) - {"stop_reason", "stop_sequence", "stop_details", "container"}
                 or stop_delta.get("stop_sequence") not in (None, "")
             ):
                 raise InvocationPortError("unsupported_provider_output")

@@ -141,7 +141,11 @@ def decode_gemini_response(raw: bytes, prepared: PreparedInvocation) -> Inferenc
     if type(parts) is not list or len(parts) != 1:
         raise InvocationPortError("unsupported_provider_output")
     part = parts[0]
-    if type(part) is not dict or set(part) != {"text"} or type(part.get("text")) is not str:
+    if (
+        type(part) is not dict
+        or set(part) - {"text", "thoughtSignature"}
+        or type(part.get("text")) is not str
+    ):
         raise InvocationPortError("unsupported_provider_output")
     if any(candidate.get(k) not in (None, [], {}) for k in (
         "citationMetadata", "groundingMetadata", "urlContextMetadata",

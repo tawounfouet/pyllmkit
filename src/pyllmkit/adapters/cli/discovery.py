@@ -146,8 +146,10 @@ def fetch_provider_models(
             results = []
             for item in items:
                 name = item.get("name", "")
-                if ":" in name:
-                    name = name.split(":")[0]
+                if not name:
+                    continue
+                if name.endswith(":latest"):
+                    name = name[:-7]
                 if name and name not in results:
                     results.append(name)
             return sorted(results)

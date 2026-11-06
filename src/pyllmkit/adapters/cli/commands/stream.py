@@ -21,11 +21,12 @@ from pyllmkit.domain.interactions import Content, Message, Role, TextContent
 from pyllmkit.domain.models import ModelId
 from pyllmkit.domain.registry.selection import DeploymentResolutionError
 
-from ..catalog import create_reference_catalog
+from ..catalog import create_reference_catalog, resolve_provider_for_model
 from ..config import get_config
 from ..console import console
 from ..formatting.errors import build_error_panel
 from ..formatting.live_stream import aconsume_and_render_stream
+from ..formatting.panels import build_stream_usage_panel
 from ..service import create_cli_async_streaming_service
 
 
@@ -125,12 +126,12 @@ def stream_command(
             from ..storage import RunRecord, SqliteRunStore
 
             store = SqliteRunStore()
-            deployment = catalog.deployments.get(session.prepared.resolution.deployment.id)
-            prov_name = (
-                deployment.provider_id.value
-                if deployment and deployment.provider_id
-                else ("ollama" if "llama" in model else "openai")
+            deployment = (
+                catalog.deployments.get(session.prepared.resolution.deployment.id)
+                if session and session.prepared and session.prepared.resolution
+                else None
             )
+            prov_name = resolve_provider_for_model(catalog, model, deployment=deployment)
             in_tok = summary.usage.input_tokens if summary.usage else None
             out_tok = summary.usage.output_tokens if summary.usage else None
             tot_tok = summary.usage.total_tokens if summary.usage else None
@@ -174,6 +175,22 @@ def stream_command(
             store.record_run(rec)
         except Exception:
             pass
+
+        if summary.exit_code == 0:
+            usage_panel = build_stream_usage_panel(
+                run_id=session.run_id.value,
+                duration_ms=summary.duration_ms,
+                finish_reason=summary.finish_reason,
+                in_tokens=in_tok,
+                out_tokens=out_tok,
+                cached_tokens=cached_tok,
+                reasoning_tokens=reas_tok,
+                ttft_ms=summary.ttft_ms,
+                model_name=model,
+                provider_name=prov_name,
+                exit_code=summary.exit_code,
+            )
+            console.print(usage_panel)
 
         if summary.exit_code != 0:
             raise typer.Exit(code=summary.exit_code)

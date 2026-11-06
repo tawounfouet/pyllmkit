@@ -20,7 +20,7 @@ from pyllmkit.domain.interactions import Content, Message, Role, TextContent
 from pyllmkit.domain.models import ModelId
 from pyllmkit.domain.registry.selection import DeploymentResolutionError
 
-from ..catalog import create_reference_catalog
+from ..catalog import create_reference_catalog, resolve_provider_for_model
 from ..config import get_config
 from ..console import console
 from ..formatting.errors import build_error_panel
@@ -115,24 +115,11 @@ def run_command(
     try:
         snapshot = _build_support_snapshot(request)
         execution = service.invoke(request, support_snapshot=snapshot)
-        if execution.run.failure is not None:
-            panel = build_error_panel(
-                execution.run.failure.code,
-                None,
-                execution.run.run_id.value,
-            )
-            console.print(panel)
-            raise typer.Exit(code=1)
-
-        console.print(build_response_panel(execution, model))
-        console.print(build_usage_panel(execution))
 
         # Enregistrement silencieux dans l'historique local pour FinOps / Evals / Observabilité
         try:
             from datetime import UTC, datetime
-
-            from pyllmkit.domain.inference import DeploymentId
-
+            import json
 
             store = SqliteRunStore()
             dur_ms = None
@@ -158,22 +145,18 @@ def run_command(
                     tot_tok = execution.response.usage.total_tokens
                     cached_tok = execution.response.usage.cached_input_tokens
                     reas_tok = execution.response.usage.reasoning_tokens
+            elif execution.run.failure is not None:
+                finish = execution.run.failure.code
+
             created = (
                 execution.run.started_at
                 or execution.run.finished_at
                 or datetime.now(UTC)
             ).isoformat()
 
-            deployment = catalog.deployments.get(DeploymentId(f"dep-{model}"))
-            prov_name = (
-                deployment.provider_id.value
-                if deployment and deployment.provider_id
-                else ("ollama" if "llama" in model else "openai")
-            )
+            prov_name = resolve_provider_for_model(catalog, model)
 
             # Formatage de l'échange complet au standard ChatML / OpenAI JSONL pour Fine-Tuning
-            import json
-
             messages_payload = [
                 {
                     "role": m.role.value,
@@ -211,6 +194,17 @@ def run_command(
         except Exception:
             pass
 
+        if execution.run.failure is not None:
+            panel = build_error_panel(
+                execution.run.failure.code,
+                None,
+                execution.run.run_id.value,
+            )
+            console.print(panel)
+            raise typer.Exit(code=1)
+
+        console.print(build_response_panel(execution, model))
+        console.print(build_usage_panel(execution, model_name=model, provider_name=prov_name))
     except (InvocationPortError, InvocationPreconditionError) as exc:
         panel = build_error_panel(exc.code)
         console.print(panel)

@@ -5,6 +5,7 @@ from collections.abc import Sequence
 from rich import box
 from rich.table import Table
 
+from pyllmkit.adapters.cli.model_specs import get_model_spec
 from pyllmkit.domain.deployments import Deployment, DeploymentStatus
 from pyllmkit.domain.models import Model
 
@@ -99,43 +100,86 @@ def build_providers_table() -> Table:
     return table
 
 
-def build_models_table(models: Sequence[Model]) -> Table:
-    """Build a styled Rich table of declared Model entities."""
+def _format_tokens(num: int) -> str:
+    """Format token count into compact human readable string (e.g. 1M, 128K, 32K)."""
+    known_powers = {
+        1_048_576: "1M",
+        2_097_152: "2M",
+        65_536: "64K",
+        32_768: "32K",
+        16_384: "16K",
+        8_192: "8K",
+        4_096: "4K",
+    }
+    if num in known_powers:
+        return known_powers[num]
+    if num >= 1_000_000:
+        return f"{num / 1_000_000:.1f}M".replace(".0M", "M")
+    if num >= 1_000:
+        return f"{num / 1_000:.0f}K"
+    return str(num)
+
+
+def build_models_table(models: Sequence[Model], show_pricing: bool = False) -> Table:
+    """Build a styled Rich table of declared Model entities with optional pricing."""
+    title = "Catalogue des modèles logiques (Spécifications & Tarifs)" if show_pricing else "Catalogue des modèles logiques"
     table = Table(
-        title="Catalogue des modèles logiques",
+        title=title,
         box=box.ROUNDED,
         header_style="bold cyan",
         title_style="bold blue",
     )
     table.add_column("Identifiant (ModelId)", style="bold white")
     table.add_column("Famille", style="dim")
-    table.add_column("Capacités", style="green")
-    table.add_column("Modalités In", style="yellow")
-    table.add_column("Modalités Out", style="cyan")
+
+    if show_pricing:
+        table.add_column("Contexte", justify="right", style="cyan")
+        table.add_column("In / 1M", justify="right", style="green")
+        table.add_column("Out / 1M", justify="right", style="yellow")
+        table.add_column("Cache R", justify="right", style="dim")
+        table.add_column("Cache W", justify="right", style="dim")
+    else:
+        table.add_column("Capacités", style="green")
+        table.add_column("Modalités In", style="yellow")
+        table.add_column("Modalités Out", style="cyan")
 
     if not models:
-        table.add_row("[dim]Aucun modèle déclaré[/dim]", "-", "-", "-", "-")
+        empty_cols = ["-"] * (6 if show_pricing else 4)
+        table.add_row("[dim]Aucun modèle déclaré[/dim]", *empty_cols)
         return table
 
     for m in models:
-        caps = ", ".join(cap.id.value for cap in m.capabilities) if m.capabilities else "standard"
-        in_modes = (
-            ", ".join(mod.value for mod in m.modalities.input_modalities)
-            if m.modalities and m.modalities.input_modalities
-            else "text"
-        )
-        out_modes = (
-            ", ".join(mod.value for mod in m.modalities.output_modalities)
-            if m.modalities and m.modalities.output_modalities
-            else "text"
-        )
-        table.add_row(
-            m.id.value,
-            m.identity.family.value if m.identity and m.identity.family else "-",
-            caps,
-            in_modes,
-            out_modes,
-        )
+        fam = m.identity.family.value if m.identity and m.identity.family else "-"
+        if show_pricing:
+            spec = get_model_spec(m.id.value)
+            if spec:
+                ctx_str = _format_tokens(spec.context_window)
+                in_cost = f"${spec.pricing.input_cost:.2f}"
+                out_cost = f"${spec.pricing.output_cost:.2f}"
+                cr = f"${spec.pricing.cache_read:.2f}" if spec.pricing.cache_read is not None else "-"
+                cw = f"${spec.pricing.cache_write:.2f}" if spec.pricing.cache_write is not None else "-"
+                table.add_row(m.id.value, fam, ctx_str, in_cost, out_cost, cr, cw)
+            else:
+                table.add_row(m.id.value, fam, "-", "-", "-", "-", "-")
+        else:
+            caps = ", ".join(cap.id.value for cap in m.capabilities) if m.capabilities else "standard"
+            in_modes = (
+                ", ".join(mod.value for mod in m.modalities.input_modalities)
+                if m.modalities and m.modalities.input_modalities
+                else "text"
+            )
+            out_modes = (
+                ", ".join(mod.value for mod in m.modalities.output_modalities)
+                if m.modalities and m.modalities.output_modalities
+                else "text"
+            )
+            table.add_row(
+                m.id.value,
+                fam,
+                caps,
+                in_modes,
+                out_modes,
+            )
     return table
 
 

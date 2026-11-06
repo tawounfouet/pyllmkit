@@ -855,7 +855,12 @@ def test_anthropic_stream_uses_native_initial_text_and_cumulative_usage() -> Non
         "type": "content_block_stop", "index": 0,
     }) == ""
     assert decoder.push("message_delta", {
-        "type": "message_delta", "delta": {"stop_reason": "end_turn"},
+        "type": "message_delta", "delta": {
+            "stop_reason": "end_turn",
+            "stop_sequence": None,
+            "stop_details": None,
+            "container": None,
+        },
         "usage": {"output_tokens": 4},
     }) == ""
     assert decoder.push("message_stop", {"type": "message_stop"}) == ""

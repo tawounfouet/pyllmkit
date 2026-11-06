@@ -154,8 +154,7 @@ def test_xai_responses_request_privacy_golden_and_usage() -> None:
         assert payload == {
             "model":ALIAS,
             "input":[{"role":"user","content":"Bonjour"}],
-            "store":False,"stream":False,"background":False,
-            "tools":[],"tool_choice":"none","parallel_tool_calls":False,
+            "store":False,"stream":False,
             "truncation":"disabled","text":{"format":{"type":"text"}},
         }
         return reply()

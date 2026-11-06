@@ -11,6 +11,7 @@ from rich.table import Table
 from ..config import get_config
 from ..console import console
 from ..formatting.errors import build_error_panel
+from ..model_specs import compute_run_cost
 from ..storage import SqliteRunStore
 
 runs_app = typer.Typer(
@@ -44,6 +45,7 @@ def runs_list(
     table.add_column("Finish", style="yellow")
     table.add_column("Durée (ms)", justify="right")
     table.add_column("Tokens", justify="right")
+    table.add_column("Coût", justify="right", style="green")
     table.add_column("Date (UTC)", style="dim")
 
     for rec in records:
@@ -52,6 +54,19 @@ def runs_list(
         in_t = str(rec.input_tokens) if rec.input_tokens is not None else "-"
         out_t = str(rec.output_tokens) if rec.output_tokens is not None else "-"
         tokens_str = f"{in_t} / {out_t}"
+
+        tot_cost, _ = compute_run_cost(
+            rec.model_id,
+            rec.input_tokens,
+            rec.output_tokens,
+            cached_tokens=rec.cached_tokens,
+        )
+        if tot_cost is not None:
+            cost_cell = f"${tot_cost:.5f}" if tot_cost > 0 else "$0.00"
+        elif rec.input_tokens is not None or rec.output_tokens is not None:
+            cost_cell = "N/A"
+        else:
+            cost_cell = "-"
 
         table.add_row(
             rec.run_id[:12] + "...",
@@ -62,6 +77,7 @@ def runs_list(
             rec.finish_reason or "-",
             dur_str,
             tokens_str,
+            cost_cell,
             rec.created_at[:19],
         )
 
@@ -125,6 +141,17 @@ def runs_inspect(
         details.append(f"[bold]Cached Tokens :[/bold] [green]{record.cached_tokens}[/green]")
     if record.reasoning_tokens is not None:
         details.append(f"[bold]Reasoning Tok.:[/bold] [magenta]{record.reasoning_tokens}[/magenta]")
+
+    _, cost_str = compute_run_cost(
+        record.model_id,
+        record.input_tokens,
+        record.output_tokens,
+        cached_tokens=record.cached_tokens,
+    )
+    if cost_str != "-":
+        details.append(f"[bold]Coût estimé   :[/bold] [bold green]{cost_str}[/bold green]")
+    elif record.input_tokens is not None or record.output_tokens is not None:
+        details.append("[bold]Coût estimé   :[/bold] [dim]N/A (modèle hors catalogue tarifaire)[/dim]")
 
     # Section Hyperparamètres (Evals)
     gen_parts = []

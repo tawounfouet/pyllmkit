@@ -50,10 +50,6 @@ def encode_xai_responses_request(prepared: PreparedInvocation) -> bytes:
         "input": messages,
         "store": False,
         "stream": False,
-        "background": False,
-        "tools": [],
-        "tool_choice": "none",
-        "parallel_tool_calls": False,
         "truncation": "disabled",
         "text": {"format": {"type": "text"}},
     }
@@ -138,10 +134,18 @@ def decode_xai_responses_response(
         if type(details) is not dict:
             raise InvocationPortError("provider_protocol_error")
         input_tokens = _count(details.get("prompt_tokens"))
+        if input_tokens is None:
+            input_tokens = _count(details.get("input_tokens"))
         output_tokens = _count(details.get("completion_tokens"))
+        if output_tokens is None:
+            output_tokens = _count(details.get("output_tokens"))
         total = _count(details.get("total_tokens"))
         cached = _nested_count(details.get("prompt_tokens_details"), "cached_tokens")
+        if cached is None:
+            cached = _nested_count(details.get("input_tokens_details"), "cached_tokens")
         reasoning = _nested_count(details.get("completion_tokens_details"), "reasoning_tokens")
+        if reasoning is None:
+            reasoning = _nested_count(details.get("output_tokens_details"), "reasoning_tokens")
         if any(x is not None for x in (input_tokens, output_tokens, total, cached, reasoning)):
             usage = Usage(
                 input_tokens=input_tokens, output_tokens=output_tokens,

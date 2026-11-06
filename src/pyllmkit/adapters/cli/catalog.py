@@ -159,3 +159,43 @@ def create_reference_catalog() -> InMemoryCatalog:
             )
 
     return catalog
+
+
+def resolve_provider_for_model(
+    catalog: InMemoryCatalog,
+    model_name: str,
+    deployment: Deployment | None = None,
+) -> str:
+    """Resolve the canonical provider identifier (e.g. ollama, openai, anthropic, etc.)."""
+    dep = deployment
+    if dep is None:
+        dep = catalog.deployments.get(DeploymentId(f"dep-{model_name}"))
+    if dep is None:
+        for candidate in catalog.deployments.list():
+            if candidate.model_id.value == model_name:
+                dep = candidate
+                break
+
+    if dep is not None:
+        if dep.provider_id is not None:
+            return dep.provider_id.value
+        if dep.runtime == "ollama":
+            return "ollama"
+
+    # Modèles taggés avec tag version / quant (ex: mistral:7b-instruct, llama3.2:3b)
+    if ":" in model_name or model_name.startswith("ollama"):
+        return "ollama"
+
+    for item in load_discovered_models():
+        if item.get("id") == model_name:
+            prov = item.get("provider")
+            if prov:
+                return prov
+
+    from pyllmkit.adapters.cli.model_specs import get_model_spec
+
+    spec = get_model_spec(model_name)
+    if spec is not None and spec.provider:
+        return spec.provider
+
+    return "openai"
