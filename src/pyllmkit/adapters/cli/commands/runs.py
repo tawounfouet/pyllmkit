@@ -190,14 +190,26 @@ def runs_export(
         int,
         typer.Option("--limit", "-n", help="Nombre maximum de runs à exporter"),
     ] = 1000,
+    allow_content_export: Annotated[
+        bool,
+        typer.Option(
+            "--allow-content-export",
+            help="Consentement explicite avant l'export de conversations sensibles",
+        ),
+    ] = False,
 ) -> None:
-    """Exporter les runs archivés au standard ChatML JSONL (OpenAI, HuggingFace, Axolotl, Unsloth)."""
+    """Exporter les seuls runs dont le contenu a été volontairement enregistré."""
+    if not allow_content_export:
+        console.print("[red]Export refusé : préciser --allow-content-export.[/red]")
+        raise typer.Exit(code=1)
     store = SqliteRunStore()
     records = store.list_runs(limit=limit)
     if model:
         records = [r for r in records if r.model_id == model]
 
-    valid_records = [r for r in records if r.state == "completed" and r.response_text]
+    valid_records = [
+        r for r in records if r.content_stored and r.state == "completed" and r.response_text
+    ]
 
     lines = []
     for r in valid_records:
@@ -212,11 +224,40 @@ def runs_export(
         output = cfg.storage.export_dir / f"export_{stamp}.jsonl"
 
     if output is not None:
-        output.parent.mkdir(parents=True, exist_ok=True)
+        import os
+
+        output.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
         output.write_text("\n".join(lines) + ("\n" if lines else ""), encoding="utf-8")
+        os.chmod(output, 0o600)
         console.print(
             f"[bold green]✓[/bold green] {len(lines)} exemple(s) exporté(s) avec succès dans [bold cyan]{output}[/bold cyan]"
         )
     else:
         for line in lines:
-            console.print(line)
+            console.print(line, markup=False)
+
+
+@runs_app.command(name="purge-content", help="Effacer les données sensibles de l'historique existant.")
+def runs_purge_content(
+    yes: Annotated[
+        bool,
+        typer.Option("--yes", help="Confirmer la suppression irréversible des contenus"),
+    ] = False,
+    run_id: Annotated[
+        str | None,
+        typer.Option("--run-id", help="Limiter l'effacement à une exécution"),
+    ] = None,
+) -> None:
+    """Supprimer les prompts, réponses et messages, y compris ceux d'anciennes versions."""
+    if not yes:
+        console.print("[red]Confirmer la suppression irréversible avec --yes.[/red]")
+        raise typer.Exit(code=1)
+    count = SqliteRunStore().purge_content(run_id)
+    console.print(f"[green]{count} run(s) expurgé(s).[/green]")
+
+
+@runs_app.command(name="purge-expired", help="Effacer les exécutions dépassant la rétention.")
+def runs_purge_expired() -> None:
+    """Appliquer la rétention paramétrée par PYLLMKIT_HISTORY_RETENTION_DAYS."""
+    count = SqliteRunStore().purge_expired()
+    console.print(f"[green]{count} run(s) expiré(s) supprimé(s).[/green]")
