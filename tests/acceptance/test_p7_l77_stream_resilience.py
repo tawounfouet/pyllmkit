@@ -255,3 +255,48 @@ def test_async_total_deadline_closes_trickling_stream() -> None:
     assert isinstance(events[-1], ResponseFailed)
     assert events[-1].reason_code == "provider_timeout"
     assert stream.closed is True
+
+
+def test_sync_cancellation_race_after_native_next_is_fail_closed() -> None:
+    run = InferenceRunId("sync-race")
+    signal = StreamCancellationSignal()
+
+    def source():
+        signal.cancel()  # Event arrives after pre-read check, before public emission.
+        yield ResponseStarted(run_id=run, sequence=0)
+        yield ResponseCompleted(run_id=run, sequence=1)
+
+    events = list(iter_resilient(source, run, signal))
+    assert [type(item) for item in events] == [ResponseStarted, ResponseCancelled]
+    assert [item.sequence for item in events] == [0, 1]
+
+
+def test_async_cancellation_race_after_native_next_is_fail_closed() -> None:
+    run = InferenceRunId("async-race")
+    signal = StreamCancellationSignal()
+
+    async def source():
+        signal.cancel()
+        yield ResponseStarted(run_id=run, sequence=0)
+        yield ResponseCompleted(run_id=run, sequence=1)
+
+    async def run_race() -> list[object]:
+        return [item async for item in aiter_resilient(source, run, signal)]
+
+    events = asyncio.run(run_race())
+    assert [type(item) for item in events] == [ResponseStarted, ResponseCancelled]
+    assert [item.sequence for item in events] == [0, 1]
+
+
+@pytest.mark.parametrize("provider", PROVIDERS)
+def test_async_success_after_resilience_wrapper_preserves_terminal(provider: str) -> None:
+    _, async_service, request, snapshot = service(provider)
+    session = async_service.open_astream(request, snapshot)
+
+    async def collect() -> list[object]:
+        return [item async for item in session]
+
+    events = asyncio.run(collect())
+    assert isinstance(events[-1], ResponseCompleted)
+    assert all(item.run_id == session.run_id for item in events)
+    assert [item.sequence for item in events] == list(range(len(events)))
