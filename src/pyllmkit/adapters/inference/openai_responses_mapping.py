@@ -90,12 +90,7 @@ def decode_openai_responses_response(raw: bytes, prepared: PreparedInvocation) -
     """Require one completed assistant text, never suppress unsupported output."""
     if type(raw) is not bytes or type(prepared) is not PreparedInvocation:
         raise InvocationPortError("provider_protocol_error")
-    try:
-        payload = decode_provider_json_object(raw)
-    except (UnicodeError, ValueError, TypeError, RecursionError):
-        raise InvocationPortError("provider_protocol_error") from None
-    if type(payload) is not dict:
-        raise InvocationPortError("provider_protocol_error")
+    payload = decode_provider_json_object(raw)
     status = payload.get("status")
     if status != "completed":
         if status in ("incomplete", "failed", "cancelled", "queued", "in_progress"):
