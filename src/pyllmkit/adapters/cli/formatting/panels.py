@@ -2,7 +2,7 @@
 
 from rich.panel import Panel
 
-from pyllmkit.adapters.cli.model_specs import ModelSpec, compute_run_cost
+from pyllmkit.adapters.cli.model_specs import ModelSpec, compute_run_cost, pricing_provenance
 from pyllmkit.application.inference.contracts import InferenceExecution
 
 
@@ -105,6 +105,7 @@ def build_usage_panel(
         )
         if cost_str != "-":
             stats.append(f"[bold]Coût estimé   :[/bold] [bold green]{cost_str}[/bold green]")
+            stats.append(f"[dim]{pricing_provenance(resolved_model)}[/dim]")
         elif in_tokens is not None or out_tokens is not None:
             stats.append("[bold]Coût estimé   :[/bold] [dim]N/A (modèle hors catalogue tarifaire)[/dim]")
 
@@ -186,6 +187,7 @@ def build_stream_usage_panel(
         )
         if cost_str != "-":
             stats.append(f"[bold]Coût estimé   :[/bold] [bold green]{cost_str}[/bold green]")
+            stats.append(f"[dim]{pricing_provenance(model_name)}[/dim]")
         elif in_tokens is not None or out_tokens is not None:
             stats.append("[bold]Coût estimé   :[/bold] [dim]N/A (modèle hors catalogue tarifaire)[/dim]")
 
@@ -221,7 +223,7 @@ def build_model_inspect_panel(spec: ModelSpec) -> Panel:
         f"[bold]Modalités In/Out  :[/bold] [yellow]{in_modes}[/yellow] -> [cyan]{out_modes}[/cyan]",
         f"[bold]Fonctionnalités  :[/bold] [magenta]{features_str}[/magenta]",
         "",
-        "[bold underline]Tarification standard (par 1M tokens) :[/bold underline]",
+        "[bold underline]Tarification indicative, catalogue local (non vérifiée en temps réel) :[/bold underline]",
         f"  - [bold]Input Tokens  :[/bold] [green]${spec.pricing.input_cost:.2f}[/green]",
         f"  - [bold]Output Tokens :[/bold] [yellow]${spec.pricing.output_cost:.2f}[/yellow]",
         f"  - [bold]Cache Read    :[/bold] [dim]{cr_str}[/dim]",
@@ -253,6 +255,8 @@ def build_model_inspect_panel(spec: ModelSpec) -> Panel:
             "[bold underline]Description & Rôle :[/bold underline]",
             f"  {spec.description}",
         ])
+
+    lines.append(f"  - [dim]{pricing_provenance(spec.id)}[/dim]")
 
     if spec.source_url or spec.last_verified:
         lines.extend([
