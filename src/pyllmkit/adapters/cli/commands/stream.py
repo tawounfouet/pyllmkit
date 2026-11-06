@@ -1,6 +1,8 @@
 """Typer command for streaming text inference (stream)."""
 
 import asyncio
+import json
+from datetime import UTC, datetime
 from typing import Annotated
 
 import typer
@@ -28,6 +30,7 @@ from ..formatting.errors import build_error_panel
 from ..formatting.live_stream import aconsume_and_render_stream
 from ..formatting.panels import build_stream_usage_panel
 from ..service import create_cli_async_streaming_service
+from ..storage import RunRecord, SqliteRunStore
 
 
 def _build_support_snapshot(request: InferenceRequest) -> GenerationSupportSnapshot | None:
@@ -78,11 +81,17 @@ def stream_command(
         bool,
         typer.Option("--mock/--live", help="Exécution simulée hors ligne (par défaut: simulation)"),
     ] = True,
+    store_content: Annotated[
+        bool,
+        typer.Option(
+            "--store-content",
+            help="Consentement explicite pour conserver prompts, instruction et réponse en SQLite",
+        ),
+    ] = False,
 ) -> None:
     """Consommer une inférence en direct avec affichage incrémental (streaming)."""
     cfg = get_config()
-    if mock and cfg.defaults.live:
-        mock = False
+    # A configuration default must never silently opt a mock command into live networking.
     if model == "gpt-4o" and cfg.defaults.model:
         model = cfg.defaults.model
     if system is None and cfg.defaults.system_prompt:
@@ -120,12 +129,7 @@ def stream_command(
 
         # Enregistrement dans l'historique local pour FinOps / Evals / Observabilité
         try:
-            import json
-            from datetime import UTC, datetime
-
-            from ..storage import RunRecord, SqliteRunStore
-
-            store = SqliteRunStore()
+            store = SqliteRunStore(store_content=store_content)
             deployment = (
                 catalog.deployments.get(session.prepared.resolution.deployment.id)
                 if session and session.prepared and session.prepared.resolution
