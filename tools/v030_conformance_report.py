@@ -208,6 +208,8 @@ def main() -> int:
         records = _records(junit)
     except (ET.ParseError, FileNotFoundError, ValueError):
         records = []
+    # JUnit may contain exception tracebacks or fixture values. Never archive it.
+    junit.unlink(missing_ok=True)
     errors = _verify(records, completed.returncode)
     data: dict[str, object] = {
         "schema_version": "v030-conformance-evidence-v1",
