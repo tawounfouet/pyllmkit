@@ -16,7 +16,7 @@
 - [ ] Python 3.11, 3.12, 3.13, Ruff, mypy strict, wheel/sdist and examples pass.
 - [ ] New L7.7 test suite passes, including 6 x sync cancellation, 6 x async
   cancellation, premature EOF, and asynchronous cancellation during HTTP I/O.
-- [ ] Branch coverage gate for `streaming_resilience` >=85%.
+- [ ] Branch coverage gate for `streaming_resilience` >=95%.
 - [ ] Independent technical reviewer validates M5 protocol compatibility,
   RunId consistency, terminality and no stream replay.
 - [ ] Independent security reviewer assesses timeout assumptions and safe
