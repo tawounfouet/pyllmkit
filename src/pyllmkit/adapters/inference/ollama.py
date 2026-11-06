@@ -101,7 +101,10 @@ class OllamaAdapter:
     _test_transport: object | None = field(default=None, repr=False, compare=False)
 
     def __post_init__(self) -> None:
-        if type(self.config) is not ProviderConnectionConfig:
+        if (
+            type(self.config) is not ProviderConnectionConfig
+            or self.config.profile is not ProviderProfile.OLLAMA
+        ):
             raise InvocationPortError("adapter_connection_invalid")
         if type(self.allow_live) is not bool:
             raise InvocationPortError("live_authorization_invalid")
@@ -144,7 +147,10 @@ class AsyncOllamaAdapter:
     _test_transport: object | None = field(default=None, repr=False, compare=False)
 
     def __post_init__(self) -> None:
-        if type(self.config) is not ProviderConnectionConfig:
+        if (
+            type(self.config) is not ProviderConnectionConfig
+            or self.config.profile is not ProviderProfile.OLLAMA
+        ):
             raise InvocationPortError("adapter_connection_invalid")
         if type(self.allow_live) is not bool:
             raise InvocationPortError("live_authorization_invalid")
