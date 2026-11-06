@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collections.abc import AsyncIterator, Iterator, Mapping
 from dataclasses import dataclass, field
+from threading import Lock
 
 from pyllmkit.application.inference.contracts import (
     InvocationOptions,
@@ -30,18 +31,36 @@ from pyllmkit.protocols.inference import (
 )
 
 
+class _OneShot:
+    """Prevent replaying a paid network invocation with one logical RunId."""
+
+    __slots__ = ("_lock", "_claimed")
+
+    def __init__(self) -> None:
+        self._lock = Lock()
+        self._claimed = False
+
+    def claim(self) -> None:
+        with self._lock:
+            if self._claimed:
+                raise InvocationPreconditionError("stream_session_already_consumed")
+            self._claimed = True
+
+
 @dataclass(frozen=True, slots=True)
 class StreamingSession:
     """Single-use lazily consumed live stream, exposing the allocated RunId."""
 
     prepared: PreparedInvocation = field(repr=False)
     adapter: PreparedStreamingPort = field(repr=False)
+    _one_shot: _OneShot = field(default_factory=_OneShot, repr=False, compare=False)
 
     @property
     def run_id(self) -> InferenceRunId:
         return self.prepared.context.run_id
 
     def __iter__(self) -> Iterator[StreamEvent]:
+        self._one_shot.claim()
         return self.adapter.stream_prepared(self.prepared)
 
 
@@ -51,12 +70,14 @@ class AsyncStreamingSession:
 
     prepared: PreparedInvocation = field(repr=False)
     adapter: AsyncPreparedStreamingPort = field(repr=False)
+    _one_shot: _OneShot = field(default_factory=_OneShot, repr=False, compare=False)
 
     @property
     def run_id(self) -> InferenceRunId:
         return self.prepared.context.run_id
 
     def __aiter__(self) -> AsyncIterator[StreamEvent]:
+        self._one_shot.claim()
         return self.adapter.astream_prepared(self.prepared)
 
 

@@ -229,12 +229,27 @@ class NativeProviderStreamingAdapter:
         if not self.allow_live:
             raise InvocationPortError("live_authorization_required")
         target, body = _native_payload(self.config.profile, prepared)
+        deployment = prepared.resolution.deployment
         if self.config.profile is ProviderProfile.OLLAMA:
+            if (
+                deployment.runtime != "ollama"
+                or (
+                    deployment.provider_id is not None
+                    and deployment.provider_id.value != "ollama"
+                )
+            ):
+                raise InvocationPortError("adapter_connection_invalid")
             from pyllmkit.adapters.inference.ollama import _preflight
             _preflight(prepared, self.config)
             target = self.config.endpoint_url
             key = None
         else:
+            if (
+                prepared.context.provider_id is None
+                or prepared.context.provider_id.value != self.config.profile.value
+                or deployment.runtime != "cloud"
+            ):
+                raise InvocationPortError("adapter_connection_invalid")
             base = _CLOUD_BASE[self.config.profile]
             if self.config.profile is ProviderProfile.GOOGLE:
                 import re
