@@ -504,3 +504,133 @@ def test_registered_ports_refuse_raw_non_prepared_input() -> None:
         sync.invoke("raw")  # type: ignore[arg-type]
     with pytest.raises(TypeError, match="prepared_invocation_required"):
         asyncio.run(async_port.ainvoke("raw"))  # type: ignore[arg-type]
+
+
+def test_security_configuration_rejects_bad_sources_and_reference_maps() -> None:
+    reference = CredentialRef("primary")
+    with pytest.raises(SecurityConfigurationError, match="credential_mapping_invalid"):
+        EnvCredentialResolver(None)  # type: ignore[arg-type]
+    with pytest.raises(SecurityConfigurationError, match="credential_mapping_invalid"):
+        EnvCredentialResolver({"primary": "OPENAI_API_KEY"})  # type: ignore[dict-item]
+    with pytest.raises(SecurityConfigurationError, match="credential_mapping_invalid"):
+        EnvCredentialResolver({reference: "lowercase"})
+    with pytest.raises(SecurityConfigurationError, match="credential_source_invalid"):
+        EnvCredentialResolver({reference: "OPENAI_API_KEY"}, environ=17)  # type: ignore[arg-type]
+    resolver = EnvCredentialResolver({reference: "OPENAI_API_KEY"}, environ={})
+    with pytest.raises(CredentialResolutionError, match="invalid_credential_reference"):
+        resolver.resolve("primary")  # type: ignore[arg-type]
+
+
+@pytest.mark.parametrize("value", ("", None, 5, False))
+def test_secret_value_refuses_nonsecret_payload(value: object) -> None:
+    with pytest.raises(CredentialResolutionError, match="credential_unavailable"):
+        SecretValue(value)  # type: ignore[arg-type]
+
+
+def test_connection_config_refuses_wrong_types_without_exposing_payloads() -> None:
+    from pyllmkit.adapters.inference import SecurityConfigurationError as SecurityError
+
+    with pytest.raises(SecurityError, match="provider_profile_invalid"):
+        ProviderConnectionConfig("openai", "https://api.openai.com/v1/responses")  # type: ignore[arg-type]
+    for bad in ("", None, True):
+        with pytest.raises(SecurityError, match="endpoint_not_approved"):
+            ProviderConnectionConfig(ProviderProfile.OPENAI, bad)  # type: ignore[arg-type]
+    cloud = ProviderConnectionConfig.openai(CredentialRef("ok"))
+    with pytest.raises(SecurityError, match="local_authorization_invalid"):
+        replace(cloud, allow_local="yes")
+    with pytest.raises(SecurityError, match="credential_reference_invalid"):
+        replace(cloud, credential_ref="raw")
+    with pytest.raises(SecurityError, match="local_authorization_invalid"):
+        replace(cloud, allow_local=True)
+    for bad in (False, 0, "false"):
+        with pytest.raises(SecurityError, match="tls_verification_required"):
+            replace(cloud, verify_tls=bad)
+    with pytest.raises(SecurityError, match="redirects_forbidden"):
+        replace(cloud, follow_redirects="false")
+    with pytest.raises(SecurityError, match="timeout_invalid"):
+        replace(cloud, timeout_seconds=True)
+    with pytest.raises(SecurityError, match="timeout_invalid"):
+        replace(cloud, timeout_seconds=float("inf"))
+
+
+def test_anthropic_strict_destination_and_credential_requirements() -> None:
+    valid = ProviderConnectionConfig.anthropic(CredentialRef("primary"))
+    with pytest.raises(SecurityConfigurationError, match="endpoint_not_approved"):
+        replace(valid, endpoint_url="https://api.anthropic.com:443/v1/messages")
+    with pytest.raises(SecurityConfigurationError, match="credential_reference_required"):
+        replace(valid, credential_ref=None)
+    with pytest.raises(SecurityConfigurationError, match="local_authorization_invalid"):
+        replace(valid, allow_local=True)
+
+
+def test_local_canonical_url_rejects_padded_port_and_nonbool_ipv6() -> None:
+    with pytest.raises(SecurityConfigurationError, match="endpoint_not_approved"):
+        ProviderConnectionConfig(
+            ProviderProfile.OLLAMA,
+            "http://127.0.0.1:011434/api/chat",
+            allow_local=True,
+        )
+    with pytest.raises(SecurityConfigurationError, match="endpoint_not_approved"):
+        ProviderConnectionConfig.ollama_local(ipv6="true")  # type: ignore[arg-type]
+
+
+def test_registry_rejects_wrong_registration_key_and_type() -> None:
+    from pyllmkit.adapters.inference.registry import AdapterKey as Key
+
+    with pytest.raises(AdapterRegistryError, match="adapter_key_invalid"):
+        Key(provider_id="openai")  # type: ignore[arg-type]
+    with pytest.raises(AdapterRegistryError, match="deployment_invalid"):
+        Key.from_deployment("raw")  # type: ignore[arg-type]
+    key = Key(runtime="ollama")
+    conn = ProviderConnectionConfig.ollama_local()
+    with pytest.raises(AdapterRegistryError, match="adapter_key_invalid"):
+        AdapterRegistration("key", conn, sync_factory=lambda _: FakeInferenceAdapter())  # type: ignore[arg-type]
+    with pytest.raises(AdapterRegistryError, match="connection_invalid"):
+        AdapterRegistration(key, "url", sync_factory=lambda _: FakeInferenceAdapter())  # type: ignore[arg-type]
+    with pytest.raises(AdapterRegistryError, match="adapter_factory_invalid"):
+        AdapterRegistration(key, conn, async_factory=17)  # type: ignore[arg-type]
+
+
+def test_sync_adapter_does_not_fallback_to_async_when_missing() -> None:
+    registry = AdapterRegistry()
+    registry.register(AdapterRegistration(
+        AdapterKey(runtime="ollama"),
+        ProviderConnectionConfig.ollama_local(),
+        async_factory=lambda _config: AsyncFakeInferenceAdapter(),
+    ))
+    catalog, dep_id, request = _fixture()
+    deployment = catalog.deployments.get(dep_id)
+    assert deployment is not None
+    with pytest.raises(AdapterRegistryError, match="sync_adapter_unavailable"):
+        registry.resolve_sync(deployment)
+    result = _service(catalog, dep_id, registry).invoke(request)
+    assert result.run.failure is not None
+    assert result.run.failure.code == "sync_adapter_unavailable"
+
+
+def test_async_factory_failure_is_sanitized_and_invalid_port_is_rejected() -> None:
+    catalog, dep_id, _ = _fixture()
+    deployment = catalog.deployments.get(dep_id)
+    assert deployment is not None
+
+    def fails(_config: ProviderConnectionConfig) -> AsyncFakeInferenceAdapter:
+        raise RuntimeError("SECRET-ANOTHER-PROVIDER")
+
+    first = AdapterRegistry()
+    first.register(AdapterRegistration(
+        AdapterKey(runtime="ollama"),
+        ProviderConnectionConfig.ollama_local(),
+        async_factory=fails,
+    ))
+    with pytest.raises(AdapterRegistryError, match="adapter_initialization_failed") as exc:
+        first.resolve_async(deployment)
+    assert "SECRET" not in str(exc.value)
+
+    second = AdapterRegistry()
+    second.register(AdapterRegistration(
+        AdapterKey(runtime="ollama"),
+        ProviderConnectionConfig.ollama_local(),
+        async_factory=lambda _config: object(),  # type: ignore[arg-type]
+    ))
+    with pytest.raises(AdapterRegistryError, match="adapter_factory_invalid"):
+        second.resolve_async(deployment)
