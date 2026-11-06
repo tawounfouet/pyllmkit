@@ -302,6 +302,8 @@ class NativeProviderStreamingAdapter:
         # A synchronous HTTPX read can block beyond a total deadline if the
         # peer continuously trickles data. No production sync socket without
         # a separately verified hard-stop execution boundary (P7-G7).
+        if not self.allow_live:
+            raise InvocationPortError("live_authorization_required")
         if self._test_transport is None:
             raise InvocationPortError("sync_stream_deadline_not_enforceable")
         target, body, headers, timeout = self._request(prepared)
