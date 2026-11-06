@@ -10,6 +10,7 @@ from pyllmkit.protocols.credentials import (
 from .errors import normalize_http_failure
 from .fake import AsyncFakeInferenceAdapter, FakeInferenceAdapter
 from .ollama import AsyncOllamaAdapter, OllamaAdapter
+from .openai_responses import AsyncOpenAIResponsesAdapter, OpenAIResponsesAdapter
 from .registry import (
     AdapterKey,
     AdapterRegistration,
@@ -20,6 +21,8 @@ from .routing import RegisteredAsyncInferencePort, RegisteredInferencePort
 from .security import EnvCredentialResolver, ProviderConnectionConfig, ProviderProfile
 
 __all__ = [
+    "OpenAIResponsesAdapter",
+    "AsyncOpenAIResponsesAdapter",
     "OllamaAdapter",
     "AsyncOllamaAdapter",
     "AsyncFakeInferenceAdapter",

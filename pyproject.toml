@@ -27,6 +27,7 @@ Repository = "https://github.com/tawounfouet/pyllmkit"
 Issues = "https://github.com/tawounfouet/pyllmkit/issues"
 
 [project.optional-dependencies]
+openai = ["httpx>=0.27,<1"]
 ollama = ["httpx>=0.27,<1"]
 providers = ["httpx>=0.27,<1"]
 dev = [
