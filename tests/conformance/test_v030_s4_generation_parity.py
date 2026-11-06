@@ -6,8 +6,8 @@ Adversarial cases bypass the service on purpose: adapters must not
 silently accept a forged or stale non-NATIVE capability assessment.
 """
 
-from dataclasses import replace
 import json
+from dataclasses import replace
 
 import pytest
 
