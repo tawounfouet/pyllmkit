@@ -46,6 +46,9 @@ jobs:
       - name: P7 L7.5 Anthropic Messages adapter and mapping coverage
         run: |
           python -m pytest -q tests/acceptance/test_p7_l75_anthropic_messages.py --cov=pyllmkit.adapters.inference.anthropic_messages --cov=pyllmkit.adapters.inference.anthropic_messages_mapping --cov-branch --cov-report=term-missing --cov-fail-under=95
+      - name: P7 L7.5b Gemini and common cloud HTTP branch coverage
+        run: |
+          python -m pytest -q tests/acceptance/test_p7_l75b_google_gemini.py --cov=pyllmkit.adapters.inference.google_gemini --cov=pyllmkit.adapters.inference.google_gemini_mapping --cov=pyllmkit.adapters.inference.cloud_http --cov-branch --cov-report=term-missing --cov-fail-under=85
       - name: Offline examples
         run: |
           python examples/01_define_model.py
@@ -82,6 +85,7 @@ jobs:
           python examples/32_ollama_live_opt_in.py
           python examples/33_openai_responses_mock.py
           python examples/34_anthropic_messages_mock.py
+          python examples/35_google_gemini_mock.py
       - name: Build wheel and sdist
         run: python -m build
       - name: Wheel clean environment smoke
@@ -89,6 +93,9 @@ jobs:
           python -m venv .venv-wheel
           .venv-wheel/bin/python -m pip install --no-index --no-deps dist/*.whl
           .venv-wheel/bin/python -c "from pyllmkit.domain import Content, Message, Role, TextContent, message_to_dict, message_from_dict; m=Message(Role.USER, Content((TextContent('x'),))); assert message_from_dict(message_to_dict(m)) == m"
+      - name: P7 L7.5b Google clean wheel without HTTPX import
+        run: |
+          .venv-wheel/bin/python -c "from pyllmkit.adapters.inference import GoogleGeminiAdapter, CredentialRef, ProviderConnectionConfig; assert ProviderConnectionConfig.google(CredentialRef('demo')).profile.value == 'google'"
       - name: P7 L7.5 clean wheel without HTTPX import smoke
         run: |
           .venv-wheel/bin/python -c "from pyllmkit.adapters.inference import AnthropicMessagesAdapter, ProviderConnectionConfig, CredentialRef; assert ProviderConnectionConfig.anthropic(CredentialRef('demo')).profile.value == 'anthropic'"
