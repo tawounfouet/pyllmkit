@@ -42,7 +42,7 @@ jobs:
           python -m pytest -q tests/acceptance/test_p7_l73_ollama_adapter.py --cov=pyllmkit.adapters.inference.ollama --cov=pyllmkit.adapters.inference.ollama_mapping --cov-branch --cov-report=term-missing --cov-fail-under=95
       - name: P7 L7.4 OpenAI Responses adapter and mapping coverage
         run: |
-          python -m pytest -q tests/acceptance/test_p7_l74_openai_responses.py --cov=pyllmkit.adapters.inference.openai_responses --cov=pyllmkit.adapters.inference.openai_responses_mapping --cov-branch --cov-report=term-missing --cov-fail-under=85
+          python -m pytest -q tests/acceptance/test_p7_l74_openai_responses.py --cov=pyllmkit.adapters.inference.openai_responses --cov=pyllmkit.adapters.inference.openai_responses_mapping --cov-branch --cov-report=term-missing --cov-fail-under=95
       - name: Offline examples
         run: |
           python examples/01_define_model.py
@@ -85,6 +85,9 @@ jobs:
           python -m venv .venv-wheel
           .venv-wheel/bin/python -m pip install --no-index --no-deps dist/*.whl
           .venv-wheel/bin/python -c "from pyllmkit.domain import Content, Message, Role, TextContent, message_to_dict, message_from_dict; m=Message(Role.USER, Content((TextContent('x'),))); assert message_from_dict(message_to_dict(m)) == m"
+      - name: P7 L7.4 clean wheel without HTTPX import smoke
+        run: |
+          .venv-wheel/bin/python -c "from pyllmkit.adapters.inference import OpenAIResponsesAdapter, ProviderConnectionConfig, CredentialRef; assert ProviderConnectionConfig.openai(CredentialRef('demo')).profile.value == 'openai'"
       - name: P7 L7.3 clean wheel without HTTPX import smoke
         run: |
           .venv-wheel/bin/python -c "from pyllmkit.adapters.inference import OllamaAdapter, ProviderConnectionConfig; a = OllamaAdapter(ProviderConnectionConfig.ollama_local()); assert a.allow_live is False"
