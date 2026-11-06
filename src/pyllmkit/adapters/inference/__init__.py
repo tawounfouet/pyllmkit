@@ -10,6 +10,7 @@ from pyllmkit.protocols.credentials import (
 from .anthropic_messages import AnthropicMessagesAdapter, AsyncAnthropicMessagesAdapter
 from .errors import normalize_http_failure
 from .fake import AsyncFakeInferenceAdapter, FakeInferenceAdapter
+from .google_gemini import AsyncGoogleGeminiAdapter, GoogleGeminiAdapter
 from .ollama import AsyncOllamaAdapter, OllamaAdapter
 from .openai_responses import AsyncOpenAIResponsesAdapter, OpenAIResponsesAdapter
 from .registry import (
@@ -22,6 +23,8 @@ from .routing import RegisteredAsyncInferencePort, RegisteredInferencePort
 from .security import EnvCredentialResolver, ProviderConnectionConfig, ProviderProfile
 
 __all__ = [
+    "GoogleGeminiAdapter",
+    "AsyncGoogleGeminiAdapter",
     "AnthropicMessagesAdapter",
     "AsyncAnthropicMessagesAdapter",
     "OpenAIResponsesAdapter",
