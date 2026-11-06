@@ -501,7 +501,7 @@ def test_gemini_common_transport_rejects_unsupported_headers_and_bad_body() -> N
 def test_gemini_invalid_alias_cannot_escape_google_model_path() -> None:
     initial = prepared()
     assert gemini_model_alias(initial) == ALIAS
-    for alias in ("../metadata", "foo/bar", "x?key=abc", "%2e%2e", "foo:bar", "\n", "x" * 129):
+    for alias in ("../metadata", "foo/bar", "x?key=abc", "%2e%2e", "foo:bar", "x\n", "x" * 129):
         tampered = replace(initial, native_model_alias=alias)
         with pytest.raises(InvocationPortError, match="invalid_model_alias"):
             encode_gemini_request(tampered)
