@@ -1,6 +1,7 @@
 """Typer commands for execution history inspection (runs list, runs inspect)."""
 
 import json
+import os
 from pathlib import Path
 from typing import Annotated
 
@@ -11,7 +12,7 @@ from rich.table import Table
 from ..config import get_config
 from ..console import console
 from ..formatting.errors import build_error_panel
-from ..model_specs import compute_run_cost
+from ..model_specs import compute_run_cost, format_pricing_provenance
 from ..storage import SqliteRunStore
 
 runs_app = typer.Typer(
@@ -150,6 +151,7 @@ def runs_inspect(
     )
     if cost_str != "-":
         details.append(f"[bold]Coût estimé   :[/bold] [bold green]{cost_str}[/bold green]")
+        details.append(f"[dim]{format_pricing_provenance(record.model_id)}[/dim]")
     elif record.input_tokens is not None or record.output_tokens is not None:
         details.append("[bold]Coût estimé   :[/bold] [dim]N/A (modèle hors catalogue tarifaire)[/dim]")
 
@@ -213,10 +215,41 @@ def runs_export(
 
     if output is not None:
         output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_text("\n".join(lines) + ("\n" if lines else ""), encoding="utf-8")
+        # Exported raw content is sensitive. Avoid default world-readable files.
+        flags = os.O_WRONLY | os.O_CREAT | os.O_TRUNC
+        flags |= getattr(os, "O_NOFOLLOW", 0)
+        fd = os.open(output, flags, 0o600)
+        try:
+            os.fchmod(fd, 0o600)
+            with os.fdopen(fd, "w", encoding="utf-8") as handle:
+                handle.write("\n".join(lines) + ("\n" if lines else ""))
+        except BaseException:
+            # fdopen closes on exit, but a failure before fdopen still needs cleanup.
+            try:
+                os.close(fd)
+            except OSError:
+                pass
+            raise
         console.print(
             f"[bold green]✓[/bold green] {len(lines)} exemple(s) exporté(s) avec succès dans [bold cyan]{output}[/bold cyan]"
         )
     else:
         for line in lines:
             console.print(line)
+
+
+@runs_app.command(name="prune", help="Supprimer les runs au-delà d’une période de rétention.")
+def runs_prune(
+    older_than_days: Annotated[
+        int, typer.Option("--older-than-days", min=1, max=36500),
+    ] = 30,
+    yes: Annotated[
+        bool, typer.Option("--yes", help="Confirmer explicitement la suppression irréversible"),
+    ] = False,
+) -> None:
+    """Purge metadata and opted-in sensitive content in one transaction."""
+    if not yes:
+        console.print("[yellow]Suppression refusée : ajouter --yes.[/yellow]")
+        raise typer.Exit(code=1)
+    count = SqliteRunStore().prune_older_than_days(older_than_days)
+    console.print(f"[green]{count} run(s) ancien(s) supprimé(s).[/green]")
