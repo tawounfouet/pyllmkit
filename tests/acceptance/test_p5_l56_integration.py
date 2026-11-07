@@ -176,7 +176,7 @@ def test_p5_ac047_ten_thousand_event_replay_has_bounded_time() -> None:
     assert elapsed < 15.0  # generous CI guard; not a provider/network benchmark
 
 
-def test_p5_ac048_packaging_public_api_and_no_release_claim() -> None:
+def test_p5_ac048_packaging_public_api_and_tagged_source_scope() -> None:
     from pyllmkit.domain.streaming import (
         STREAMING_SCHEMA_VERSION,
         AsyncInferenceStream,
@@ -185,14 +185,14 @@ def test_p5_ac048_packaging_public_api_and_no_release_claim() -> None:
         consume_stream,
     )
 
-    assert __version__ == "0.1.0a2"
+    assert __version__ == "0.3.0"
     assert STREAMING_SCHEMA_VERSION == 1
     assert callable(consume_stream)
     assert hasattr(AsyncInferenceStream, "__aiter__")
     assert hasattr(InferenceStream, "__iter__")
     assert StreamState(InferenceRunId("smoke")).status is StreamStatus.CREATED
     project = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert 'version = "0.1.0a2"' in project
+    assert 'version = "0.3.0"' in project
     assert "dependencies = []" in project
     for index in range(18, 23):
         matches = tuple((ROOT / "examples").glob(f"{index:02}_*.py"))

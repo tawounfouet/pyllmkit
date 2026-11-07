@@ -1,0 +1,121 @@
+name: One-shot v0.3.0 Git tag after qualified CI
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+
+permissions:
+  contents: write
+
+jobs:
+  tag-v030:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact qualified commit without persisting credentials
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify v0.3.0 release gates and create annotated tag once
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO_NAME: ${{ github.repository }}
+          TARGET_SHA: ${{ github.event.workflow_run.head_sha }}
+          QUALIFIED_RUN: ${{ github.event.workflow_run.id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          import pathlib
+          import tomllib
+          import urllib.error
+          import urllib.request
+
+          repo = os.environ["REPO_NAME"]
+          target = os.environ["TARGET_SHA"]
+          run = os.environ["QUALIFIED_RUN"]
+          tag = "v0.3.0"
+          token = os.environ["GH_TOKEN"]
+          base = f"https://api.github.com/repos/{repo}"
+          headers = {
+              "Authorization": f"Bearer {token}",
+              "Accept": "application/vnd.github+json",
+              "X-GitHub-Api-Version": "2022-11-28",
+              "User-Agent": "pyllmkit-v030-one-shot-tag",
+          }
+
+          def api(method, endpoint, payload=None):
+              data = json.dumps(payload).encode("utf-8") if payload is not None else None
+              req = urllib.request.Request(
+                  base + endpoint, data=data, headers=headers, method=method,
+              )
+              try:
+                  with urllib.request.urlopen(req, timeout=20) as response:
+                      return response.status, json.load(response)
+              except urllib.error.HTTPError as exc:
+                  if exc.code == 404 and method == "GET":
+                      return 404, None
+                  raise RuntimeError(
+                      f"GitHub API {method} {endpoint} returned HTTP {exc.code}"
+                  ) from None
+
+          meta = tomllib.loads(pathlib.Path("pyproject.toml").read_text("utf-8"))
+          assert meta["project"]["name"] == "pyllmkit", "wrong project"
+          assert meta["project"]["version"] == "0.3.0", "wrong project version"
+          release = pathlib.Path(
+              "docs/milestones/0.3.0/18_V030_TAG_SCOPE_AND_AUTHORIZATION_2026-11-07.md"
+          ).read_text("utf-8")
+          assert "AUTHORIZATION: GIT_TAG_v0.3.0_ONLY" in release
+          notes = pathlib.Path("CHANGELOG.md").read_text("utf-8")
+          assert "## [0.3.0] - 2026-11-07" in notes
+
+          _, branch = api("GET", "/branches/main")
+          assert branch["commit"]["sha"] == target, "main moved since CI"
+          _, actual_run = api("GET", f"/actions/runs/{run}")
+          assert actual_run["status"] == "completed"
+          assert actual_run["conclusion"] == "success"
+          assert actual_run["head_sha"] == target
+          assert actual_run["event"] == "push"
+          _, jobs = api("GET", f"/actions/runs/{run}/jobs?per_page=100")
+          checks = {job["name"]: job["conclusion"] for job in jobs["jobs"]}
+          expected = {"validate (3.11)", "validate (3.12)", "validate (3.13)"}
+          assert all(checks.get(job) == "success" for job in expected), checks
+          _, artifacts = api("GET", f"/actions/runs/{run}/artifacts?per_page=100")
+          names = {item["name"] for item in artifacts["artifacts"] if not item["expired"]}
+          assert all(f"v030-conformance-{ver}" in names
+                     for ver in ("3.11", "3.12", "3.13")), names
+
+          code, existing = api("GET", f"/git/ref/tags/{tag}")
+          if code != 404:
+              if existing["object"]["type"] == "tag":
+                  _, object_data = api("GET", f"/git/tags/{existing['object']['sha']}")
+                  assert object_data["object"]["sha"] == target, "tag already points elsewhere"
+              else:
+                  assert existing["object"]["sha"] == target, "tag already points elsewhere"
+              print(f"{tag} already targets the qualified SHA {target}")
+          else:
+              _, tag_object = api("POST", "/git/tags", {
+                  "tag": tag,
+                  "message": (
+                      "PyLLMKit v0.3.0 - owner-approved text_only_v1 offline source "
+                      f"release; qualified CI run {run}; provider-live not certified"
+                  ),
+                  "object": target,
+                  "type": "commit",
+              })
+              api("POST", "/git/refs", {
+                  "ref": f"refs/tags/{tag}",
+                  "sha": tag_object["sha"],
+              })
+              print(f"Created annotated {tag} -> {target}; CI run {run}")
+          PY

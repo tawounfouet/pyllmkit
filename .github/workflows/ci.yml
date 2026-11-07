@@ -191,7 +191,7 @@ jobs:
       - name: L3.5 installed wheel full domain smoke
         run: |
           .venv-wheel/bin/python examples/12_full_inference_walkthrough.py
-          .venv-wheel/bin/python -c "from pyllmkit import __version__; from pyllmkit.domain import INFERENCE_SCHEMA_VERSION, INTERACTION_SCHEMA_VERSION; from pyllmkit.domain.models.serialization import SCHEMA_VERSION; assert (__version__, INFERENCE_SCHEMA_VERSION, INTERACTION_SCHEMA_VERSION, SCHEMA_VERSION) == ('0.1.0a2', 1, 1, 1)"
+          .venv-wheel/bin/python -c "from pyllmkit import __version__; from pyllmkit.domain import INFERENCE_SCHEMA_VERSION, INTERACTION_SCHEMA_VERSION; from pyllmkit.domain.models.serialization import SCHEMA_VERSION; assert (__version__, INFERENCE_SCHEMA_VERSION, INTERACTION_SCHEMA_VERSION, SCHEMA_VERSION) == ('0.3.0', 1, 1, 1)"
       - name: Sdist clean environment smoke
         run: |
           python -m venv .venv-sdist

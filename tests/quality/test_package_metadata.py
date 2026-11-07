@@ -16,6 +16,6 @@ def test_typing_marker_is_present() -> None:
     assert (ROOT / "src" / "pyllmkit" / "py.typed").exists()
 
 
-def test_phase_2_alpha_candidate_metadata_version() -> None:
+def test_v030_owner_approved_git_tag_source_version() -> None:
     pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
-    assert pyproject["project"]["version"] == "0.1.0a2"
+    assert pyproject["project"]["version"] == "0.3.0"

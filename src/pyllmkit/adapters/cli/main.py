@@ -48,7 +48,7 @@ def _get_version() -> str:
     try:
         return version("pyllmkit")
     except PackageNotFoundError:
-        return "0.1.0a2"
+        return "0+unknown"
 
 
 def version_callback(value: bool) -> None:
