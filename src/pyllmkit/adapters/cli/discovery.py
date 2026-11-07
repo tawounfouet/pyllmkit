@@ -7,6 +7,8 @@ from pathlib import Path
 from typing import Any
 
 from .config import find_config_file, get_config
+from .discovery_snapshot_v2 import ENDPOINTS, snapshot_path, update_discovery_snapshot
+from .media_catalog_v2 import _identifier
 
 PROVIDER_FAMILY_MAP = {
     "openai": "openai",
@@ -38,11 +40,31 @@ def load_discovered_models(path: Path | None = None) -> list[dict[str, str]]:
     if not target.is_file():
         return []
     try:
+        if target.stat().st_size > _MAX_DISCOVERY_BYTES:
+            return []
         content = target.read_text(encoding="utf-8")
         data = json.loads(content)
         if isinstance(data, list):
-            return [m for m in data if isinstance(m, dict) and "id" in m]
-    except Exception:
+            results: list[dict[str, str]] = []
+            for row in data:
+                if not isinstance(row, dict):
+                    continue
+                try:
+                    model_id = _identifier(row.get("id"), "discovery_model")
+                    provider = _identifier(row.get("provider"), "discovery_provider").lower()
+                except ValueError:
+                    continue
+                if provider not in ENDPOINTS:
+                    continue
+                results.append({
+                    "id": model_id,
+                    "provider": provider,
+                    "family": str(row.get("family") or provider),
+                    "runtime": str(row.get("runtime") or "cloud"),
+                    "region": str(row.get("region") or "global"),
+                })
+            return results
+    except (OSError, UnicodeError, ValueError):
         pass
     return []
 
@@ -56,12 +78,26 @@ def save_discovered_models(
     target.parent.mkdir(parents=True, exist_ok=True)
 
     existing = load_discovered_models(target)
-    by_id = {m["id"]: m for m in existing}
+    # Two providers can expose the same native ID; never collapse their entries.
+    by_route = {(m["provider"], m["id"]): m for m in existing}
     for m in models:
-        by_id[m["id"]] = m
+        model_id = _identifier(m.get("id"), "discovery_model")
+        provider = _identifier(m.get("provider"), "discovery_provider").lower()
+        if provider not in ENDPOINTS:
+            raise ValueError("unknown_discovery_provider")
+        by_route[(provider, model_id)] = {
+            "id": model_id,
+            "provider": provider,
+            "family": str(m.get("family") or provider),
+            "runtime": str(m.get("runtime") or "cloud"),
+            "region": str(m.get("region") or "global"),
+        }
 
-    merged = sorted(by_id.values(), key=lambda x: (x.get("provider", ""), x.get("id", "")))
-    target.write_text(json.dumps(merged, indent=2, ensure_ascii=False), encoding="utf-8")
+    merged = [by_route[key] for key in sorted(by_route)]
+    payload = json.dumps(merged, indent=2, ensure_ascii=False)
+    if len(payload.encode("utf-8")) > _MAX_DISCOVERY_BYTES:
+        raise ValueError("discovery_payload_too_large")
+    target.write_text(payload, encoding="utf-8")
     return target
 
 
@@ -95,7 +131,7 @@ def _fetch_discovery_json(
     """Fetch only fixed provider URLs and read bounded JSON data."""
     if type(timeout) not in (float, int) or not 0 < timeout <= 120:
         raise ValueError("invalid_discovery_timeout")
-    if not (url.startswith("https://") or url == "http://127.0.0.1:11434/api/tags"):
+    if url not in ENDPOINTS.values():
         raise ValueError("invalid_discovery_endpoint")
     req = urllib.request.Request(url, headers=headers)
     with _open_discovery_request(req, float(timeout)) as response:
@@ -207,6 +243,7 @@ def sync_configured_providers(
 
     results: dict[str, dict[str, Any]] = {}
     discovered_records: list[dict[str, str]] = []
+    observed_success: dict[str, list[str]] = {}
 
     for prov in providers_to_sync:
         canonical_env = (
@@ -227,23 +264,29 @@ def sync_configured_providers(
 
         try:
             model_ids = fetch_provider_models(prov, api_key=api_key, timeout=timeout)
+            # An invalid listing is not a trusted cache update.
+            validated_ids = [_identifier(mid, "discovery_model") for mid in model_ids]
+            if len(validated_ids) > 3000:
+                raise ValueError("discovery_payload_too_large")
+            provider_id = "google" if prov == "gemini" else prov
+            observed_success[provider_id] = list(validated_ids)
             family = PROVIDER_FAMILY_MAP.get(prov, prov)
             runtime = "ollama" if prov == "ollama" else "cloud"
 
-            for mid in model_ids:
+            for mid in validated_ids:
                 discovered_records.append({
                     "id": mid,
                     "family": family,
-                    "provider": prov,
+                    "provider": provider_id,
                     "runtime": runtime,
                     "region": "local" if prov == "ollama" else "global",
                 })
 
             results[prov] = {
                 "status": "success",
-                "message": f"{len(model_ids)} modèle(s) synchronisé(s)",
-                "count": len(model_ids),
-                "models": model_ids,
+                "message": f"{len(validated_ids)} modèle(s) synchronisé(s)",
+                "count": len(validated_ids),
+                "models": validated_ids,
             }
         except Exception:
             results[prov] = {
@@ -253,11 +296,21 @@ def sync_configured_providers(
             }
 
     saved_path = None
+    cache_path = get_discovered_models_path(local=local)
     if discovered_records:
         saved_path = save_discovered_models(
             discovered_records,
-            target_path=get_discovered_models_path(local=local),
+            target_path=cache_path,
         )
+    if observed_success:
+        # Discovery records only a scoped, potentially incomplete /models view.
+        # It never promotes a model to confirmed-callable status.
+        snapshot = update_discovery_snapshot(
+            snapshot_path(cache_path), observed_success,
+        )
+        for prov in observed_success:
+            results[prov]["revision"] = snapshot.revision
+            results[prov]["snapshot_path"] = str(snapshot_path(cache_path))
 
     total_synced = len(discovered_records)
     for _p, res in results.items():
