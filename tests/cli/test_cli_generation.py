@@ -151,7 +151,7 @@ class TestCliGenerateCommands:
         assert result.exit_code == 0
         assert "Image générée avec succès" in result.stdout
         assert "1024x1024" in result.stdout
-        assert "$0.0400" in result.stdout
+        assert "$0.0400" not in result.stdout  # retired price is not a current quote
         assert "Fichier sauvegardé avec succès" in result.stdout
         assert out_file.exists()
 
