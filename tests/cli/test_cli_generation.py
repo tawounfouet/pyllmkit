@@ -65,18 +65,16 @@ class TestMediaSaver:
         with pytest.raises(FileNotFoundError):
             save_output_media(out, tmp_path / "dst.wav")
 
-    def test_save_uri_downloads_bytes(self, tmp_path: Path) -> None:
+    def test_save_uri_refuses_untrusted_remote_download(self, tmp_path: Path) -> None:
         target = tmp_path / "downloaded.mp4"
         out = VideoOutput(MediaSourceRef("uri", "https://example.org/sample.mp4"))
+        with (
+            patch("urllib.request.urlopen", side_effect=AssertionError("No network permitted")),
+            pytest.raises(ValueError, match="distant direct interdit"),
+        ):
+            save_output_media(out, target)
+        assert not target.exists()
 
-        mock_resp = MagicMock()
-        mock_resp.read.return_value = b"FAKE_MP4_BYTES"
-        mock_resp.__enter__.return_value = mock_resp
-
-        with patch("urllib.request.urlopen", return_value=mock_resp):
-            result = save_output_media(out, target)
-        assert result == target
-        assert target.read_bytes() == b"FAKE_MP4_BYTES"
 
     def test_save_multipart_output(self, tmp_path: Path) -> None:
         target = tmp_path / "extracted_media.png"
