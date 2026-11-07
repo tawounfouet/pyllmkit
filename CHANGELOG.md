@@ -18,7 +18,7 @@
   - Helper d'infrastructure passif `media_mapping.py` sans dépendance externe (`dependencies = []`).
 - **CLI (`run`, `stream`) & Expérience Utilisateur** :
   - Nouveaux drapeaux `--image` (`-i`), `--audio` (`-a`), `--video` (`-v`) sur `pyllmkit run` et `pyllmkit stream`.
-  - Résolution des entrées (fichiers locaux, URLs HTTP/HTTPS, Data URIs base64) avec garde de taille (< 100 Mo).
+  - Résolution des entrées (fichiers locaux, URLs HTTP/HTTPS, Data URIs base64). Mise à jour corrective : fichiers locaux limités à 16 MiB et requêtes média encodées limitées à 24 MiB, au lieu de 100 Mo d'entrée acceptés à tort.
   - Panneaux Rich : affichage explicite de la ligne `Modalités : text, image, audio, video` dans les métriques d'exécution.
   - Persistance ChatML : traçabilité des pièces jointes multimédias dans `history.db` pour fine-tuning et audit FinOps.
 
@@ -32,7 +32,7 @@
   - Intégration des modèles génératifs de référence dans `models_catalog.json` : `dall-e-3`, `dall-e-2`, `tts-1`, `tts-1-hd`, `imagen-3`, `veo-2`.
   - Extension du calculateur `compute_run_cost` pour tarifer avec exactitude à l'unité (`unit == "image"`), au volume de caractères (`unit == "1M characters"`), ou à la durée (`unit == "second"`).
 - **CLI & Matérialisation sur Disque (`media_saver.py`, `generate.py`)** :
-  - Nouveau module d'écriture sécurisée `media_saver.py` extrayant les octets binaires depuis les Data URIs, fichiers locaux ou URLs.
+  - Nouveau module d'écriture `media_saver.py` pour les Data URIs et fichiers locaux. Les téléchargements d'URL distantes arbitraires sont désormais refusés dans le saver ; les adaptateurs fournisseurs matérialisent au préalable les URLs approuvées.
   - Module `mock_assets.py` : génération en pur Python (zéro dépendance) de fichiers de simulation valides et lisibles dans Aperçu, QuickTime et Music (vrai PNG 24-bit 256x256, vrai WAV PCM 16-bit 22kHz 2.0s, conteneur MP4 H.264 2.0s).
   - Adaptateur live `OpenAIMediaAdapter` et `CompositeOpenAIAdapter` pour la génération réelle en direct avec OpenAI (`/v1/images/generations` pour DALL-E 3 et `/v1/audio/speech` pour TTS) via l'option `--live`.
   - Option universelle `-o / --output-file` sur `pyllmkit run` pour enregistrer directement le média généré sur disque.
@@ -66,11 +66,22 @@
 - **Historique** : les runs `generate` sont tracés dans `history.db` (`mode = "generate"`, metadata-only, prompt seulement avec `--record-content`).
 
 ### 3. Qualification & Intégrité Globale
-- **3 008 tests unitaires, d'acceptation et CLI passants à 100 %** (dont 41 tests hors réseau dédiés aux adaptateurs média et au FinOps).
+- **3 008 tests** constatés au commit initial multimodal (état historique, avant durcissement). Les chiffres actualisés et le SHA de référence sont consignés ci-dessous.
 - **Couverture de branches globale : 92 %** (`pytest --cov=pyllmkit --cov-branch`). Les gates CI par module sont inchangés.
 - Génération live validée le 2026-11-07 : `gpt-image-1-mini`, `gpt-4o-mini-tts`, `gemini-2.5-flash-image`, `gemini-2.5-flash-preview-tts`, `grok-imagine-image`, `grok-imagine-video`, `gemini-omni-1.2-flash`.
 - **Zéro dépendance d'exécution ajoutée** (`dependencies = []`).
 - **Règle typographique stricte** : aucun tiret cadratin U+2014, standard ASCII U+002D exclusif.
+
+### 4. Correctifs de qualification et de sécurité post-multimodale (branche main, non taguée)
+
+- **Réparation des gates CI** : scénarios multimodaux ajoutés aux tests de couverture ciblés des six fournisseurs, tests de rejet Gemini, couverture partagée du transport cloud ; seuils de couverture inchangés.
+- **Transport media** : taille des réponses API limitée à 160 MiB, taille des téléchargements de médias et Data URIs limitée à 100 MiB, corps d'erreur lu sur 8 KiB maximum, exceptions inattendues assainies.
+- **Réseau** : authentification vers des origines HTTPS explicitement autorisées, refus des proxies et redirections, résolution DNS publique et connexion TLS vers une IP validée, avec SNI/contrôle du certificat du nom d'origine. Les URLs de médias sortants non approuvées échouent volontairement, notamment sur CDN inconnu.
+- **Fichiers** : téléchargement direct d'URLs interdit au saver CLI, décodage base64 strict, tailles bornées, préfixes de noms de fichier assainis.
+- **Requêtes multimodales** : limites différenciées de 1 MiB pour le texte, 24 MiB pour le corps encodé image/audio/vidéo, et 16 MiB pour chaque fichier local. Ce dernier plafond remplace le plafond CLI antérieur de 100 Mo : **changement de compatibilité intentionnel**.
+- **Confidentialité** : plus de message brut d'exception imprévue dans `generate`.
+- **Qualification observée** : [CI #42339308625](https://github.com/tawounfouet/pyllmkit/actions/runs/42339308625), SHA `6861e0fd89606c4b4e7eee58fee9bf2709f0bb94`, **3 047 pytest PASS, 752 conformance PASS par Python 3.11/3.12/3.13**, Ruff, mypy strict et wheel/sdist. Une nouvelle CI sera exigée après ces notes.
+- **Réserve** : cette campagne est **offline**. Pas de certification provider-live, ni de publication PyPI, ni de déplacement du tag `v0.3.0`. Voir [rapport de remédiation](docs/quality/2026-11-07_MULTIMODAL_SECURITY_AND_CI_REMEDIATION.md).
 
 ## [0.3.0] - 2026-11-07
 

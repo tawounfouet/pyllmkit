@@ -123,3 +123,43 @@ def test_unexpected_transport_exception_does_not_expose_secrets() -> None:
         with pytest.raises(InvocationPortError, match="provider_protocol_error") as error:
             media_http.http_bytes("https://api.x.ai/v1/test")
     assert "PRIVATE" not in str(error.value)
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "http://api.openai.com/v1/images/generations",
+        "https://127.0.0.1/v1/images/generations",
+        "https://api.openai.com.evil.example/v1/images/generations",
+        "https://api.x.ai:8443/v1/videos/generations",
+        "https://user:password@api.openai.com/v1/audio/speech",
+    ],
+)
+def test_authenticated_api_rejects_bad_origin_before_dns(url: str) -> None:
+    with (
+        patch("socket.getaddrinfo", side_effect=AssertionError("DNS must not be used")) as dns,
+        patch("urllib.request.build_opener", side_effect=AssertionError("No network")),
+        pytest.raises(InvocationPortError, match="unsafe_provider_destination"),
+    ):
+        media_http.http_bytes(url, headers={"Authorization": "Bearer synthetic"})
+    dns.assert_not_called()
+
+
+def test_authenticated_api_pins_verified_peer_and_denies_redirect() -> None:
+    dns = [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("93.184.216.34", 443))]
+    with (
+        patch("socket.getaddrinfo", return_value=dns),
+        patch("urllib.request.build_opener") as build,
+    ):
+        build.return_value.open.return_value = _response(b"{}")
+        media_http.http_bytes(
+            "https://api.openai.com/v1/images/generations",
+            headers={"Authorization": "Bearer synthetic"},
+            payload={"prompt": "offline"},
+            method="POST",
+        )
+    args = build.call_args.args
+    assert any(isinstance(x, media_http._PinnedHTTPSHandler) for x in args)
+    assert any(isinstance(x, media_http._DenyMediaRedirect) for x in args)
+    pinned = next(x for x in args if isinstance(x, media_http._PinnedHTTPSHandler))
+    assert pinned._ip == "93.184.216.34"
