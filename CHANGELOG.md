@@ -2,6 +2,16 @@
 
 ## [Unreleased] - Support Multimodal Universel (Entrée & Génération de Médias)
 
+### M1 - Catalogue multimodal v2 et découverte déterministe (2026-11-07)
+
+- Fichier `media_catalog_v2.json` validé (23 routes), provenance datée, propriétaires du modèle / fournisseur d'API / acteur facturant séparés et capacités inconnues explicites.
+- Contrats typés `MediaCatalog`, `MediaModelDescriptor`, `CapabilityMatrix`, résolution d'alias non ambiguë, lecture statique et merge non destructif.
+- Snapshots de découverte `discovered_models_v2.json` versionnés, privés et atomiques, clés qualifiées par fournisseur, observations non exhaustives sans preuve d'accessibilité.
+- Découverte réseau limitée aux endpoints prédéfinis ; compatibilité de cache v1 conservée avec correction des collisions entre fournisseurs.
+- CLI `models list --media`, `models availability [--json]`, `models diff [--against PATH] [--json]` ; `models inspect` enrichi, `models sync` conserve son consentement explicite.
+- [ADR M1](docs/architecture/ADR-M1-VERSIONED-MEDIA-CATALOG.md), tests hermétiques de schéma, ambiguïtés, migration, historique et comparaisons.
+
+
 ### M0 - Catalogue média et sécurité des dépréciations (2026-11-07)
 
 - Audit source des 23 modèles strictement médias, avec statuts `current`, `deprecated`, `retired`, `unverified` et `unknown` : [rapport M0](docs/audits/MEDIA_MODEL_AVAILABILITY_AUDIT.md).
