@@ -251,7 +251,7 @@ def test_build_usage_panel_with_tokens() -> None:
     mock_run.run_id.value = "test-run-123"
     mock_run.state.value = "completed"
     mock_run.started_at = datetime(2026, 11, 6, 12, 0, 0, tzinfo=UTC)
-    mock_run.finished_at = datetime(2026, 11, 6, 12, 0, 1, 500000, tzinfo=timezone.utc)
+    mock_run.finished_at = datetime(2026, 11, 6, 12, 0, 1, 500000, tzinfo=UTC)
 
     mock_resp = MagicMock()
     mock_resp.finish_reason.code.value = "stop"
@@ -461,8 +461,8 @@ def test_build_usage_panel_with_cache_and_reasoning() -> None:
     mock_run = MagicMock()
     mock_run.run_id.value = "run-cache-1"
     mock_run.state.value = "completed"
-    mock_run.started_at = datetime(2026, 11, 6, 12, 0, 0, tzinfo=timezone.utc)
-    mock_run.finished_at = datetime(2026, 11, 6, 12, 0, 2, tzinfo=timezone.utc)
+    mock_run.started_at = datetime(2026, 11, 6, 12, 0, 0, tzinfo=UTC)
+    mock_run.finished_at = datetime(2026, 11, 6, 12, 0, 2, tzinfo=UTC)
 
     mock_resp = MagicMock()
     mock_resp.finish_reason.code.value = "stop"
