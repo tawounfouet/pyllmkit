@@ -1,7 +1,7 @@
 # ADR-059 - Frontiere de conformite multi-provider v0.3.0
 
 - Date : 2026-11-06
-- Statut : **PROPOSED - S0/G0, en attente de revue**
+- Statut : **ACCEPTED BY OWNER - S0/G0, contrat text-only offline seulement (2026-11-07)**
 - Base : `main@8dd97d5e33108c350e11b3a976926f2138f4e936`
 - Jalon : `0.3.0` Multi-provider Contract Stabilization
 - References : ADR-021, ADR-030..038, ADR-049..058 ; PyLLMKit docs 01/02/03/07/08/09.
@@ -19,7 +19,7 @@ uniforme de toutes les fonctionnalites proprietaires. Elle est une
 equivalence des **decisions de contrat** : preconditions, conservation des
 champs, sorties, identites, terminaux, erreurs et echec explicite.
 
-## Decision proposee
+## Decision adoptee par le proprietaire pour le profil offline
 
 1. **Ne pas introduire de nouveau Value Object ProviderContract dans le domaine.**
    Reutiliser les Protocols existants et une suite de conformite situee
@@ -75,7 +75,15 @@ champs, sorties, identites, terminaux, erreurs et echec explicite.
 
 ## Qualification de cette decision
 
-S0-G0 : tracabilite vers les fichiers, tests et tickets, sans modification
-du runtime ni upgrade de version. La validation de cet ADR est
-**en attente de revue independante**. Gouvernance et diffusion :
-issues #22, #35 et #36 restent ouvertes.
+S0-G0 : le proprietaire, developpeur et mainteneur unique, a explicitement
+accepte la decision de conception pour la baseline text-only offline
+le 2026-11-07. La revue par un tiers n'est pas exigee pour ce projet,
+sans qu'une telle revue soit presentee comme realisee. Les tests locaux
+sont declares par le proprietaire ; la CI GitHub au SHA exact reste la
+preuve reproductible du scope hermetique.
+
+Le registre de decision et des exceptions figure dans
+[17_OWNER_SELF_ACCEPTANCE_AND_SCOPED_GATES_2026-11-07.md](../milestones/0.3.0/17_OWNER_SELF_ACCEPTANCE_AND_SCOPED_GATES_2026-11-07.md).
+Cette acceptation ne certifie pas le reseau live, la production, la
+securite egress reelle ni une release 0.3.0. Issue #22 not_planned ;
+#36 et #81 conservent les chantiers operationnels distincts.
