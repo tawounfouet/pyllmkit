@@ -2,7 +2,8 @@
 
 import json
 import os
-undefinedfrom pathlib import Path
+import urllib.request
+from pathlib import Path
 from typing import Any
 
 from .config import find_config_file, get_config
@@ -68,16 +69,19 @@ _MAX_DISCOVERY_BYTES = 1_048_576
 
 
 class _NoRedirectHandler(urllib.request.HTTPRedirectHandler):
-    """Fail closed: provider discovery never follows a redirect with credentials."""
+    """Do not follow a provider redirect with credentials or metadata."""
 
-    def redirect_request(self, req, fp, code, msg, headers, newurl):  # type: ignore[no-untyped-def]
+    def redirect_request(
+        self, req: urllib.request.Request, fp: object, code: int,
+        msg: str, headers: object, newurl: str,
+    ) -> None:
         return None
 
 
 def _open_discovery_request(
     request: urllib.request.Request, timeout: float,
 ):
-    """Open only fixed endpoints with proxy discovery and redirects disabled."""
+    """Use fixed endpoints, no environment proxies, no redirects."""
     opener = urllib.request.build_opener(
         urllib.request.ProxyHandler({}),
         _NoRedirectHandler(),
@@ -88,13 +92,13 @@ def _open_discovery_request(
 def _fetch_discovery_json(
     url: str, headers: dict[str, str], timeout: float,
 ) -> dict[str, Any]:
-    """Read bounded JSON from an explicit provider endpoint, never from redirect URLs."""
+    """Fetch only fixed provider URLs and read bounded JSON data."""
     if type(timeout) not in (float, int) or not 0 < timeout <= 120:
         raise ValueError("invalid_discovery_timeout")
     if not (url.startswith("https://") or url == "http://127.0.0.1:11434/api/tags"):
         raise ValueError("invalid_discovery_endpoint")
-    request = urllib.request.Request(url, headers=headers)
-    with _open_discovery_request(request, float(timeout)) as response:
+    req = urllib.request.Request(url, headers=headers)
+    with _open_discovery_request(req, float(timeout)) as response:
         content = response.read(_MAX_DISCOVERY_BYTES + 1)
     if len(content) > _MAX_DISCOVERY_BYTES:
         raise ValueError("discovery_payload_too_large")
@@ -109,78 +113,83 @@ def fetch_provider_models(
     api_key: str | None = None,
     timeout: float = 10.0,
 ) -> list[str]:
-    """Query provider HTTP API to discover all available models for the given credentials."""
+    """Query the configured provider's fixed models endpoint, without redirect."""
     prov = provider.lower().strip()
     headers: dict[str, str] = {"User-Agent": "PyLLMKit/0.3.1"}
 
     if prov == "openai":
         if not api_key:
-            raise ValueError("Clé d'API OpenAI requise pour interroger le catalogue")
+            raise ValueError("discovery_credential_required")
         url = "https://api.openai.com/v1/models"
         headers["Authorization"] = f"Bearer {api_key}"
         data = _fetch_discovery_json(url, headers, timeout)
-            items = data.get("data", [])
-            return sorted(item["id"] for item in items if isinstance(item, dict) and "id" in item)
+        items = data.get("data", [])
+        return sorted(item["id"] for item in items if isinstance(item, dict) and "id" in item)
 
-    elif prov == "anthropic":
+    if prov == "anthropic":
         if not api_key:
-            raise ValueError("Clé d'API Anthropic requise pour interroger le catalogue")
+            raise ValueError("discovery_credential_required")
         url = "https://api.anthropic.com/v1/models"
         headers["x-api-key"] = api_key
         headers["anthropic-version"] = "2023-06-01"
         data = _fetch_discovery_json(url, headers, timeout)
-            items = data.get("data", [])
-            return sorted(item["id"] for item in items if isinstance(item, dict) and "id" in item)
+        items = data.get("data", [])
+        return sorted(item["id"] for item in items if isinstance(item, dict) and "id" in item)
 
-    elif prov in ("google", "gemini"):
+    if prov in ("google", "gemini"):
         if not api_key:
-            raise ValueError("Clé d'API Gemini requise pour interroger le catalogue")
-undefined        data = _fetch_discovery_json(url, headers, timeout)
-            items = data.get("models", [])
-            results = []
-            for item in items:
-                name = item.get("name", "")
-                if name.startswith("models/"):
-                    name = name[len("models/"):]
-                if name:
-                    results.append(name)
-            return sorted(results)
+            raise ValueError("discovery_credential_required")
+        url = "https://generativelanguage.googleapis.com/v1beta/models"
+        headers["x-goog-api-key"] = api_key
+        data = _fetch_discovery_json(url, headers, timeout)
+        items = data.get("models", [])
+        results = []
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            name = item.get("name", "")
+            if name.startswith("models/"):
+                name = name[len("models/"):]
+            if name:
+                results.append(name)
+        return sorted(results)
 
-    elif prov == "mistral":
+    if prov == "mistral":
         if not api_key:
-            raise ValueError("Clé d'API Mistral requise pour interroger le catalogue")
+            raise ValueError("discovery_credential_required")
         url = "https://api.mistral.ai/v1/models"
         headers["Authorization"] = f"Bearer {api_key}"
         data = _fetch_discovery_json(url, headers, timeout)
-            items = data.get("data", [])
-            return sorted(item["id"] for item in items if isinstance(item, dict) and "id" in item)
+        items = data.get("data", [])
+        return sorted(item["id"] for item in items if isinstance(item, dict) and "id" in item)
 
-    elif prov == "xai":
+    if prov == "xai":
         if not api_key:
-            raise ValueError("Clé d'API xAI requise pour interroger le catalogue")
+            raise ValueError("discovery_credential_required")
         url = "https://api.x.ai/v1/models"
         headers["Authorization"] = f"Bearer {api_key}"
         data = _fetch_discovery_json(url, headers, timeout)
-            items = data.get("data", [])
-            return sorted(item["id"] for item in items if isinstance(item, dict) and "id" in item)
+        items = data.get("data", [])
+        return sorted(item["id"] for item in items if isinstance(item, dict) and "id" in item)
 
-    elif prov == "ollama":
-undefined
+    if prov == "ollama":
+        url = "http://127.0.0.1:11434/api/tags"
         data = _fetch_discovery_json(url, headers, timeout)
-            items = data.get("models", [])
-            results = []
-            for item in items:
-                name = item.get("name", "")
-                if not name:
-                    continue
-                if name.endswith(":latest"):
-                    name = name[:-7]
-                if name and name not in results:
-                    results.append(name)
-            return sorted(results)
+        items = data.get("models", [])
+        results = []
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            name = item.get("name", "")
+            if not name:
+                continue
+            if name.endswith(":latest"):
+                name = name[:-7]
+            if name and name not in results:
+                results.append(name)
+        return sorted(results)
 
-    else:
-        raise ValueError(f"Fournisseur non supporté pour la synchronisation : {prov}")
+    raise ValueError("unsupported_discovery_provider")
 
 
 def sync_configured_providers(
@@ -236,9 +245,10 @@ def sync_configured_providers(
                 "count": len(model_ids),
                 "models": model_ids,
             }
-undefined = {
+        except Exception:
+            results[prov] = {
                 "status": "error",
-undefined
+                "message": "Échec (discovery_request_failed)",
                 "count": 0,
             }
 
