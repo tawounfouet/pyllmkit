@@ -48,7 +48,7 @@ jobs:
           python -m pytest -q tests/acceptance/test_p7_l75_anthropic_messages.py tests/acceptance/test_multimodal_inference_mapping.py --cov=pyllmkit.adapters.inference.anthropic_messages --cov=pyllmkit.adapters.inference.anthropic_messages_mapping --cov-branch --cov-report=term-missing --cov-fail-under=95
       - name: P7 L7.5b Gemini and common cloud HTTP branch coverage
         run: |
-          python -m pytest -q tests/acceptance/test_p7_l75b_google_gemini.py tests/acceptance/test_multimodal_inference_mapping.py --cov=pyllmkit.adapters.inference.google_gemini --cov=pyllmkit.adapters.inference.google_gemini_mapping --cov=pyllmkit.adapters.inference.cloud_http --cov-branch --cov-report=term-missing --cov-fail-under=95
+          python -m pytest -q tests/acceptance/test_p7_l75b_google_gemini.py tests/acceptance/test_multimodal_inference_mapping.py tests/acceptance/test_p7_l74_openai_responses.py tests/acceptance/test_p7_l75_anthropic_messages.py tests/acceptance/test_p7_l75c_xai_responses.py tests/acceptance/test_p7_l75d_mistral_chat.py --cov=pyllmkit.adapters.inference.google_gemini --cov=pyllmkit.adapters.inference.google_gemini_mapping --cov=pyllmkit.adapters.inference.cloud_http --cov-branch --cov-report=term-missing --cov-fail-under=95
       - name: P7 L7.5c xAI Responses mapping and adapter branch coverage
         run: |
           python -m pytest -q tests/acceptance/test_p7_l75c_xai_responses.py tests/acceptance/test_multimodal_inference_mapping.py --cov=pyllmkit.adapters.inference.xai_responses --cov=pyllmkit.adapters.inference.xai_responses_mapping --cov-branch --cov-report=term-missing --cov-fail-under=95
