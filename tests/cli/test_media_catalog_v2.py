@@ -88,6 +88,7 @@ def test_explicit_provider_is_required_for_ambiguous_id_and_alias() -> None:
     right["api_provider"] = "second-provider"
     right["billing_provider"] = "second-provider"
     right["public_model_id"] = "same-name"
+    right["aliases"] = ["old-name"]
     data["models"] = [left, right]
     catalog = parse_media_catalog(data)
     with pytest.raises(ValueError, match="ambiguous_model_identifier"):
@@ -121,6 +122,7 @@ def test_duplicate_route_and_alias_conflict_rejected() -> None:
     data = _document()
     copy_model = copy.deepcopy(data["models"][0])
     copy_model["public_model_id"] = "another-image"
+    copy_model["native_model_id"] = "another-image"
     copy_model["aliases"] = [data["models"][0]["public_model_id"]]
     data["models"].append(copy_model)
     with pytest.raises(ValueError, match="ambiguous_provider_alias"):
