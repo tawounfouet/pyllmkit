@@ -16,12 +16,12 @@
       "audio"
     ],
     "pricing": {
-      "input_cost": 10.0,
-      "output_cost": 50.0,
-      "cache_read": 1.0,
+      "input_cost": 10,
+      "output_cost": 50,
+      "cache_read": 1,
       "cache_write": 12.5,
       "unit": "1M tokens",
-      "cache_write_12h": 25.0
+      "cache_write_12h": 25
     },
     "features": [
       "web_search",
@@ -49,12 +49,12 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 2.0,
-      "output_cost": 10.0,
+      "input_cost": 2,
+      "output_cost": 10,
       "cache_read": 0.1,
       "cache_write": 2.5,
       "unit": "1M tokens",
-      "cache_write_12h": 5.0
+      "cache_write_12h": 5
     },
     "features": [
       "web_search",
@@ -81,8 +81,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 1.0,
-      "output_cost": 5.0,
+      "input_cost": 1,
+      "output_cost": 5,
       "cache_read": 0.05,
       "cache_write": 1.25,
       "unit": "1M tokens",
@@ -145,8 +145,8 @@
       "audio"
     ],
     "pricing": {
-      "input_cost": 4.0,
-      "output_cost": 24.0,
+      "input_cost": 4,
+      "output_cost": 24,
       "cache_read": 0.4,
       "cache_write": null,
       "unit": "1M tokens"
@@ -162,17 +162,17 @@
     "last_verified": "2026-11-06",
     "pricing_modalities": {
       "audio": {
-        "input_cost": 32.0,
-        "output_cost": 64.0,
+        "input_cost": 32,
+        "output_cost": 64,
         "cache_read": 0.4
       },
       "text": {
-        "input_cost": 4.0,
-        "output_cost": 24.0,
+        "input_cost": 4,
+        "output_cost": 24,
         "cache_read": 0.4
       },
       "image": {
-        "input_cost": 5.0,
+        "input_cost": 5,
         "output_cost": null,
         "cache_read": 0.5
       }
@@ -212,8 +212,8 @@
     "last_verified": "2026-11-06",
     "pricing_modalities": {
       "audio": {
-        "input_cost": 10.0,
-        "output_cost": 20.0,
+        "input_cost": 10,
+        "output_cost": 20,
         "cache_read": 0.3
       },
       "text": {
@@ -243,10 +243,10 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 4.0,
-      "output_cost": 20.0,
+      "input_cost": 4,
+      "output_cost": 20,
       "cache_read": 0.4,
-      "cache_write": 5.0,
+      "cache_write": 5,
       "unit": "1M tokens"
     },
     "features": [
@@ -272,8 +272,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 2.0,
-      "output_cost": 12.0,
+      "input_cost": 2,
+      "output_cost": 12,
       "cache_read": 0.2,
       "cache_write": 2.5,
       "unit": "1M tokens"
@@ -328,9 +328,9 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 30.0,
-      "output_cost": 180.0,
-      "cache_read": 30.0,
+      "input_cost": 30,
+      "output_cost": 180,
+      "cache_read": 30,
       "cache_write": null,
       "unit": "1M tokens"
     },
@@ -360,7 +360,7 @@
     ],
     "pricing": {
       "input_cost": 2.5,
-      "output_cost": 10.0,
+      "output_cost": 10,
       "cache_read": 1.25,
       "cache_write": null,
       "unit": "1M tokens"
@@ -419,9 +419,9 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 10.0,
-      "output_cost": 30.0,
-      "cache_read": 5.0,
+      "input_cost": 10,
+      "output_cost": 30,
+      "cache_read": 5,
       "cache_write": null,
       "unit": "1M tokens"
     },
@@ -448,8 +448,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 30.0,
-      "output_cost": 60.0,
+      "input_cost": 30,
+      "output_cost": 60,
       "cache_read": null,
       "cache_write": null,
       "unit": "1M tokens"
@@ -504,8 +504,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 15.0,
-      "output_cost": 60.0,
+      "input_cost": 15,
+      "output_cost": 60,
       "cache_read": 7.5,
       "cache_write": null,
       "unit": "1M tokens"
@@ -534,8 +534,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 15.0,
-      "output_cost": 60.0,
+      "input_cost": 15,
+      "output_cost": 60,
       "cache_read": 7.5,
       "cache_write": null,
       "unit": "1M tokens"
@@ -621,8 +621,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 10.0,
-      "output_cost": 50.0,
+      "input_cost": 10,
+      "output_cost": 50,
       "cache_read": 0.25,
       "cache_write": 12.5,
       "unit": "1M tokens"
@@ -652,9 +652,9 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 10.0,
-      "output_cost": 50.0,
-      "cache_read": 1.0,
+      "input_cost": 10,
+      "output_cost": 50,
+      "cache_read": 1,
       "cache_write": 12.5,
       "unit": "1M tokens"
     },
@@ -681,10 +681,10 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 4.0,
-      "output_cost": 20.0,
+      "input_cost": 4,
+      "output_cost": 20,
       "cache_read": 0.2,
-      "cache_write": 5.0,
+      "cache_write": 5,
       "unit": "1M tokens"
     },
     "features": [
@@ -711,8 +711,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 5.0,
-      "output_cost": 25.0,
+      "input_cost": 5,
+      "output_cost": 25,
       "cache_read": 0.5,
       "cache_write": 6.25,
       "unit": "1M tokens"
@@ -740,8 +740,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 2.0,
-      "output_cost": 10.0,
+      "input_cost": 2,
+      "output_cost": 10,
       "cache_read": 0.2,
       "cache_write": 2.5,
       "unit": "1M tokens"
@@ -770,8 +770,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 3.0,
-      "output_cost": 15.0,
+      "input_cost": 3,
+      "output_cost": 15,
       "cache_read": 0.3,
       "cache_write": 3.75,
       "unit": "1M tokens"
@@ -829,8 +829,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 1.0,
-      "output_cost": 5.0,
+      "input_cost": 1,
+      "output_cost": 5,
       "cache_read": 0.1,
       "cache_write": 1.25,
       "unit": "1M tokens"
@@ -858,8 +858,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 3.0,
-      "output_cost": 15.0,
+      "input_cost": 3,
+      "output_cost": 15,
       "cache_read": 0.3,
       "cache_write": 3.75,
       "unit": "1M tokens"
@@ -890,9 +890,9 @@
     ],
     "pricing": {
       "input_cost": 0.8,
-      "output_cost": 4.0,
+      "output_cost": 4,
       "cache_read": 0.08,
-      "cache_write": 1.0,
+      "cache_write": 1,
       "unit": "1M tokens"
     },
     "features": [
@@ -919,8 +919,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 15.0,
-      "output_cost": 75.0,
+      "input_cost": 15,
+      "output_cost": 75,
       "cache_read": 1.5,
       "cache_write": 18.75,
       "unit": "1M tokens"
@@ -949,8 +949,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 3.0,
-      "output_cost": 15.0,
+      "input_cost": 3,
+      "output_cost": 15,
       "cache_read": 0.3,
       "cache_write": 3.75,
       "unit": "1M tokens"
@@ -1010,8 +1010,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 2.0,
-      "output_cost": 10.0,
+      "input_cost": 2,
+      "output_cost": 10,
       "cache_read": 0.1,
       "cache_write": null,
       "unit": "1M tokens"
@@ -1107,7 +1107,7 @@
     ],
     "pricing": {
       "input_cost": 1.5,
-      "output_cost": 9.0,
+      "output_cost": 9,
       "cache_read": 0.15,
       "cache_write": null,
       "unit": "1M tokens"
@@ -1166,8 +1166,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 2.0,
-      "output_cost": 12.0,
+      "input_cost": 2,
+      "output_cost": 12,
       "cache_read": 0.2,
       "cache_write": null,
       "unit": "1M tokens"
@@ -1197,7 +1197,7 @@
     ],
     "pricing": {
       "input_cost": 0.5,
-      "output_cost": 3.0,
+      "output_cost": 3,
       "cache_read": 0.05,
       "cache_write": null,
       "unit": "1M tokens"
@@ -1228,7 +1228,7 @@
     ],
     "pricing": {
       "input_cost": 1.25,
-      "output_cost": 5.0,
+      "output_cost": 5,
       "cache_read": 0.3,
       "cache_write": null,
       "unit": "1M tokens"
@@ -1355,9 +1355,9 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 0.0,
-      "output_cost": 0.0,
-      "cache_read": 0.0,
+      "input_cost": 0,
+      "output_cost": 0,
+      "cache_read": 0,
       "cache_write": null,
       "unit": "1M tokens"
     },
@@ -1384,8 +1384,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 2.0,
-      "output_cost": 6.0,
+      "input_cost": 2,
+      "output_cost": 6,
       "cache_read": 0.5,
       "cache_write": null,
       "unit": "1M tokens"
@@ -1414,8 +1414,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 2.0,
-      "output_cost": 6.0,
+      "input_cost": 2,
+      "output_cost": 6,
       "cache_read": 0.5,
       "cache_write": null,
       "unit": "1M tokens"
@@ -1442,8 +1442,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 2.0,
-      "output_cost": 6.0,
+      "input_cost": 2,
+      "output_cost": 6,
       "cache_read": 0.3,
       "cache_write": null,
       "unit": "1M tokens"
@@ -1469,8 +1469,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 1.0,
-      "output_cost": 2.0,
+      "input_cost": 1,
+      "output_cost": 2,
       "cache_read": 0.2,
       "cache_write": null,
       "unit": "1M tokens"
@@ -1498,8 +1498,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 2.0,
-      "output_cost": 10.0,
+      "input_cost": 2,
+      "output_cost": 10,
       "cache_read": 0.2,
       "cache_write": null,
       "unit": "1M tokens"
@@ -1528,7 +1528,7 @@
     ],
     "pricing": {
       "input_cost": 0.2,
-      "output_cost": 1.0,
+      "output_cost": 1,
       "cache_read": 0.02,
       "cache_write": null,
       "unit": "1M tokens"
@@ -1555,8 +1555,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 5.0,
-      "output_cost": 15.0,
+      "input_cost": 5,
+      "output_cost": 15,
       "cache_read": 0.5,
       "cache_write": null,
       "unit": "1M tokens"
@@ -1673,8 +1673,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 2.0,
-      "output_cost": 6.0,
+      "input_cost": 2,
+      "output_cost": 6,
       "cache_read": 0.2,
       "cache_write": null,
       "unit": "1M tokens"
@@ -1846,9 +1846,9 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 0.0,
-      "output_cost": 0.0,
-      "cache_read": 0.0,
+      "input_cost": 0,
+      "output_cost": 0,
+      "cache_read": 0,
       "cache_write": null,
       "unit": "1M tokens"
     },
@@ -1905,8 +1905,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 2.0,
-      "output_cost": 6.0,
+      "input_cost": 2,
+      "output_cost": 6,
       "cache_read": 0.25,
       "cache_write": 2.5,
       "unit": "1M tokens"
@@ -1965,7 +1965,7 @@
     ],
     "pricing": {
       "input_cost": 0.5,
-      "output_cost": 3.0,
+      "output_cost": 3,
       "cache_read": 0.05,
       "cache_write": 0.625,
       "unit": "1M tokens"
@@ -2021,10 +2021,10 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 3.0,
-      "output_cost": 15.0,
+      "input_cost": 3,
+      "output_cost": 15,
       "cache_read": 0.3,
-      "cache_write": 3.0,
+      "cache_write": 3,
       "unit": "1M tokens"
     },
     "features": [
@@ -2050,7 +2050,7 @@
     ],
     "pricing": {
       "input_cost": 0.95,
-      "output_cost": 4.0,
+      "output_cost": 4,
       "cache_read": 0.19,
       "cache_write": null,
       "unit": "1M tokens"
@@ -2163,9 +2163,9 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 0.0,
-      "output_cost": 0.0,
-      "cache_read": 0.0,
+      "input_cost": 0,
+      "output_cost": 0,
+      "cache_read": 0,
       "cache_write": null,
       "unit": "1M tokens"
     },
@@ -2192,10 +2192,10 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 0.0,
-      "output_cost": 0.0,
-      "cache_read": 0.0,
-      "cache_write": 0.0,
+      "input_cost": 0,
+      "output_cost": 0,
+      "cache_read": 0,
+      "cache_write": 0,
       "unit": "1M tokens"
     },
     "features": [
@@ -2221,9 +2221,9 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 0.0,
-      "output_cost": 0.0,
-      "cache_read": 0.0,
+      "input_cost": 0,
+      "output_cost": 0,
+      "cache_read": 0,
       "cache_write": null,
       "unit": "1M tokens"
     },
@@ -2248,9 +2248,9 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 0.0,
-      "output_cost": 0.0,
-      "cache_read": 0.0,
+      "input_cost": 0,
+      "output_cost": 0,
+      "cache_read": 0,
       "cache_write": null,
       "unit": "1M tokens"
     },
@@ -2277,9 +2277,9 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 0.0,
-      "output_cost": 0.0,
-      "cache_read": 0.0,
+      "input_cost": 0,
+      "output_cost": 0,
+      "cache_read": 0,
       "cache_write": null,
       "unit": "1M tokens"
     },
@@ -2307,9 +2307,9 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 0.0,
-      "output_cost": 0.0,
-      "cache_read": 0.0,
+      "input_cost": 0,
+      "output_cost": 0,
+      "cache_read": 0,
       "cache_write": null,
       "unit": "1M tokens"
     },
@@ -2337,9 +2337,9 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 0.0,
-      "output_cost": 0.0,
-      "cache_read": 0.0,
+      "input_cost": 0,
+      "output_cost": 0,
+      "cache_read": 0,
       "cache_write": null,
       "unit": "1M tokens"
     },
@@ -2365,9 +2365,9 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 0.0,
-      "output_cost": 0.0,
-      "cache_read": 0.0,
+      "input_cost": 0,
+      "output_cost": 0,
+      "cache_read": 0,
       "cache_write": null,
       "unit": "1M tokens"
     },
@@ -2394,9 +2394,9 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 0.0,
-      "output_cost": 0.0,
-      "cache_read": 0.0,
+      "input_cost": 0,
+      "output_cost": 0,
+      "cache_read": 0,
       "cache_write": null,
       "unit": "1M tokens"
     },
@@ -2424,9 +2424,9 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 0.0,
-      "output_cost": 0.0,
-      "cache_read": 0.0,
+      "input_cost": 0,
+      "output_cost": 0,
+      "cache_read": 0,
       "cache_write": null,
       "unit": "1M tokens"
     },
@@ -2454,8 +2454,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 5.0,
-      "output_cost": 25.0,
+      "input_cost": 5,
+      "output_cost": 25,
       "cache_read": 0.5,
       "cache_write": 6.25,
       "unit": "1M tokens"
@@ -2485,8 +2485,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 5.0,
-      "output_cost": 25.0,
+      "input_cost": 5,
+      "output_cost": 25,
       "cache_read": 0.5,
       "cache_write": 6.25,
       "unit": "1M tokens"
@@ -2516,8 +2516,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 5.0,
-      "output_cost": 25.0,
+      "input_cost": 5,
+      "output_cost": 25,
       "cache_read": 0.5,
       "cache_write": 6.25,
       "unit": "1M tokens"
@@ -2547,8 +2547,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 5.0,
-      "output_cost": 25.0,
+      "input_cost": 5,
+      "output_cost": 25,
       "cache_read": 0.5,
       "cache_write": 6.25,
       "unit": "1M tokens"
@@ -2578,8 +2578,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 3.0,
-      "output_cost": 15.0,
+      "input_cost": 3,
+      "output_cost": 15,
       "cache_read": 0.3,
       "cache_write": 3.75,
       "unit": "1M tokens"
@@ -2609,8 +2609,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 2.0,
-      "output_cost": 10.0,
+      "input_cost": 2,
+      "output_cost": 10,
       "cache_read": 0.2,
       "cache_write": 2.5,
       "unit": "1M tokens"
@@ -2639,9 +2639,9 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 0.0,
-      "output_cost": 0.0,
-      "cache_read": 0.0,
+      "input_cost": 0,
+      "output_cost": 0,
+      "cache_read": 0,
       "cache_write": null,
       "unit": "1M tokens"
     },
@@ -2667,9 +2667,9 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 0.0,
-      "output_cost": 0.0,
-      "cache_read": 0.0,
+      "input_cost": 0,
+      "output_cost": 0,
+      "cache_read": 0,
       "cache_write": null,
       "unit": "1M tokens"
     },
@@ -2695,9 +2695,9 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 0.0,
-      "output_cost": 0.0,
-      "cache_read": 0.0,
+      "input_cost": 0,
+      "output_cost": 0,
+      "cache_read": 0,
       "cache_write": null,
       "unit": "1M tokens"
     },
@@ -2725,9 +2725,9 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 0.0,
-      "output_cost": 0.0,
-      "cache_read": 0.0,
+      "input_cost": 0,
+      "output_cost": 0,
+      "cache_read": 0,
       "cache_write": null,
       "unit": "1M tokens"
     },
@@ -2755,7 +2755,7 @@
     ],
     "pricing": {
       "input_cost": 0.042,
-      "output_cost": 0.0,
+      "output_cost": 0,
       "cache_read": null,
       "cache_write": null,
       "unit": "1M tokens"
@@ -2782,8 +2782,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 0.0,
-      "output_cost": 0.0,
+      "input_cost": 0,
+      "output_cost": 0,
       "cache_read": null,
       "cache_write": null,
       "unit": "1M tokens"
@@ -2844,7 +2844,7 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 1.0,
+      "input_cost": 1,
       "output_cost": 3.2,
       "cache_read": 0.2,
       "cache_write": null,
@@ -2931,9 +2931,9 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 0.0,
-      "output_cost": 0.0,
-      "cache_read": 0.0,
+      "input_cost": 0,
+      "output_cost": 0,
+      "cache_read": 0,
       "cache_write": null,
       "unit": "1M tokens"
     },
@@ -3109,7 +3109,7 @@
     ],
     "pricing": {
       "input_cost": 1.25,
-      "output_cost": 10.0,
+      "output_cost": 10,
       "cache_read": 0.125,
       "cache_write": null,
       "unit": "1M tokens"
@@ -3138,7 +3138,7 @@
     ],
     "pricing": {
       "input_cost": 0.25,
-      "output_cost": 2.0,
+      "output_cost": 2,
       "cache_read": 0.025,
       "cache_write": null,
       "unit": "1M tokens"
@@ -3168,7 +3168,7 @@
     ],
     "pricing": {
       "input_cost": 1.75,
-      "output_cost": 14.0,
+      "output_cost": 14,
       "cache_read": 0.175,
       "cache_write": null,
       "unit": "1M tokens"
@@ -3197,7 +3197,7 @@
     ],
     "pricing": {
       "input_cost": 1.75,
-      "output_cost": 14.0,
+      "output_cost": 14,
       "cache_read": 0.175,
       "cache_write": null,
       "unit": "1M tokens"
@@ -3226,7 +3226,7 @@
     ],
     "pricing": {
       "input_cost": 1.75,
-      "output_cost": 14.0,
+      "output_cost": 14,
       "cache_read": 0.175,
       "cache_write": null,
       "unit": "1M tokens"
@@ -3255,7 +3255,7 @@
     ],
     "pricing": {
       "input_cost": 1.75,
-      "output_cost": 14.0,
+      "output_cost": 14,
       "cache_read": 0.175,
       "cache_write": null,
       "unit": "1M tokens"
@@ -3284,7 +3284,7 @@
     ],
     "pricing": {
       "input_cost": 2.5,
-      "output_cost": 15.0,
+      "output_cost": 15,
       "cache_read": 0.25,
       "cache_write": null,
       "unit": "1M tokens"
@@ -3372,8 +3372,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 5.0,
-      "output_cost": 30.0,
+      "input_cost": 5,
+      "output_cost": 30,
       "cache_read": 0.5,
       "cache_write": null,
       "unit": "1M tokens"
@@ -3403,9 +3403,9 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 30.0,
-      "output_cost": 180.0,
-      "cache_read": 30.0,
+      "input_cost": 30,
+      "output_cost": 180,
+      "cache_read": 30,
       "cache_write": null,
       "unit": "1M tokens"
     },
@@ -3433,8 +3433,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 2.0,
-      "output_cost": 10.0,
+      "input_cost": 2,
+      "output_cost": 10,
       "cache_read": 0.2,
       "cache_write": 2.5,
       "unit": "1M tokens"
@@ -3465,7 +3465,7 @@
     ],
     "pricing": {
       "input_cost": 0.05,
-      "output_cost": 0.0,
+      "output_cost": 0,
       "cache_read": null,
       "cache_write": null,
       "unit": "1 min"
@@ -3494,7 +3494,7 @@
     ],
     "pricing": {
       "input_cost": 0.6,
-      "output_cost": 3.0,
+      "output_cost": 3,
       "cache_read": 0.1,
       "cache_write": null,
       "unit": "1M tokens"
@@ -3522,7 +3522,7 @@
     ],
     "pricing": {
       "input_cost": 0.95,
-      "output_cost": 4.0,
+      "output_cost": 4,
       "cache_read": 0.16,
       "cache_write": null,
       "unit": "1M tokens"
@@ -3661,8 +3661,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 4.0,
-      "output_cost": 20.0,
+      "input_cost": 4,
+      "output_cost": 20,
       "cache_read": 0.2,
       "cache_write": null,
       "unit": "1M tokens"
@@ -3691,8 +3691,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 2.0,
-      "output_cost": 6.0,
+      "input_cost": 2,
+      "output_cost": 6,
       "cache_read": 0.5,
       "cache_write": null,
       "unit": "1M tokens"
@@ -3721,8 +3721,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 2.0,
-      "output_cost": 6.0,
+      "input_cost": 2,
+      "output_cost": 6,
       "cache_read": 0.5,
       "cache_write": null,
       "unit": "1M tokens"
@@ -3751,8 +3751,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 2.0,
-      "output_cost": 6.0,
+      "input_cost": 2,
+      "output_cost": 6,
       "cache_read": 0.5,
       "cache_write": null,
       "unit": "1M tokens"
@@ -3781,8 +3781,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 2.0,
-      "output_cost": 10.0,
+      "input_cost": 2,
+      "output_cost": 10,
       "cache_read": 0.5,
       "cache_write": null,
       "unit": "1M tokens"
@@ -3811,8 +3811,8 @@
       "text"
     ],
     "pricing": {
-      "input_cost": 2.0,
-      "output_cost": 10.0,
+      "input_cost": 2,
+      "output_cost": 10,
       "cache_read": 0.5,
       "cache_write": null,
       "unit": "1M tokens"
@@ -3877,7 +3877,7 @@
     ],
     "pricing": {
       "input_cost": 1.25,
-      "output_cost": 5.0,
+      "output_cost": 5,
       "cache_read": 0.3125,
       "cache_write": null,
       "unit": "1M tokens"
@@ -3940,14 +3940,14 @@
     ],
     "pricing": {
       "input_cost": null,
-      "output_cost": 0.04,
+      "output_cost": null,
       "unit": "image"
     },
     "features": [
       "image_generation"
     ],
-    "description": "Modèle de génération d'images haute fidélité d'OpenAI. Retiré de l'API OpenAI (préférer gpt-image-*).",
-    "source_url": "https://openai.com/api/pricing/",
+    "description": "Modèle de génération d'images haute fidélité d'OpenAI. Retiré de l'API OpenAI (préférer gpt-image-*). [Retiré : mock historique seulement.]",
+    "source_url": "https://developers.openai.com/api/docs/deprecations",
     "last_verified": "2026-11-07"
   },
   "dall-e-2": {
@@ -3965,14 +3965,14 @@
     ],
     "pricing": {
       "input_cost": null,
-      "output_cost": 0.02,
+      "output_cost": null,
       "unit": "image"
     },
     "features": [
       "image_generation"
     ],
-    "description": "Modèle historique de génération d'images d'OpenAI. Retiré de l'API OpenAI (préférer gpt-image-*).",
-    "source_url": "https://openai.com/api/pricing/",
+    "description": "Modèle historique de génération d'images d'OpenAI. Retiré de l'API OpenAI (préférer gpt-image-*). [Retiré : mock historique seulement.]",
+    "source_url": "https://developers.openai.com/api/docs/deprecations",
     "last_verified": "2026-11-07"
   },
   "tts-1": {
@@ -3989,7 +3989,7 @@
       "audio"
     ],
     "pricing": {
-      "input_cost": 15.0,
+      "input_cost": 15,
       "output_cost": null,
       "unit": "1M characters"
     },
@@ -4014,7 +4014,7 @@
       "audio"
     ],
     "pricing": {
-      "input_cost": 30.0,
+      "input_cost": 30,
       "output_cost": null,
       "unit": "1M characters"
     },
@@ -4040,14 +4040,14 @@
     ],
     "pricing": {
       "input_cost": null,
-      "output_cost": 0.03,
+      "output_cost": null,
       "unit": "image"
     },
     "features": [
       "image_generation"
     ],
-    "description": "Modèle de génération d'images photoréalistes de Google DeepMind. Accès requis au modèle Imagen (non exposé par toutes les clés Gemini API).",
-    "source_url": "https://cloud.google.com/vertex-ai/generative-ai/pricing",
+    "description": "Modèle de génération d'images photoréalistes de Google DeepMind. Accès requis au modèle Imagen (non exposé par toutes les clés Gemini API). [Retiré : mock historique seulement.]",
+    "source_url": "https://ai.google.dev/gemini-api/docs/deprecations",
     "last_verified": "2026-11-07"
   },
   "veo-2": {
@@ -4066,14 +4066,14 @@
     ],
     "pricing": {
       "input_cost": null,
-      "output_cost": 0.15,
+      "output_cost": null,
       "unit": "second"
     },
     "features": [
       "video_generation"
     ],
-    "description": "Modèle de génération vidéo cinématique de Google DeepMind. Accès requis au modèle Veo (non exposé par toutes les clés Gemini API). Préférer gemini-omni-1.2-flash (Veo 3.1 preview arrêté le 2026-10-22).",
-    "source_url": "https://deepmind.google/technologies/veo/",
+    "description": "Modèle de génération vidéo cinématique de Google DeepMind. Accès requis au modèle Veo (non exposé par toutes les clés Gemini API). Préférer gemini-omni-1.2-flash (Veo 3.1 preview arrêté le 2026-10-22). [Retiré : mock historique seulement.]",
+    "source_url": "https://ai.google.dev/gemini-api/docs/deprecations",
     "last_verified": "2026-11-07"
   },
   "gpt-image-1-mini": {
@@ -4198,8 +4198,8 @@
     "features": [
       "image_generation"
     ],
-    "description": "Génération d'images Gemini (generateContent, modalité IMAGE).",
-    "source_url": "https://ai.google.dev/gemini-api/docs/models",
+    "description": "Génération d'images Gemini (generateContent, modalité IMAGE). [Retiré : mock historique seulement.]",
+    "source_url": "https://ai.google.dev/gemini-api/docs/deprecations",
     "last_verified": "2026-11-07"
   },
   "gemini-3.1-flash-image": {
@@ -4484,6 +4484,33 @@
     ],
     "description": "Génération vidéo Google (redirigé vers 1.2 le 2026-12-03).",
     "source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-omni-flash",
+    "last_verified": "2026-11-07"
+  },
+  "veo-3.1-lite-generate-preview": {
+    "id": "veo-3.1-lite-generate-preview",
+    "name": "Google Veo 3.1 Lite Preview",
+    "family": "google",
+    "provider": "google",
+    "context_window": null,
+    "max_output_tokens": null,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "video"
+    ],
+    "pricing": {
+      "input_cost": null,
+      "output_cost": null,
+      "unit": "second"
+    },
+    "features": [
+      "text_to_video",
+      "image_to_video"
+    ],
+    "description": "Veo 3.1 Lite via Gemini API, tarification selon résolution et audio; pas de coût plat unique.",
+    "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
     "last_verified": "2026-11-07"
   }
 }
