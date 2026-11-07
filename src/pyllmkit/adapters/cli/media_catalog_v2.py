@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 import re
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -303,7 +303,8 @@ def diff_media_catalog(left: MediaCatalog, right: MediaCatalog) -> dict[str, tup
     """Deterministic offline diff of two versioned snapshots, provider-qualified."""
     old = {(m.api_provider, m.public_model_id): m for m in left.models}
     new = {(m.api_provider, m.public_model_id): m for m in right.models}
-    fmt = lambda key: f"{key[0]}:{key[1]}"
+    def fmt(key: tuple[str, str]) -> str:
+        return f"{key[0]}:{key[1]}"
     return {
         "added": tuple(sorted(fmt(key) for key in new.keys() - old.keys())),
         "removed": tuple(sorted(fmt(key) for key in old.keys() - new.keys())),
