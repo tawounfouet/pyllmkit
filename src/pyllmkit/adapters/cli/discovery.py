@@ -2,9 +2,7 @@
 
 import json
 import os
-import urllib.error
-import urllib.request
-from pathlib import Path
+undefinedfrom pathlib import Path
 from typing import Any
 
 from .config import find_config_file, get_config
@@ -66,6 +64,46 @@ def save_discovered_models(
     return target
 
 
+_MAX_DISCOVERY_BYTES = 1_048_576
+
+
+class _NoRedirectHandler(urllib.request.HTTPRedirectHandler):
+    """Fail closed: provider discovery never follows a redirect with credentials."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):  # type: ignore[no-untyped-def]
+        return None
+
+
+def _open_discovery_request(
+    request: urllib.request.Request, timeout: float,
+):
+    """Open only fixed endpoints with proxy discovery and redirects disabled."""
+    opener = urllib.request.build_opener(
+        urllib.request.ProxyHandler({}),
+        _NoRedirectHandler(),
+    )
+    return opener.open(request, timeout=timeout)
+
+
+def _fetch_discovery_json(
+    url: str, headers: dict[str, str], timeout: float,
+) -> dict[str, Any]:
+    """Read bounded JSON from an explicit provider endpoint, never from redirect URLs."""
+    if type(timeout) not in (float, int) or not 0 < timeout <= 120:
+        raise ValueError("invalid_discovery_timeout")
+    if not (url.startswith("https://") or url == "http://127.0.0.1:11434/api/tags"):
+        raise ValueError("invalid_discovery_endpoint")
+    request = urllib.request.Request(url, headers=headers)
+    with _open_discovery_request(request, float(timeout)) as response:
+        content = response.read(_MAX_DISCOVERY_BYTES + 1)
+    if len(content) > _MAX_DISCOVERY_BYTES:
+        raise ValueError("discovery_payload_too_large")
+    data = json.loads(content.decode("utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError("invalid_discovery_payload")
+    return data
+
+
 def fetch_provider_models(
     provider: str,
     api_key: str | None = None,
@@ -80,9 +118,7 @@ def fetch_provider_models(
             raise ValueError("Clé d'API OpenAI requise pour interroger le catalogue")
         url = "https://api.openai.com/v1/models"
         headers["Authorization"] = f"Bearer {api_key}"
-        req = urllib.request.Request(url, headers=headers)
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
+        data = _fetch_discovery_json(url, headers, timeout)
             items = data.get("data", [])
             return sorted(item["id"] for item in items if isinstance(item, dict) and "id" in item)
 
@@ -92,19 +128,14 @@ def fetch_provider_models(
         url = "https://api.anthropic.com/v1/models"
         headers["x-api-key"] = api_key
         headers["anthropic-version"] = "2023-06-01"
-        req = urllib.request.Request(url, headers=headers)
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
+        data = _fetch_discovery_json(url, headers, timeout)
             items = data.get("data", [])
             return sorted(item["id"] for item in items if isinstance(item, dict) and "id" in item)
 
     elif prov in ("google", "gemini"):
         if not api_key:
             raise ValueError("Clé d'API Gemini requise pour interroger le catalogue")
-        url = f"https://generativelanguage.googleapis.com/v1beta/models?key={api_key}"
-        req = urllib.request.Request(url, headers=headers)
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
+undefined        data = _fetch_discovery_json(url, headers, timeout)
             items = data.get("models", [])
             results = []
             for item in items:
@@ -120,9 +151,7 @@ def fetch_provider_models(
             raise ValueError("Clé d'API Mistral requise pour interroger le catalogue")
         url = "https://api.mistral.ai/v1/models"
         headers["Authorization"] = f"Bearer {api_key}"
-        req = urllib.request.Request(url, headers=headers)
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
+        data = _fetch_discovery_json(url, headers, timeout)
             items = data.get("data", [])
             return sorted(item["id"] for item in items if isinstance(item, dict) and "id" in item)
 
@@ -131,17 +160,13 @@ def fetch_provider_models(
             raise ValueError("Clé d'API xAI requise pour interroger le catalogue")
         url = "https://api.x.ai/v1/models"
         headers["Authorization"] = f"Bearer {api_key}"
-        req = urllib.request.Request(url, headers=headers)
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
+        data = _fetch_discovery_json(url, headers, timeout)
             items = data.get("data", [])
             return sorted(item["id"] for item in items if isinstance(item, dict) and "id" in item)
 
     elif prov == "ollama":
-        url = "http://localhost:11434/api/tags"
-        req = urllib.request.Request(url, headers=headers)
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
+undefined
+        data = _fetch_discovery_json(url, headers, timeout)
             items = data.get("models", [])
             results = []
             for item in items:
@@ -211,10 +236,9 @@ def sync_configured_providers(
                 "count": len(model_ids),
                 "models": model_ids,
             }
-        except Exception as exc:
-            results[prov] = {
+undefined = {
                 "status": "error",
-                "message": f"Échec ({exc})",
+undefined
                 "count": 0,
             }
 
