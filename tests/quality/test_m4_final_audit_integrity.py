@@ -46,11 +46,11 @@ def test_full_phase4_traceability_and_quality_gate_are_archived() -> None:
     assert "M4_GATE_REVIEW.md" in precheck
 
 
-def test_no_release_and_coverage_gate_are_enforced_by_source_metadata() -> None:
+def test_no_pypi_publication_and_coverage_gate_are_enforced_by_source_metadata() -> None:
     config = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     project = config["project"]
     assert project["name"] == "pyllmkit"
-    assert project["version"] == "0.1.0a2"
+    assert project["version"] == "0.3.0"
     assert project["dependencies"] == []
     workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
     assert "--cov-fail-under=95" in workflow

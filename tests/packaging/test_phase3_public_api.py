@@ -40,13 +40,13 @@ def test_m1_m2_m3_schema_versions_are_independent_v1() -> None:
     )
 
 
-def test_package_is_explicitly_unpublished_a2_source_candidate() -> None:
+def test_package_is_owner_approved_v030_source_tag_candidate() -> None:
     project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))[
         "project"
     ]
     assert project["name"] == "pyllmkit"
-    assert project["version"] == "0.1.0a2"
-    assert runtime_version == "0.1.0a2"
+    assert project["version"] == "0.3.0"
+    assert runtime_version == "0.3.0"
     assert project["dependencies"] == []
     assert project["requires-python"] == ">=3.11"
     assert project["license"] == "MIT"

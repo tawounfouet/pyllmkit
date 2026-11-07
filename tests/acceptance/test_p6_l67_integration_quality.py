@@ -167,10 +167,10 @@ def test_ac054_snapshot_replay_noop_without_side_effects() -> None:
 
 
 def test_ac055_package_version_and_python_distribution_constraints_remain_stable() -> None:
-    assert pyllmkit.__version__ == "0.1.0a2"
-    assert importlib.metadata.version("pyllmkit") == "0.1.0a2"
+    assert pyllmkit.__version__ == "0.3.0"
+    assert importlib.metadata.version("pyllmkit") == "0.3.0"
     pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert 'version = "0.1.0a2"' in pyproject
+    assert 'version = "0.3.0"' in pyproject
     assert "setuptools" in pyproject
     assert "pyllmkit*" in pyproject
 
