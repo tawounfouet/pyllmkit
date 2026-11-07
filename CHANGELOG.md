@@ -2,6 +2,14 @@
 
 ## [Unreleased] - Support Multimodal Universel (Entrée & Génération de Médias)
 
+### M0 - Catalogue média et sécurité des dépréciations (2026-11-07)
+
+- Audit source des 23 modèles strictement médias, avec statuts `current`, `deprecated`, `retired`, `unverified` et `unknown` : [rapport M0](docs/audits/MEDIA_MODEL_AVAILABILITY_AUDIT.md).
+- Refus `model_retired` / `model_unverified` avant credentials et réseau, aussi dans les adaptateurs. Simulation historique conservée.
+- Défaut image `gpt-image-2` ; défaut TTS historique `gpt-4o-mini-tts` maintenu avec avertissement et migration Realtime encore requise avant 2027-01-06.
+- Prix d'anciens modèles retirés supprimés des estimations opérationnelles ; nouveau Veo 3.1 Lite sans prix forfaitaire inventé.
+- Limite de 24 MiB pour les corps JSON média sortants, CI et tests de non-régression renforcés.
+
 ### 1. Compréhension Multimodale en Entrée (Input: Images, Audio, Vidéo)
 - **Domaine `interactions`** :
   - Ajout des types de valeur immuables `AudioContent` et `VideoContent` (héritant de `ContentPart`) avec modality et format canoniques.
