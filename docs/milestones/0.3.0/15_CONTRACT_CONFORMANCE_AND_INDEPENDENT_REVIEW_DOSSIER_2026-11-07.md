@@ -146,3 +146,9 @@ L'auteur assistant **ne peut ni remplir une signature humaine**, ni transformer 
 5. Ajouter une note de migration/compatibilité, préparer une candidate et qualifier G9 séparément (issue #103).
 
 **Cette publication documentaire n'est pas un GO de tag, de release ou de PyPI.**
+
+## 9. Addendum - exception propriétaire pour la revue tierce (2026-11-07)
+
+Les analyses et classifications de preuves ci-dessus restent une trace historique de la situation avant décision du propriétaire. Celui-ci est l'unique développeur et mainteneur et a **accepté lui-même les contrats et risques documentés** pour le périmètre text-only offline, tout en déclarant avoir testé localement. L'obligation de reviewer différent a été levée sans prétendre qu'une revue indépendante a eu lieu : [#105](https://github.com/tawounfouet/pyllmkit/issues/105) close `not_planned`.
+
+L'acte normatif actualisé, y compris les réserves techniques non effacées, figure dans [17_OWNER_SELF_ACCEPTANCE_AND_SCOPED_GATES_2026-11-07.md](17_OWNER_SELF_ACCEPTANCE_AND_SCOPED_GATES_2026-11-07.md). La sécurité live et G9 release restent des décisions distinctes.
