@@ -7,6 +7,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from pyllmkit.adapters.inference.media_lifecycle import MediaLifecycle, media_model_policy
+
 # Default path to packaged catalog
 _DEFAULT_CATALOG_PATH = Path(__file__).parent / "data" / "models_catalog.json"
 
@@ -198,6 +200,8 @@ def compute_run_cost(
     if not isinstance(model_name, str) or not model_name:
         return None, "-"
 
+    if media_model_policy(model_name).state is MediaLifecycle.RETIRED:
+        return None, "-"
     spec = get_model_spec(model_name)
     if spec is None:
         return None, "-"
@@ -276,6 +280,8 @@ def compute_run_cost(
 
 def format_pricing_provenance(model_name: str) -> str:
     """Clearly label local, potentially stale prices, never live billing evidence."""
+    if media_model_policy(model_name).state is MediaLifecycle.RETIRED:
+        return "Modèle retiré : aucun tarif opérationnel applicable."
     spec = get_model_spec(model_name)
     if spec is None:
         return "Prix non disponible (aucune source tarifaire vérifiée)"
