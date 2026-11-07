@@ -82,3 +82,14 @@ merges do **not** count as a formal independent review.
   **NO-GO** until each blocked gate has verifiable evidence.
 
 **No S9 publication operation is authorized or performed.**
+
+## 6. Addendum propriétaire du 2026-11-07 (sans réécriture des décisions historiques)
+
+Le propriétaire est l'unique développeur et mainteneur. Il déclare avoir tout testé localement et accepte personnellement la baseline de développement `text_only_v1` offline. Il **renonce à l'exigence de revue tierce et aux protections obligatoires de main** pour ce projet.
+
+- [#22](https://github.com/tawounfouet/pyllmkit/issues/22) : branche protégée non requise, issue close `not_planned`, pas de protection active.
+- [#105](https://github.com/tawounfouet/pyllmkit/issues/105) : revue indépendante non requise, issue close `not_planned`, pas de revue indépendante réalisée.
+- [Décision propriétaire #17](17_OWNER_SELF_ACCEPTANCE_AND_SCOPED_GATES_2026-11-07.md) : G0/G1 acceptés offline ; G2-G8 acceptés dans le périmètre documenté avec exceptions, G6-live NO-GO, G9 toujours sans GO.
+- [CI main #42322797692](https://github.com/tawounfouet/pyllmkit/actions/runs/42322797692) : 3/3 jobs Python réussis au SHA `125b2e67d55954e949c9a836f7ceed8f7adaac2b`.
+
+Cet addendum **remplace les deux exigences procédurales de revue tierce et de protection main comme obstacles de publication**, sans prétendre qu'elles ont été techniquement satisfaites. Les contrôles de version, artefacts, sécurité live applicable, compatibilité et autorisations par canal de publication continuent de relever de G9. Le statut historique `NO-GO` de ce document reflète la situation d'avant cette décision ; le registre actuel est [#103](https://github.com/tawounfouet/pyllmkit/issues/103).
