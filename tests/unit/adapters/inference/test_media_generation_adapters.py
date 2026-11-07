@@ -142,7 +142,7 @@ def test_http_error_detail_is_recorded_and_sanitized() -> None:
         io.BytesIO(json.dumps({"error": {"message": "The model 'dall-e-3' does not exist. key sk-proj-test123456789"}}).encode()),
     )
     diag = MediaDiagnostics()
-    ex = _invoke("dall-e-3", _Recorder([err]), diagnostics=diag)
+    ex = _invoke("gpt-image-2", _Recorder([err]), diagnostics=diag)
     assert ex.run.failure.code == "model_not_found"
     assert diag.http_status == 400
     assert "does not exist" in (diag.last_error or "")
@@ -158,11 +158,11 @@ def test_gemini_image_generate_content() -> None:
         ]}}],
         "usageMetadata": {"promptTokenCount": 4, "candidatesTokenCount": 1290, "totalTokenCount": 1294},
     }])
-    ex = _invoke("gemini-2.5-flash-image", rec, options=MediaGenerationOptions(aspect_ratio="16:9"))
+    ex = _invoke("gemini-3.1-flash-image", rec, options=MediaGenerationOptions(aspect_ratio="16:9"))
     out = ex.response.output
     assert isinstance(out, ImageOutput) and out.mime_type == "image/png"
     req = rec.requests[0]
-    assert req.full_url.endswith("/models/gemini-2.5-flash-image:generateContent")
+    assert req.full_url.endswith("/models/gemini-3.1-flash-image:generateContent")
     assert req.get_header("X-goog-api-key")
     body = rec.payload(0)
     assert "IMAGE" in body["generationConfig"]["responseModalities"]
@@ -187,7 +187,7 @@ def test_gemini_tts_wraps_raw_pcm_into_wav() -> None:
 
 def test_gemini_blocked_prompt_maps_to_content_filtered() -> None:
     diag = MediaDiagnostics()
-    ex = _invoke("gemini-2.5-flash-image", _Recorder([{"promptFeedback": {"blockReason": "SAFETY"}}]), diagnostics=diag)
+    ex = _invoke("gemini-3.1-flash-image", _Recorder([{"promptFeedback": {"blockReason": "SAFETY"}}]), diagnostics=diag)
     assert ex.run.failure.code == "content_filtered"
     assert "SAFETY" in (diag.last_error or "")
 
@@ -200,9 +200,9 @@ def test_veo_long_running_operation_polling() -> None:
             "generatedSamples": [{"video": {"uri": "https://generativelanguage.googleapis.com/v1beta/files/x:download"}}]}}},
         b"\x00\x00\x00\x18ftypmp42",
     ])
-    ex = _invoke("veo-2", rec, options=MediaGenerationOptions(poll_interval_seconds=0.0, duration_seconds=5))
+    ex = _invoke("veo-3.1-lite-generate-preview", rec, options=MediaGenerationOptions(poll_interval_seconds=0.0, duration_seconds=5))
     assert isinstance(ex.response.output, VideoOutput)
-    assert rec.requests[0].full_url.endswith("/models/veo-2.0-generate-001:predictLongRunning")
+    assert rec.requests[0].full_url.endswith("/models/veo-3.1-lite-generate-preview:predictLongRunning")
     assert rec.requests[2].full_url.endswith("/v1beta/operations/abc")
 
 
@@ -371,9 +371,9 @@ def test_missing_credential_is_reported(monkeypatch: pytest.MonkeyPatch) -> None
 
 def test_openai_image_url_fallback_and_empty_payload() -> None:
     rec = _Recorder([{"data": [{"url": "https://files.openai.com/img.png"}]}, PNG_1x1])
-    ex = _invoke("dall-e-3", rec)
+    ex = _invoke("gpt-image-2", rec)
     assert isinstance(ex.response.output, ImageOutput)
-    assert rec.payload(0)["quality"] == "standard"
+    assert rec.payload(0)["model"] == "gpt-image-2"
     diag = MediaDiagnostics()
     ex2 = _invoke("gpt-image-1-mini", _Recorder([{"data": []}]), diagnostics=diag)
     assert ex2.run.failure.code == "unsupported_provider_output"
@@ -418,12 +418,13 @@ def test_gemini_omni_incomplete_status() -> None:
     assert ex.run.failure.code == "provider_not_completed"
 
 
-def test_dead_veo_id_suggests_omni() -> None:
-    err = urllib.error.HTTPError("https://x.test", 404, "nf", {}, io.BytesIO(b'{"error": {"message": "not found"}}'))  # type: ignore[arg-type]
+def test_retired_veo_id_rejected_without_network() -> None:
+    rec = _Recorder([])
     diag = MediaDiagnostics()
-    ex = _invoke("veo-2", _Recorder([err]), diagnostics=diag)
-    assert ex.run.failure.code == "model_not_found"
-    assert "gemini-omni-1.2-flash" in (diag.last_error or "")
+    ex = _invoke("veo-2", rec, diagnostics=diag)
+    assert ex.run.failure.code == "model_retired"
+    assert rec.requests == []
+    assert diag.http_status is None
 
 
 # --------------------------------------------------------------------- FinOps
@@ -433,8 +434,8 @@ def test_media_cost_never_assumes_quantities() -> None:
     assert compute_run_cost("veo-2", None, None) == (None, "-")
     assert compute_run_cost("dall-e-3", None, None) == (None, "-")
     assert compute_run_cost("tts-1", None, None) == (None, "-")
-    assert compute_run_cost("veo-2", None, None, output_media_seconds=2.0)[0] == pytest.approx(0.30)
-    assert compute_run_cost("dall-e-3", None, None, output_media_units=2)[0] == pytest.approx(0.08)
+    assert compute_run_cost("veo-2", None, None, output_media_seconds=2.0) == (None, "-")
+    assert compute_run_cost("dall-e-3", None, None, output_media_units=2) == (None, "-")
 
 
 def test_runs_list_does_not_bill_failed_or_mock_runs(tmp_path: Any) -> None:
@@ -452,6 +453,6 @@ def test_runs_list_does_not_bill_failed_or_mock_runs(tmp_path: Any) -> None:
     result = CliRunner().invoke(app, ["runs", "list"], env={"COLUMNS": "250"})
     assert result.exit_code == 0, result.output
     assert "$0.750" not in result.output
-    assert result.output.count("$0.04") == 1  # only the completed live image run
+    assert "$0.04" not in result.output  # historical retired price is not a current quote
     shown = CliRunner().invoke(app, ["runs", "inspect", "failedveo00000000"], env={"COLUMNS": "200"})
     assert "non facturé" in shown.output
