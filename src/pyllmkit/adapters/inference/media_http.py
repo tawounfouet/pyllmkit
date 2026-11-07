@@ -13,9 +13,11 @@ infrastructure; the domain never sees HTTP, secrets or provider payloads.
 from __future__ import annotations
 
 import base64
+import http.client
 import json
 import re
 import socket
+import ssl
 import struct
 import urllib.error
 import urllib.request
@@ -247,6 +249,48 @@ class _DenyMediaRedirect(urllib.request.HTTPRedirectHandler):
         raise InvocationPortError("unsafe_provider_destination")
 
 
+class _PinnedHTTPSConnection(http.client.HTTPSConnection):
+    """Connect to a vetted IP while authenticating TLS against the URL hostname."""
+
+    def __init__(self, host: str, *, pinned_ip: str, **kwargs: Any) -> None:
+        super().__init__(host, **kwargs)
+        self._pinned_ip = pinned_ip
+
+    def connect(self) -> None:
+        if self._tunnel_host is not None:
+            raise InvocationPortError("unsafe_provider_destination")
+        self.sock = self._create_connection(
+            (self._pinned_ip, self.port), self.timeout, self.source_address,
+        )
+        self.sock = self._context.wrap_socket(self.sock, server_hostname=self.host)
+
+
+class _PinnedHTTPSHandler(urllib.request.HTTPSHandler):
+    """No second DNS lookup after peer-policy validation."""
+
+    def __init__(self, pinned_ip: str) -> None:
+        super().__init__(context=ssl.create_default_context())
+        self._ip = pinned_ip
+
+    def https_open(self, request: urllib.request.Request) -> Any:
+        def factory(host: str, **kwargs: Any) -> _PinnedHTTPSConnection:
+            return _PinnedHTTPSConnection(host, pinned_ip=self._ip, **kwargs)
+
+        return self.do_open(factory, request)
+
+
+def _public_endpoint_ip(host: str) -> str:
+    try:
+        addresses = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
+        candidates = [item[4][0] for item in addresses]
+        if not candidates or any(not ip_address(value).is_global for value in candidates):
+            raise InvocationPortError("unsafe_provider_destination")
+    except (OSError, ValueError):
+        raise InvocationPortError("unsafe_provider_destination") from None
+    # Prefer globally routable IPv4 on CI and single-stack networks.
+    return next((value for value in candidates if ":" not in value), candidates[0])
+
+
 def _trusted_media_host(url: str) -> str:
     """Restrict downloaded media to supplier-controlled public HTTPS hosts."""
     if (
@@ -290,22 +334,17 @@ def fetch_provider_media_bytes(
 ) -> bytes:
     """Fail closed for untrusted asset URLs: trusted HTTPS host, public DNS, no redirects.
 
-    The preflight does not pin the actual peer IP. Live DNS/TLS pinning is still
-    an operational release gate, not a guarantee of this helper.
+    DNS results must be globally routable and HTTPS connections are pinned to
+    a vetted IP while TLS verifies the original hostname. This is not a full
+    end-to-end provider-live production certification.
     """
     host = _trusted_media_host(url)
-    try:
-        addresses = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
-        if not addresses or any(
-            not ip_address(item[4][0]).is_global for item in addresses
-        ):
-            raise InvocationPortError("unsafe_provider_destination")
-    except (OSError, ValueError):
-        raise InvocationPortError("unsafe_provider_destination") from None
+    selected_ip = _public_endpoint_ip(host)
     request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT}, method="GET")
     opener = urllib.request.build_opener(
         urllib.request.ProxyHandler({}),
         _DenyMediaRedirect(),
+        _PinnedHTTPSHandler(selected_ip),
     )
     return _open(
         request, timeout, diagnostics, None, opener=opener,
@@ -349,9 +388,11 @@ def http_bytes(
                 raise InvocationPortError("unsafe_provider_destination")
         except ValueError:
             raise InvocationPortError("unsafe_provider_destination") from None
+        selected_ip = _public_endpoint_ip(parsed.hostname)
         opener = urllib.request.build_opener(
             urllib.request.ProxyHandler({}),
             _DenyMediaRedirect(),
+            _PinnedHTTPSHandler(selected_ip),
         )
     request = urllib.request.Request(url, data=data, headers=all_headers, method=method)
     return _open(request, timeout, diagnostics, secret, opener=opener)
