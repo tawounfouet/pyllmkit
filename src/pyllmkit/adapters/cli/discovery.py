@@ -270,7 +270,7 @@ def sync_configured_providers(
                 raise ValueError("discovery_payload_too_large")
             provider_id = "google" if prov == "gemini" else prov
             observed_success[provider_id] = list(validated_ids)
-            family = PROVIDER_FAMILY_MAP.get(prov, prov)
+            family = PROVIDER_FAMILY_MAP.get(provider_id, provider_id)
             runtime = "ollama" if prov == "ollama" else "cloud"
 
             for mid in validated_ids:
