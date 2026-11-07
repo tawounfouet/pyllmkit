@@ -15,9 +15,12 @@ from __future__ import annotations
 import base64
 import json
 import re
+import socket
 import struct
 import urllib.error
 import urllib.request
+from ipaddress import ip_address
+from urllib.parse import urlsplit
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any, Literal
@@ -31,6 +34,13 @@ from pyllmkit.protocols.credentials import CredentialResolverPort, SecretValue
 MediaKind = Literal["image", "audio", "video"]
 
 USER_AGENT = "PyLLMKit/0.3.0"
+MAX_PROVIDER_RESPONSE_BYTES = 160 * 1024 * 1024
+MAX_MEDIA_DOWNLOAD_BYTES = 100 * 1024 * 1024
+_MAX_ERROR_RESPONSE_BYTES = 8 * 1024
+_TRUSTED_MEDIA_SUFFIXES = (
+    "x.ai", "openai.com", "blob.core.windows.net",
+    "googleapis.com", "googleusercontent.com",
+)
 _MAX_DETAIL_CHARS = 400
 _SECRET_LIKE = re.compile(r"(sk-[A-Za-z0-9_\-]{8,}|xai-[A-Za-z0-9]{8,}|AIza[0-9A-Za-z_\-]{20,}|AQ\.[A-Za-z0-9_\-]{10,})")
 
@@ -168,18 +178,36 @@ def _error_message_from_body(raw: bytes) -> str:
     return str(body)[:_MAX_DETAIL_CHARS]
 
 
+def _read_bounded(response: Any, limit: int) -> bytes:
+    """Bound memory even when Content-Length is absent, false or malicious."""
+    content = response.read(limit + 1)
+    if type(content) is not bytes:
+        raise InvocationPortError("provider_protocol_error")
+    if len(content) > limit:
+        raise InvocationPortError("response_too_large")
+    return content
+
+
 def _open(
     request: urllib.request.Request,
     timeout: float,
     diagnostics: MediaDiagnostics | None,
     secret: str | None,
+    *,
+    opener: urllib.request.OpenerDirector | None = None,
+    max_bytes: int = MAX_PROVIDER_RESPONSE_BYTES,
 ) -> bytes:
     try:
-        with urllib.request.urlopen(request, timeout=timeout) as response:
-            return bytes(response.read())
+        if opener is None:
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                return _read_bounded(response, max_bytes)
+        with opener.open(request, timeout=timeout) as response:
+            return _read_bounded(response, max_bytes)
+    except InvocationPortError:
+        raise
     except urllib.error.HTTPError as exc:
         try:
-            raw = exc.read() if exc.fp is not None else b""
+            raw = exc.read(_MAX_ERROR_RESPONSE_BYTES) if exc.fp is not None else b""
         except Exception:
             raw = b""
         message = _error_message_from_body(raw) if raw else f"HTTP {exc.code}"
@@ -196,8 +224,92 @@ def _open(
                 diagnostics.record(f"Délai réseau dépassé ({timeout:.0f}s)")
             raise InvocationPortError("provider_timeout") from None
         if diagnostics is not None:
-            diagnostics.record(f"Connexion impossible : {exc.reason}", secret=secret)
+            diagnostics.record("Connexion impossible", secret=secret)
         raise InvocationPortError("connection_failure") from None
+    except Exception:
+        # Transport exceptions can include signed URLs and credentials.
+        raise InvocationPortError("provider_protocol_error") from None
+
+
+class _DenyMediaRedirect(urllib.request.HTTPRedirectHandler):
+    """Never follow a supplier URL to a different, potentially internal target."""
+
+    def redirect_request(
+        self,
+        req: urllib.request.Request,
+        fp: Any,
+        code: int,
+        msg: str,
+        headers: Any,
+        newurl: str,
+    ) -> None:
+        raise InvocationPortError("unsafe_provider_destination")
+
+
+def _trusted_media_host(url: str) -> str:
+    """Restrict downloaded media to supplier-controlled public HTTPS hosts."""
+    if (
+        type(url) is not str
+        or len(url) > 8192
+        or any(ord(ch) < 33 or ch == "\\" for ch in url)
+    ):
+        raise InvocationPortError("unsafe_provider_destination")
+    try:
+        parsed = urlsplit(url)
+        host = parsed.hostname
+        port = parsed.port
+    except ValueError:
+        raise InvocationPortError("unsafe_provider_destination") from None
+    if (
+        parsed.scheme != "https"
+        or not host
+        or parsed.username is not None
+        or parsed.password is not None
+        or parsed.fragment
+        or port not in (None, 443)
+    ):
+        raise InvocationPortError("unsafe_provider_destination")
+    host = host.rstrip(".").lower()
+    try:
+        ip_address(host)
+    except ValueError:
+        pass
+    else:
+        raise InvocationPortError("unsafe_provider_destination")
+    if not any(host == suffix or host.endswith("." + suffix) for suffix in _TRUSTED_MEDIA_SUFFIXES):
+        raise InvocationPortError("unsafe_provider_destination")
+    return host
+
+
+def fetch_provider_media_bytes(
+    url: str,
+    *,
+    timeout: float = 60.0,
+    diagnostics: MediaDiagnostics | None = None,
+) -> bytes:
+    """Fail closed for untrusted asset URLs: trusted HTTPS host, public DNS, no redirects.
+
+    The preflight does not pin the actual peer IP. Live DNS/TLS pinning is still
+    an operational release gate, not a guarantee of this helper.
+    """
+    host = _trusted_media_host(url)
+    try:
+        addresses = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
+        if not addresses or any(
+            not ip_address(item[4][0]).is_global for item in addresses
+        ):
+            raise InvocationPortError("unsafe_provider_destination")
+    except (OSError, ValueError):
+        raise InvocationPortError("unsafe_provider_destination") from None
+    request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT}, method="GET")
+    opener = urllib.request.build_opener(
+        urllib.request.ProxyHandler({}),
+        _DenyMediaRedirect(),
+    )
+    return _open(
+        request, timeout, diagnostics, None, opener=opener,
+        max_bytes=MAX_MEDIA_DOWNLOAD_BYTES,
+    )
 
 
 def http_bytes(
