@@ -225,3 +225,37 @@ necessaire pour lever les gates qui exigent explicitement cette independance.
 - [Rapport post-integration S8](https://github.com/tawounfouet/pyllmkit/blob/main/docs/milestones/0.3.0/12_S8_SOURCE_INTEGRATION_AND_MAIN_QUALIFICATION.md).
 - [Runbook release S9](https://github.com/tawounfouet/pyllmkit/blob/main/docs/milestones/0.3.0/13_S9_RELEASE_READINESS_NO_GO.md).
 - GitHub issues [#22](https://github.com/tawounfouet/pyllmkit/issues/22), [#35](https://github.com/tawounfouet/pyllmkit/issues/35), [#36](https://github.com/tawounfouet/pyllmkit/issues/36), [#81](https://github.com/tawounfouet/pyllmkit/issues/81), [#83](https://github.com/tawounfouet/pyllmkit/issues/83), [#84](https://github.com/tawounfouet/pyllmkit/issues/84), [#85](https://github.com/tawounfouet/pyllmkit/issues/85), [#86](https://github.com/tawounfouet/pyllmkit/issues/86), [#87](https://github.com/tawounfouet/pyllmkit/issues/87).
+
+
+## 8. Addendum de qualification post-CLI - 2026-11-07
+
+Cet addendum complète l'audit historique au SHA `ce163988` ; il ne remplace pas les preuves S0-S9 d'origine et **ne ratifie aucun gate à lui seul**.
+
+### État vérifié après les PR CLI
+
+- Dernier SHA de `main` pris comme référence de cet addendum : `2d20d9ad94f2bff2287f02180eef9e41f8f6c852` (fusion de la PR #101).
+- PR #100 fusionnée : CLI Typer/Rich, configuration, exécution, streaming, catalogue/discovery, SQLite/JSONL et vues FinOps.
+- PR #101 fusionnée : choix `--live` explicitement requis, `FinishReason.UNKNOWN` préservé, stockage metadata-only par défaut, consentement `--record-content`, rétention optionnelle, secret Gemini dans en-tête HTTP et provenance locale des prix.
+- CI post-merge `main` [#42319330384](https://github.com/tawounfouet/pyllmkit/actions/runs/42319330384) : SUCCESS sur Python 3.11/3.12/3.13 ; **2 823 tests pytest et 752 scénarios de conformance par version**, lint, mypy, exemples, wheel/sdist.
+- Catalogue CLI : 131 spécifications sur 15 catégories de fournisseurs ; le nombre d'entrées n'atteste ni le nombre de providers natifs ni la disponibilité réelle des modèles.
+- PR [#102](https://github.com/tawounfouet/pyllmkit/pull/102) ouverte pour empêcher l'invention de prix et limites absents et exiger un consentement distinct pour `runs export`. Aucun résultat CI de cette PR n'est présumé dans le présent addendum.
+
+### Risques non levés
+
+- `main` expose `protected=false` et aucun ruleset actif visible ; la configuration administrative doit être effectuée et vérifiée par l'owner (issue #22).
+- Pas de revue indépendante attestée pour les principaux changements de jalon ou la PR #101. L'auteur de cet addendum **n'est pas reviewer indépendant**.
+- La CI est hermétique. DNS/peer-IP/TLS, SSRF, budgets live, streaming sync avec hard deadline, rotation des secrets divulgués et qualification fournisseur-live ne sont **pas certifiés** (issues #36 et #81).
+- Une branche alternative `fix/cli-security-privacy-finops-integrity` diverge et propose notamment un consentement d'export et une expurgation legacy. **Ne pas fusionner aveuglément** : conserver les changements pertinents via PR ciblée avec validation dédiée.
+- `pyproject.toml` reste à `0.1.0a2`; ni candidate `0.3.0a1`, ni tag `v0.3.0`, ni publication ne sont autorisés par le seul succès CI.
+
+### Décision post-intégration
+
+| Frontière | Décision | Condition de sortie |
+|---|---|---|
+| Intégration source des PR #100/#101 | GO, déjà sur main | SHA + CI documentés ci-dessus |
+| Contrat text-only offline, six providers | GO technique | Préserver le harnais 752 scénarios |
+| G0-G8 formels | PENDING / PARTIAL | ADR/profile ratifiés, matrice exhaustive, revues indépendantes, politique des exceptions |
+| G6 provider-live / production | NO-GO | Revue egress réelle, deadlines, canaris et budgets avec accord distinct |
+| G9 version/tag/distribution | NO-GO | Gouvernance main, plan SemVer, changelog, provenance, décision release indépendante |
+
+Le présent document est une trace datée. Après une nouvelle fusion, produire un PV de qualification au **nouveau SHA exact** plutôt que réécrire rétroactivement cet audit.
