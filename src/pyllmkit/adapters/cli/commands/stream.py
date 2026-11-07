@@ -181,7 +181,7 @@ def stream_command(
             usage_panel = build_stream_usage_panel(
                 run_id=session.run_id.value,
                 duration_ms=summary.duration_ms,
-                finish_reason=summary.finish_reason,
+                finish_reason=summary.finish_reason or "unknown",
                 in_tokens=in_tok,
                 out_tokens=out_tok,
                 cached_tokens=cached_tok,
