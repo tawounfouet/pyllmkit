@@ -108,7 +108,7 @@ def config_show() -> None:
     # Valeurs par défaut
     defaults_lines = [
         f"[bold]Modèle par défaut      :[/bold] {cfg.defaults.model or 'gpt-4o'}",
-        f"[bold]Mode Live automatique  :[/bold] {'[green]Actif[/green]' if cfg.defaults.live else '[dim]Désactivé (offline mock)[/dim]'}",
+        "[bold]Exécution live        :[/bold] [yellow]Uniquement avec --live explicite (defaults.live ignoré)[/yellow]",
         f"[bold]Température            :[/bold] {cfg.defaults.temperature if cfg.defaults.temperature is not None else '[dim]Non définie (défaut API)[/dim]'}",
         f"[bold]Max Tokens             :[/bold] {cfg.defaults.max_tokens if cfg.defaults.max_tokens is not None else '[dim]Non défini (défaut API)[/dim]'}",
         f"[bold]System Prompt          :[/bold] {cfg.defaults.system_prompt if cfg.defaults.system_prompt else '[dim]Non défini[/dim]'}",

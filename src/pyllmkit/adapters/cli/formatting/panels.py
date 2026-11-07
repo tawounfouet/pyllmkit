@@ -2,7 +2,11 @@
 
 from rich.panel import Panel
 
-from pyllmkit.adapters.cli.model_specs import ModelSpec, compute_run_cost
+from pyllmkit.adapters.cli.model_specs import (
+    ModelSpec,
+    compute_run_cost,
+    format_pricing_provenance,
+)
 from pyllmkit.application.inference.contracts import InferenceExecution
 
 
@@ -38,12 +42,9 @@ def build_usage_panel(
     raw_finish = (
         response.finish_reason.code.value
         if (response and response.finish_reason)
-        else "stop"
+        else "unknown"
     )
-    if raw_finish == "unknown" and run.state.value == "completed":
-        finish_code = "stop"
-    else:
-        finish_code = raw_finish
+    finish_code = raw_finish
 
     in_tokens: int | None = None
     out_tokens: int | None = None
@@ -108,6 +109,7 @@ def build_usage_panel(
         )
         if cost_str != "-":
             stats.append(f"[bold]Coût estimé   :[/bold] [bold green]{cost_str}[/bold green]")
+            stats.append(f"[dim]{format_pricing_provenance(resolved_model)}[/dim]")
         elif in_tokens is not None or out_tokens is not None:
             stats.append("[bold]Coût estimé   :[/bold] [dim]N/A (modèle hors catalogue tarifaire)[/dim]")
 
@@ -132,7 +134,7 @@ def build_stream_usage_panel(
     exit_code: int = 0,
 ) -> Panel:
     """Format execution metrics and FinOps cost for streaming sessions."""
-    finish_code = finish_reason if finish_reason != "unknown" else "stop"
+    finish_code = finish_reason
     status_str = (
         "[green]completed[/green]"
         if exit_code == 0
@@ -189,6 +191,7 @@ def build_stream_usage_panel(
         )
         if cost_str != "-":
             stats.append(f"[bold]Coût estimé   :[/bold] [bold green]{cost_str}[/bold green]")
+            stats.append(f"[dim]{format_pricing_provenance(model_name)}[/dim]")
         elif in_tokens is not None or out_tokens is not None:
             stats.append("[bold]Coût estimé   :[/bold] [dim]N/A (modèle hors catalogue tarifaire)[/dim]")
 
@@ -225,6 +228,7 @@ def build_model_inspect_panel(spec: ModelSpec) -> Panel:
         f"[bold]Fonctionnalités  :[/bold] [magenta]{features_str}[/magenta]",
         "",
         "[bold underline]Tarification standard (par 1M tokens) :[/bold underline]",
+        f"  [dim]{format_pricing_provenance(spec.id)}[/dim]",
         f"  - [bold]Input Tokens  :[/bold] [green]${spec.pricing.input_cost:.2f}[/green]",
         f"  - [bold]Output Tokens :[/bold] [yellow]${spec.pricing.output_cost:.2f}[/yellow]",
         f"  - [bold]Cache Read    :[/bold] [dim]{cr_str}[/dim]",

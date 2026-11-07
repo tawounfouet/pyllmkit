@@ -48,7 +48,7 @@ def test_fetch_provider_models_openai() -> None:
     mock_resp.read.return_value = json.dumps(fake_response).encode("utf-8")
     mock_resp.__enter__.return_value = mock_resp
 
-    with patch("urllib.request.urlopen", return_value=mock_resp):
+    with patch("pyllmkit.adapters.cli.discovery._open_discovery_request", return_value=mock_resp):
         models = fetch_provider_models("openai", api_key="sk-test")
         assert models == ["gpt-3.5-custom", "gpt-4o-custom"]
 
@@ -63,7 +63,7 @@ def test_fetch_provider_models_anthropic() -> None:
     mock_resp.read.return_value = json.dumps(fake_response).encode("utf-8")
     mock_resp.__enter__.return_value = mock_resp
 
-    with patch("urllib.request.urlopen", return_value=mock_resp):
+    with patch("pyllmkit.adapters.cli.discovery._open_discovery_request", return_value=mock_resp):
         models = fetch_provider_models("anthropic", api_key="sk-ant-test")
         assert models == ["claude-3-5-sonnet-20241022"]
 
@@ -78,7 +78,7 @@ def test_fetch_provider_models_google() -> None:
     mock_resp.read.return_value = json.dumps(fake_response).encode("utf-8")
     mock_resp.__enter__.return_value = mock_resp
 
-    with patch("urllib.request.urlopen", return_value=mock_resp):
+    with patch("pyllmkit.adapters.cli.discovery._open_discovery_request", return_value=mock_resp):
         models = fetch_provider_models("google", api_key="AIzaTest")
         assert models == ["gemini-custom-pro"]
 
@@ -93,7 +93,7 @@ def test_fetch_provider_models_ollama() -> None:
     mock_resp.read.return_value = json.dumps(fake_response).encode("utf-8")
     mock_resp.__enter__.return_value = mock_resp
 
-    with patch("urllib.request.urlopen", return_value=mock_resp):
+    with patch("pyllmkit.adapters.cli.discovery._open_discovery_request", return_value=mock_resp):
         models = fetch_provider_models("ollama")
         assert models == ["deepseek-coder"]
 
@@ -111,7 +111,7 @@ def test_sync_configured_providers(tmp_path: Path, monkeypatch) -> None:
     mock_resp.read.return_value = json.dumps(fake_openai).encode("utf-8")
     mock_resp.__enter__.return_value = mock_resp
 
-    with patch("urllib.request.urlopen", return_value=mock_resp):
+    with patch("pyllmkit.adapters.cli.discovery._open_discovery_request", return_value=mock_resp):
         total, results = sync_configured_providers(target_provider="openai")
         assert total == 1
         assert results["openai"]["status"] == "success"
@@ -145,7 +145,7 @@ def test_cli_models_sync_command(tmp_path: Path, monkeypatch) -> None:
     mock_resp.read.return_value = json.dumps(fake_resp).encode("utf-8")
     mock_resp.__enter__.return_value = mock_resp
 
-    with patch("urllib.request.urlopen", return_value=mock_resp):
+    with patch("pyllmkit.adapters.cli.discovery._open_discovery_request", return_value=mock_resp):
         result = runner.invoke(app, ["models", "sync", "--provider", "openai"])
         assert result.exit_code == 0
         assert "Résultat de synchronisation" in result.output

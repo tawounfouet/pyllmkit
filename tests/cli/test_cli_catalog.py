@@ -242,7 +242,7 @@ def test_all_model_specs_integrity() -> None:
 
 def test_build_usage_panel_with_tokens() -> None:
     """Test build_usage_panel with explicit token counts and duration."""
-    from datetime import datetime, timezone
+    from datetime import UTC, datetime
     from unittest.mock import MagicMock
 
     from pyllmkit.adapters.cli.formatting.panels import build_usage_panel
@@ -250,8 +250,8 @@ def test_build_usage_panel_with_tokens() -> None:
     mock_run = MagicMock()
     mock_run.run_id.value = "test-run-123"
     mock_run.state.value = "completed"
-    mock_run.started_at = datetime(2026, 11, 6, 12, 0, 0, tzinfo=timezone.utc)
-    mock_run.finished_at = datetime(2026, 11, 6, 12, 0, 1, 500000, tzinfo=timezone.utc)
+    mock_run.started_at = datetime(2026, 11, 6, 12, 0, 0, tzinfo=UTC)
+    mock_run.finished_at = datetime(2026, 11, 6, 12, 0, 1, 500000, tzinfo=UTC)
 
     mock_resp = MagicMock()
     mock_resp.finish_reason.code.value = "stop"
@@ -359,6 +359,7 @@ def test_create_reference_catalog_discovered_branches(monkeypatch) -> None:
 def test_load_catalog_specs_and_local_overrides(tmp_path, monkeypatch) -> None:
     """Test loading specs from custom path, handling corrupt json, and local overrides."""
     import json
+
     from pyllmkit.adapters.cli.model_specs import load_catalog_specs
 
     # 1. Corrupt json
@@ -452,7 +453,7 @@ def test_compute_run_cost_comprehensive() -> None:
 
 def test_build_usage_panel_with_cache_and_reasoning() -> None:
     """Test build_usage_panel with cached tokens and reasoning tokens."""
-    from datetime import datetime, timezone
+    from datetime import UTC, datetime
     from unittest.mock import MagicMock
 
     from pyllmkit.adapters.cli.formatting.panels import build_usage_panel
@@ -460,8 +461,8 @@ def test_build_usage_panel_with_cache_and_reasoning() -> None:
     mock_run = MagicMock()
     mock_run.run_id.value = "run-cache-1"
     mock_run.state.value = "completed"
-    mock_run.started_at = datetime(2026, 11, 6, 12, 0, 0, tzinfo=timezone.utc)
-    mock_run.finished_at = datetime(2026, 11, 6, 12, 0, 2, tzinfo=timezone.utc)
+    mock_run.started_at = datetime(2026, 11, 6, 12, 0, 0, tzinfo=UTC)
+    mock_run.finished_at = datetime(2026, 11, 6, 12, 0, 2, tzinfo=UTC)
 
     mock_resp = MagicMock()
     mock_resp.finish_reason.code.value = "stop"
@@ -575,7 +576,7 @@ def test_resolve_provider_fallbacks() -> None:
 
 def test_model_spec_candidate_progressive_resolution() -> None:
     """Test progressive matching of snapshot dates, reasoning suffixes, and iterations."""
-    from pyllmkit.adapters.cli.model_specs import compute_run_cost, get_model_spec
+    from pyllmkit.adapters.cli.model_specs import get_model_spec
 
     # 1. Grok reasoning / non-reasoning snapshot
     spec_grok_nr = get_model_spec("grok-4.20-0309-non-reasoning")
@@ -606,6 +607,7 @@ def test_model_spec_candidate_progressive_resolution() -> None:
 
     # 4. Unknown model fallback in usage panels
     from unittest.mock import MagicMock
+
     from pyllmkit.adapters.cli.formatting.panels import (
         build_stream_usage_panel,
         build_usage_panel,

@@ -6,6 +6,7 @@ import os
 import sqlite3
 from contextlib import closing
 from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 
@@ -129,9 +130,24 @@ class SqliteRunStore:
                 db_path = config_dir / "history.db"
         self._db_path = db_path
         self._init_db()
+        retention = os.environ.get("PYLLMKIT_HISTORY_RETENTION_DAYS")
+        if retention:
+            try:
+                days = int(retention)
+            except ValueError as exc:
+                raise ValueError("invalid_history_retention_days") from exc
+            self.prune_older_than_days(days)
 
     def _get_connection(self) -> sqlite3.Connection:
         self._db_path.parent.mkdir(parents=True, exist_ok=True)
+        # Secure permissions before the first write; never change existing user DBs.
+        if not self._db_path.exists():
+            try:
+                fd = os.open(self._db_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            except FileExistsError:
+                pass
+            else:
+                os.close(fd)
         return sqlite3.connect(self._db_path)
 
     def _init_db(self) -> None:
@@ -285,3 +301,25 @@ class SqliteRunStore:
                 return None
             col_names = [col[0] for col in cursor.description]
             return self._row_to_record(col_names, row)
+
+    def prune_older_than_days(self, days: int, now: datetime | None = None) -> int:
+        """Delete dated rows beyond the opt-in retention period; skip invalid dates."""
+        if type(days) is not int or not (1 <= days <= 36500):
+            raise ValueError("invalid_history_retention_days")
+        current = now if now is not None else datetime.now(UTC)
+        if current.tzinfo is None or current.utcoffset() is None:
+            raise ValueError("retention_now_must_be_aware")
+        cutoff = current - timedelta(days=days)
+        with closing(self._get_connection()) as conn:
+            rows = conn.execute("SELECT run_id, created_at FROM runs").fetchall()
+            expired: list[tuple[str]] = []
+            for run_id, timestamp in rows:
+                try:
+                    when = datetime.fromisoformat(timestamp)
+                except (ValueError, TypeError):
+                    continue
+                if when.tzinfo is not None and when.utcoffset() is not None and when < cutoff:
+                    expired.append((run_id,))
+            with conn:
+                conn.executemany("DELETE FROM runs WHERE run_id = ?", expired)
+        return len(expired)

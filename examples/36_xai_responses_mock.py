@@ -38,7 +38,8 @@ def main() -> None:
     def mock(request:httpx.Request)->httpx.Response:
         data=json.loads(request.content)
         assert data["store"] is False
-        assert data["tools"]==[]
+        assert "tools" not in data  # text_only_v1: no implicit tool negotiation
+        assert data["text"]["format"]["type"] == "text"
         return httpx.Response(200,json={
             "object":"response","model":data["model"],"status":"completed","store":False,
             "output":[{"type":"message","role":"assistant","status":"completed",

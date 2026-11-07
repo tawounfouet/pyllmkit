@@ -224,3 +224,15 @@ def compute_run_cost(
         cost_str = f"${total:.4f} (${cost_in:.4f} in + ${cost_out:.4f} out)"
 
     return total, cost_str
+
+
+def format_pricing_provenance(model_name: str) -> str:
+    """Clearly label local, potentially stale prices, never live billing evidence."""
+    spec = get_model_spec(model_name)
+    if spec is None:
+        return "Prix non disponible (aucune source tarifaire vérifiée)"
+    verified = spec.last_verified or "non renseignée"
+    return (
+        f"Tarif indicatif du catalogue local, vérifié le : {verified}; "
+        "non actualisé en temps réel, distinct de la facturation fournisseur."
+    )

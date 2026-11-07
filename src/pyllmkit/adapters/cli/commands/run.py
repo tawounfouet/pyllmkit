@@ -1,5 +1,7 @@
 """Typer command for blocking text inference (run)."""
 
+import json
+from datetime import UTC, datetime
 from typing import Annotated
 
 import typer
@@ -77,11 +79,15 @@ def run_command(
         bool,
         typer.Option("--mock/--live", help="Exécution simulée hors ligne (par défaut: simulation)"),
     ] = True,
+    record_content: Annotated[
+        bool,
+        typer.Option("--record-content", help="Consentir au stockage local du prompt et de la réponse"),
+    ] = False,
 ) -> None:
     """Exécuter une inférence textuelle bloquante avec rapport d'usage."""
     cfg = get_config()
-    if mock and cfg.defaults.live:
-        mock = False
+    # A CLI invocation is offline by default, even if config.defaults.live is true.
+    # Only an explicit --live switch may construct a network-capable adapter.
     if model == "gpt-4o" and cfg.defaults.model:
         model = cfg.defaults.model
     if system is None and cfg.defaults.system_prompt:
@@ -118,9 +124,6 @@ def run_command(
 
         # Enregistrement silencieux dans l'historique local pour FinOps / Evals / Observabilité
         try:
-            from datetime import UTC, datetime
-            import json
-
             store = SqliteRunStore()
             dur_ms = None
             if execution.run.started_at and execution.run.finished_at:
@@ -138,7 +141,7 @@ def run_command(
                 resp_text = execution.response.output.text
                 if execution.response.finish_reason:
                     raw_code = execution.response.finish_reason.code.value
-                    finish = "stop" if raw_code == "unknown" and execution.run.state.value == "completed" else raw_code
+                    finish = raw_code
                 if execution.response.usage:
                     in_tok = execution.response.usage.input_tokens
                     out_tok = execution.response.usage.output_tokens
@@ -166,14 +169,14 @@ def run_command(
             ]
             if resp_text:
                 messages_payload.append({"role": "assistant", "content": resp_text})
-            msgs_json = json.dumps(messages_payload, ensure_ascii=False)
+            msgs_json = json.dumps(messages_payload, ensure_ascii=False) if record_content else None
 
             rec = RunRecord(
                 run_id=execution.run.run_id.value,
                 model_id=model,
                 provider=f"{prov_name} (mock)" if mock else prov_name,
-                prompt=prompt,
-                response_text=resp_text,
+                prompt=prompt if record_content else "",
+                response_text=resp_text if record_content else None,
                 state=execution.run.state.value,
                 finish_reason=finish,
                 input_tokens=in_tok,
@@ -186,7 +189,7 @@ def run_command(
                 ttft_ms=None,
                 temperature=temperature,
                 max_tokens=max_tokens,
-                system_prompt=system,
+                system_prompt=system if record_content else None,
                 mode="run",
                 messages_json=msgs_json,
             )
