@@ -151,7 +151,7 @@ class TestCliGenerateCommands:
         assert result.exit_code == 0
         assert "Image générée avec succès" in result.stdout
         assert "1024x1024" in result.stdout
-        assert "$0.0400" in result.stdout
+        assert "$0.0400" not in result.stdout  # retired price is not a current quote
         assert "Fichier sauvegardé avec succès" in result.stdout
         assert out_file.exists()
 
@@ -178,7 +178,7 @@ class TestCliGenerateCommands:
         assert "Vidéo générée avec succès" in result.stdout
         assert "5.0 s" in result.stdout
         assert "1280x720" in result.stdout
-        assert "$0.7500" in result.stdout
+        assert "$0.7500" not in result.stdout  # retired Veo has no operational price
         assert "Fichier sauvegardé avec succès" in result.stdout
         assert out_file.exists()
 

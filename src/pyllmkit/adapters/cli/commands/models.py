@@ -6,6 +6,12 @@ import typer
 from rich import box
 from rich.table import Table
 
+from pyllmkit.adapters.inference.media_lifecycle import (
+    POLICY,
+    MediaLifecycle,
+    media_model_policy,
+)
+
 from ..catalog import create_reference_catalog
 from ..console import console
 from ..discovery import sync_configured_providers
@@ -66,6 +72,33 @@ def inspect_model(
 
     panel = build_model_inspect_panel(spec)
     console.print(panel)
+    lifecycle = media_model_policy(model_id)
+    if lifecycle.state is not MediaLifecycle.UNKNOWN:
+        console.print(f"[bold]Cycle de vie :[/bold] {lifecycle.state.value}")
+        if lifecycle.shutdown_date is not None:
+            console.print(f"[bold]Retrait annoncé :[/bold] {lifecycle.shutdown_date.isoformat()}")
+        if lifecycle.replacement:
+            console.print(f"[bold]Remplacement candidat :[/bold] {lifecycle.replacement}")
+        console.print(f"[dim]Source : {lifecycle.source_url}[/dim]")
+
+
+@models_app.command(name="lifecycle")
+def list_media_lifecycle() -> None:
+    """Inspect date-aware media model retirement status (no provider call)."""
+    table = Table(title="Cycle de vie des modèles média - sources officielles", box=box.ROUNDED)
+    table.add_column("Modèle")
+    table.add_column("État")
+    table.add_column("Date de retrait")
+    table.add_column("Candidat")
+    for model_id in sorted(POLICY):
+        info = media_model_policy(model_id)
+        table.add_row(
+            model_id, info.state.value,
+            info.shutdown_date.isoformat() if info.shutdown_date else "-",
+            info.replacement or "-",
+        )
+    console.print(table)
+    console.print("[dim]État documentaire, pas preuve d'accès API de ce compte.[/dim]")
 
 
 @models_app.command(name="sync")

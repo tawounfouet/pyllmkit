@@ -103,6 +103,7 @@ def create_reference_catalog() -> InMemoryCatalog:
         ("tts-1-hd", "openai", "openai", "cloud", "global"),
         ("imagen-3", "google", "google", "cloud", "global"),
         ("veo-2", "google", "google", "cloud", "global"),
+        ("veo-3.1-lite-generate-preview", "google", "google", "cloud", "global"),
         # Media generation models exposed by the live provider APIs (2026-11)
         ("gpt-image-1-mini", "openai", "openai", "cloud", "global"),
         ("gpt-image-1.5", "openai", "openai", "cloud", "global"),

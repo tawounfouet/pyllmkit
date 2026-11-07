@@ -33,6 +33,7 @@ from pyllmkit.adapters.inference.media_http import (
     resolve_secret,
     sniff_image_mime,
 )
+from pyllmkit.adapters.inference.media_lifecycle import require_live_media_model
 from pyllmkit.adapters.inference.security import ProviderConnectionConfig
 from pyllmkit.application.inference import InvocationPortError, PreparedInvocation
 from pyllmkit.domain.inference import (
@@ -65,8 +66,9 @@ class OpenAIMediaAdapter:
     def invoke(self, prepared: PreparedInvocation) -> InferenceResponse:
         if not self.allow_live:
             raise InvocationPortError("live_authorization_required")
-        secret = resolve_secret(self.config, self.credentials)
         model_name = model_name_of(prepared)
+        require_live_media_model(model_name)
+        secret = resolve_secret(self.config, self.credentials)
         prompt = extract_prompt(prepared)
 
         kind = media_output_kind(prepared)

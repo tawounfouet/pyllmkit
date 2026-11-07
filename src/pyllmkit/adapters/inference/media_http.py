@@ -36,6 +36,7 @@ from pyllmkit.protocols.credentials import CredentialResolverPort, SecretValue
 MediaKind = Literal["image", "audio", "video"]
 
 USER_AGENT = "PyLLMKit/0.3.0"
+MAX_PROVIDER_REQUEST_BYTES = 24 * 1024 * 1024
 MAX_PROVIDER_RESPONSE_BYTES = 160 * 1024 * 1024
 MAX_MEDIA_DOWNLOAD_BYTES = 100 * 1024 * 1024
 _MAX_ERROR_RESPONSE_BYTES = 8 * 1024
@@ -377,6 +378,8 @@ def http_bytes(
     data = None
     if payload is not None:
         data = json.dumps(payload).encode("utf-8")
+        if len(data) > MAX_PROVIDER_REQUEST_BYTES:
+            raise InvocationPortError("request_too_large")
         all_headers.setdefault("Content-Type", "application/json")
     # Never let a credential-bearing request follow redirects or reach arbitrary origins.
     credentialed = any(

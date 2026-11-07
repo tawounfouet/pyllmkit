@@ -20,12 +20,12 @@ def fake_openai_env(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", "sk-proj-test123456789")
 
 
-def test_openai_media_dalle_image_generation_success(fake_openai_env: None) -> None:
+def test_openai_media_gpt_image_generation_success(fake_openai_env: None) -> None:
     catalog = create_reference_catalog()
     service = create_cli_inference_service(catalog, mock=False)
 
     req = InferenceRequest(
-        ModelTarget(ModelId("dall-e-3")),
+        ModelTarget(ModelId("gpt-image-2")),
         (Message(Role.USER, Content((TextContent("Un astronaute sur la Lune"),))),),
     )
 
@@ -95,7 +95,7 @@ def test_openai_media_handles_401_error(fake_openai_env: None) -> None:
     service = create_cli_inference_service(catalog, mock=False)
 
     req = InferenceRequest(
-        ModelTarget(ModelId("dall-e-3")),
+        ModelTarget(ModelId("gpt-image-2")),
         (Message(Role.USER, Content((TextContent("Test error"),))),),
     )
 

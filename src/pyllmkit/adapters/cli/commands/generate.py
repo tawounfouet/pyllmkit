@@ -6,6 +6,7 @@ from typing import Annotated
 import typer
 
 from pyllmkit.adapters.inference.media_http import MediaDiagnostics, MediaGenerationOptions
+from pyllmkit.adapters.inference.media_lifecycle import MediaLifecycle, media_model_policy
 from pyllmkit.application.inference.contracts import (
     InvocationPortError,
     InvocationPreconditionError,
@@ -25,10 +26,9 @@ from ..prompt_file import PromptFileError, resolve_prompt
 from ..service import create_cli_inference_service
 from ..storage import RunRecord, SqliteRunStore
 
-# Defaults point at models actually exposed by the provider APIs (verified 2026-11-07).
-# Legacy ids (dall-e-3, tts-1, veo-2, imagen-3) stay usable in mock mode and when the
-# account still has access to them.
-DEFAULT_IMAGE_MODEL = "gpt-image-1-mini"
+# The TTS default remains on a deprecated Speech API pending migration to Realtime.
+# Do not substitute gpt-realtime-2.1-mini into the incompatible /audio/speech endpoint.
+DEFAULT_IMAGE_MODEL = "gpt-image-2"
 DEFAULT_AUDIO_MODEL = "gpt-4o-mini-tts"
 DEFAULT_VIDEO_MODEL = "grok-imagine-video"
 
@@ -322,6 +322,14 @@ def _execute_generation(
             f"Utilisez 'pyllmkit generate {spec.modalities_out[0]}' ou un autre --model.",
         ))
         raise typer.Exit(code=1)
+    lifecycle = media_model_policy(model)
+    if not mock and lifecycle.state in (MediaLifecycle.RETIRED, MediaLifecycle.UNVERIFIED):
+        code = "model_retired" if lifecycle.state is MediaLifecycle.RETIRED else "model_unverified"
+        candidate = f" Candidat : {lifecycle.replacement} (accès à vérifier)." if lifecycle.replacement else ""
+        console.print(build_error_panel(code, f"Modèle '{model}' non autorisé en live.{candidate}"))
+        raise typer.Exit(code=1)
+    if not mock and lifecycle.state is MediaLifecycle.DEPRECATED:
+        console.print(f"[yellow]Attention : modèle '{model}' en fin de vie. Voir models inspect.[/yellow]")
     catalog = create_reference_catalog()
     diagnostics = MediaDiagnostics()
     service = create_cli_inference_service(

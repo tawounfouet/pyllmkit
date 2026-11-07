@@ -2,7 +2,7 @@
 
 Ce guide couvre de bout en bout la génération d'assets (images, audio de synthèse vocale, vidéos) avec [`PyLLMKit`](../../README.md) : configuration, commandes CLI, modèles disponibles par fournisseur, options, stockage des fichiers, historique FinOps, API Python, architecture interne, dépannage et extension. Pour la configuration générale de la CLI (cascade de fichiers, base SQLite, exports), consultez d'abord le [Guide de Configuration et de Stockage](01_CLI_CONFIGURATION_AND_STORAGE_GUIDE.md). L'analyse de conception initiale se trouve dans [l'analyse de génération multimodale](../analysis/2026-11-07_MULTIMODAL_OUTPUT_GENERATION_ANALYSIS.md).
 
-> État vérifié le **2026-11-07** avec des clés réelles OpenAI, Google Gemini API et xAI. La disponibilité des modèles dépend de votre compte : utilisez la [section 12](#13-vérifier-les-modèles-accessibles-avec-vos-clés) pour la vérifier.
+> Les expériences live ci-dessous sont des résultats historiques du projet, pas une preuve de disponibilité actuelle. Consulter [l'audit M0](../audits/MEDIA_MODEL_AVAILABILITY_AUDIT.md) pour les retraits, limites et identifiants non vérifiés.
 
 ---
 
@@ -107,36 +107,38 @@ PYLLMKIT_ASSETS_DIR=~/Desktop/rendus pyllmkit generate image "Logo minimaliste" 
 
 ## 4. Modèles disponibles
 
+Pour consulter les statuts hors réseau : `pyllmkit models lifecycle` ou `pyllmkit models inspect <id>`. La disponibilité est propre au compte fournisseur et non au catalogue local.
+
 ### 4.1 Modèles disponibles (2026-11-07)
 
 « Live » : génération réellement exécutée avec succès. « Listé » : modèle exposé par l'API de listing du fournisseur, pris en charge par l'adaptateur, mais pas encore appelé en génération.
 
 | Type | Modèle | Fournisseur | Statut | Remarques |
 |---|---|---|---|---|
-| Image | `gpt-image-1-mini` | OpenAI | Live | **Défaut** de `generate image`, économique |
-| Image | `gpt-image-1.5`, `gpt-image-2` | OpenAI | Listé | Meilleure fidélité |
-| Image | `gemini-2.5-flash-image` | Google | Live | Respecte `--aspect-ratio` |
-| Image | `gemini-3.1-flash-image`, `gemini-3-pro-image`, `gemini-nano-banana-2.1` | Google | Listé | Famille Gemini Image (Nano Banana) |
+| Image | `gpt-image-1-mini` | OpenAI | Deprecated | Retrait annoncé 2026-12-01 |
+| Image | `gpt-image-1.5`, `gpt-image-2` | OpenAI | Deprecated / current | **Nouveau défaut** : `gpt-image-2` |
+| Image | `gemini-2.5-flash-image` | Google | Retired | Arrêt 2026-10-02 ; mock uniquement |
+| Image | `gemini-3.1-flash-image`, `gemini-3-pro-image` | Google | Current | `gemini-nano-banana-2.1` non confirmé comme ID API natif |
 | Image | `grok-imagine-image` | xAI | Live | JPEG en sortie |
 | Image | `grok-imagine-image-2.0` | xAI | Listé | Accepte `--quality` |
-| Audio | `gpt-4o-mini-tts` | OpenAI | Live | **Défaut** de `generate audio`, accepte `--instructions` |
-| Audio | `tts-1`, `tts-1-hd` | OpenAI | Live (`tts-1`) | Pas d'`--instructions` |
+| Audio | `gpt-4o-mini-tts` | OpenAI | Deprecated | Défaut provisoire, retrait 2027-01-06 ; migration Realtime à concevoir |
+| Audio | `tts-1`, `tts-1-hd` | OpenAI | Deprecated | Retrait 2027-01-06 |
 | Audio | `gemini-2.5-flash-preview-tts` | Google | Live | WAV 24 kHz mono, 30 voix |
 | Audio | `gemini-3.8-flash-tts` | Google | Listé | Même interface que ci-dessus |
 | Vidéo | `grok-imagine-video` | xAI | Live | **Défaut** de `generate video`, job asynchrone |
 | Vidéo | `grok-imagine-video-1.5` | xAI | Listé | Jusqu'à 1080p natif |
-| Vidéo | `gemini-omni-1.2-flash` | Google | Live | Audio natif, 3 à 15 s, réponse synchrone |
-| Vidéo | `gemini-omni-1.1-flash` | Google | Listé | Redirigé vers 1.2 le 2026-12-03 |
+| Vidéo | `gemini-omni-1.2-flash` | Google | Historique, statut public non confirmé | Nécessite une vérification d'accès et d'ID |
+| Vidéo | `gemini-omni-1.1-flash` | Google | Documenté | Disponibilité selon compte |
 
 ### 4.2 Modèles historiques (simulation uniquement avec les clés testées)
 
 | Modèle | Statut constaté | Alternative |
 |---|---|---|
-| `dall-e-3`, `dall-e-2` | `The model 'dall-e-3' does not exist` | `gpt-image-1-mini` |
-| `imagen-3` (→ `imagen-3.0-generate-002`) | 404, non exposé par la clé Gemini API | `gemini-2.5-flash-image` |
-| `veo-2` (→ `veo-2.0-generate-001`) | 404 ; Veo 3.1 preview arrêté le 2026-10-22 | `gemini-omni-1.2-flash` |
+| `dall-e-3`, `dall-e-2` | Retirés 2026-05-12 | `gpt-image-2` |
+| `imagen-3` (→ `imagen-3.0-generate-002`) | Retiré | `gemini-3.1-flash-image` |
+| `veo-2` (→ `veo-2.0-generate-001`) | Retiré | `veo-3.1-lite-generate-preview` (à qualifier) |
 
-Ces entrées restent dans le catalogue : elles fonctionnent en simulation, et en live si votre compte y a encore accès (les adaptateurs Imagen `:predict` et Veo `:predictLongRunning` sont implémentés).
+Ces entrées historiques fonctionnent encore en simulation, mais leur utilisation live est interdite par la politique M0 avant la lecture des clés API.
 
 ### 4.3 Consulter le catalogue
 
