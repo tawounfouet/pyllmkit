@@ -40,7 +40,7 @@ assert message.content.parts[0].text == "Bonjour"
 - **Catalogue :** modèles, déploiements, découverte et résolution déterministe.
 - **CLI et suivi :** exécution mock/live, historique SQLite, coûts estimés et export avec consentement explicite.
 
-**Sur `main`, après le tag `v0.3.0` :** entrées image/audio/vidéo et commandes `pyllmkit generate image|audio|video` (mock par défaut). `--live` nécessite un choix explicite et une clé fournisseur. [Guide multimédia](docs/guides/02_MEDIA_ASSET_GENERATION_GUIDE.md) et [limites de sécurité](docs/quality/2026-11-07_MULTIMODAL_SECURITY_AND_CI_REMEDIATION.md).
+**Sur `main`, après le tag `v0.3.0` :** entrées image/audio/vidéo et commandes `pyllmkit generate image|audio|video` (mock par défaut). `--live` nécessite un choix explicite et une clé fournisseur. Pour les modèles médias, `pyllmkit models lifecycle` expose les retraits connus. Les IDs retirés ou non vérifiés sont interdits en live et l'audit [M0](docs/audits/MEDIA_MODEL_AVAILABILITY_AUDIT.md) documente les autres limites. [Guide multimédia](docs/guides/02_MEDIA_ASSET_GENERATION_GUIDE.md) et [limites de sécurité](docs/quality/2026-11-07_MULTIMODAL_SECURITY_AND_CI_REMEDIATION.md).
 
 ## Architecture
 
