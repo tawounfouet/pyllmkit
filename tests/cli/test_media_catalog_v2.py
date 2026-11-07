@@ -384,3 +384,16 @@ def test_gemini_alias_sync_uses_canonical_google_snapshot(
     assert results["gemini"]["status"] == "success"
     saved = load_discovery_snapshot(tmp_path / "discovered_models_v2.json")
     assert saved.observed_ids() == {"google": {"gemini-3.1-flash-image"}}
+
+def test_legacy_registry_never_selects_ambiguous_provider_implicitly() -> None:
+    from pyllmkit.adapters.cli.catalog import create_reference_catalog
+    from pyllmkit.domain.models import ModelId
+
+    conflicting = [
+        {"id": "overlap-model", "provider": "openai", "family": "openai"},
+        {"id": "overlap-model", "provider": "google", "family": "google"},
+    ]
+    with patch("pyllmkit.adapters.cli.catalog.load_discovered_models",
+               return_value=conflicting):
+        catalog = create_reference_catalog()
+    assert catalog.models.get(ModelId("overlap-model")) is None
