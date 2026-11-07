@@ -308,9 +308,11 @@ def sync_configured_providers(
         snapshot = update_discovery_snapshot(
             snapshot_path(cache_path), observed_success,
         )
-        for prov in observed_success:
-            results[prov]["revision"] = snapshot.revision
-            results[prov]["snapshot_path"] = str(snapshot_path(cache_path))
+        for prov in results:
+            canonical = "google" if prov == "gemini" else prov
+            if canonical in observed_success and results[prov]["status"] == "success":
+                results[prov]["revision"] = snapshot.revision
+                results[prov]["snapshot_path"] = str(snapshot_path(cache_path))
 
     total_synced = len(discovered_records)
     for _p, res in results.items():
