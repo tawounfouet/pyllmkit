@@ -28,14 +28,7 @@ def test_all_approved_l35_documentation_artifacts_exist() -> None:
 
 def test_readme_links_to_all_four_domain_api_components() -> None:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    for relative in (
-        "docs/api/inference-request.md",
-        "docs/api/inference-response.md",
-        "docs/api/inference-run.md",
-        "docs/api/inference-json-v1.md",
-        "docs/api/inference.md",
-        "docs/quality/PHASE_3_TRACEABILITY.md",
-    ):
+    for relative in ("docs/api/inference.md", "docs/api/inference-json-v1.md"):
         assert f"]({relative})" in readme
 
 

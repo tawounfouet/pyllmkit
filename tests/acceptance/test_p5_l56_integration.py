@@ -143,7 +143,7 @@ def test_p5_ac045_offline_and_documents_are_integrated() -> None:
     ):
         assert document.is_file()
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    assert "Phase 5 - Streaming" in readme
+    assert "](docs/api/streaming.md)" in readme
 
 
 def test_p5_ac046_reject_oversized_decoded_trace_before_replay() -> None:

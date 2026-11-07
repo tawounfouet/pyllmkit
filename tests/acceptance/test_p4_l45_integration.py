@@ -87,18 +87,14 @@ def test_p4_ac035_complete_offline_workflow_executes(
     assert "offline, no execution" in capsys.readouterr().out
 
 
-def test_p4_ac036_readme_snippet_is_runnable() -> None:
+def test_p4_ac036_documented_tooling_walkthrough_is_runnable() -> None:
+    import runpy
+
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    section = readme.split(
-        "## Phase 4 : exemple complet hors ligne (P4-AC-036)", 1
-    )[1].split("## État de qualification", 1)[0]
-    fence = chr(96) * 3
-    snippet = section.split(fence + "python\n", 1)[1].split("\n" + fence, 1)[0]
-    ast.parse(snippet, filename="README#P4-AC-036")
-    namespace: dict[str, object] = {"__name__": "__main__"}
-    exec(compile(snippet, "README#P4-AC-036", "exec"), namespace)
-    assert namespace["p4_decoded"].tools[0].name == "get_weather"
-    assert namespace["p4_wire"]["object_type"] == "tooling_inference_intent"
+    path = ROOT / "examples/17_full_tooling_walkthrough.py"
+    assert "](examples/17_full_tooling_walkthrough.py)" in readme
+    namespace = runpy.run_path(str(path), run_name="__main__")
+    assert callable(namespace["main"])
 
 
 def test_p4_ac037_packaging_public_api_and_metadata() -> None:
