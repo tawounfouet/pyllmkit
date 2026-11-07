@@ -1,6 +1,8 @@
 """Typer command for streaming text inference (stream)."""
 
 import asyncio
+import json
+from datetime import UTC, datetime
 from typing import Annotated
 
 import typer
@@ -28,6 +30,7 @@ from ..formatting.errors import build_error_panel
 from ..formatting.live_stream import aconsume_and_render_stream
 from ..formatting.panels import build_stream_usage_panel
 from ..service import create_cli_async_streaming_service
+from ..storage import RunRecord, SqliteRunStore
 
 
 def _build_support_snapshot(request: InferenceRequest) -> GenerationSupportSnapshot | None:
@@ -78,11 +81,14 @@ def stream_command(
         bool,
         typer.Option("--mock/--live", help="Exécution simulée hors ligne (par défaut: simulation)"),
     ] = True,
+    record_content: Annotated[
+        bool,
+        typer.Option("--record-content", help="Consentir au stockage local du prompt et du flux"),
+    ] = False,
 ) -> None:
     """Consommer une inférence en direct avec affichage incrémental (streaming)."""
     cfg = get_config()
-    if mock and cfg.defaults.live:
-        mock = False
+    # Explicit --live is the only way to enable billable streaming.
     if model == "gpt-4o" and cfg.defaults.model:
         model = cfg.defaults.model
     if system is None and cfg.defaults.system_prompt:
@@ -120,11 +126,6 @@ def stream_command(
 
         # Enregistrement dans l'historique local pour FinOps / Evals / Observabilité
         try:
-            import json
-            from datetime import UTC, datetime
-
-            from ..storage import RunRecord, SqliteRunStore
-
             store = SqliteRunStore()
             deployment = (
                 catalog.deployments.get(session.prepared.resolution.deployment.id)
@@ -148,14 +149,14 @@ def stream_command(
             ]
             if summary.text:
                 messages_payload.append({"role": "assistant", "content": summary.text})
-            msgs_json = json.dumps(messages_payload, ensure_ascii=False)
+            msgs_json = json.dumps(messages_payload, ensure_ascii=False) if record_content else None
 
             rec = RunRecord(
                 run_id=session.run_id.value,
                 model_id=model,
                 provider=f"{prov_name} (mock)" if mock else prov_name,
-                prompt=prompt,
-                response_text=summary.text,
+                prompt=prompt if record_content else "",
+                response_text=summary.text if record_content else None,
                 state="completed" if summary.exit_code == 0 else "failed",
                 finish_reason=summary.finish_reason,
                 input_tokens=in_tok,
@@ -168,7 +169,7 @@ def stream_command(
                 ttft_ms=summary.ttft_ms,
                 temperature=temperature,
                 max_tokens=max_tokens,
-                system_prompt=system,
+                system_prompt=system if record_content else None,
                 mode="stream",
                 messages_json=msgs_json,
             )
