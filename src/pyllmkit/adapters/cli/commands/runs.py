@@ -12,7 +12,7 @@ from rich.table import Table
 from ..config import get_config
 from ..console import console
 from ..formatting.errors import build_error_panel
-from ..model_specs import compute_run_cost, format_pricing_provenance
+from ..model_specs import compute_run_cost, format_pricing_provenance, get_model_spec
 from ..storage import SqliteRunStore
 
 runs_app = typer.Typer(
@@ -46,8 +46,10 @@ def runs_list(
     table.add_column("Finish", style="yellow")
     table.add_column("Durée (ms)", justify="right")
     table.add_column("Tokens", justify="right")
-    table.add_column("Coût", justify="right", style="green")
+    table.add_column("Coût estimé", justify="right", style="green")
+    table.add_column("Tarif vérifié", style="dim")
     table.add_column("Date (UTC)", style="dim")
+    table.caption = "Prix du catalogue local, non temps réel; voir models inspect pour la source."
 
     for rec in records:
         status_style = "green" if rec.state == "completed" else "red"
@@ -69,6 +71,9 @@ def runs_list(
         else:
             cost_cell = "-"
 
+        spec = get_model_spec(rec.model_id)
+        last_verified = (spec.last_verified or "date inconnue") if spec else "N/A"
+
         table.add_row(
             rec.run_id[:12] + "...",
             rec.model_id,
@@ -79,6 +84,7 @@ def runs_list(
             dur_str,
             tokens_str,
             cost_cell,
+            last_verified,
             rec.created_at[:19],
         )
 
