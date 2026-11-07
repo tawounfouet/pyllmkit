@@ -47,3 +47,7 @@ Les interfaces publiques du domaine ne doivent pas être modifiées pour satisfa
 - [ ] Faire ratifier les breaking changes autorisés et consigner la décision G7.
 
 **Verdict :** documentation de migration prête pour revue, **G7 non ratifié**. Aucune création de tag ou distribution autorisée par ce document.
+
+## 5. Acceptation propriétaire et réserve de distribution (2026-11-07)
+
+Le mainteneur unique accepte ce guide pour la baseline de développement `text_only_v1` offline. La revue par un consommateur tiers n'est pas obligatoire par décision propriétaire, mais l'absence d'une comparaison complète d'API et de migration reste un **risque technique accepté à documenter pour une version stable**, et non une preuve de compatibilité. Voir [registre de décision #17](17_OWNER_SELF_ACCEPTANCE_AND_SCOPED_GATES_2026-11-07.md).
