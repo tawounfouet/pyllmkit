@@ -195,14 +195,15 @@ def _open(
     secret: str | None,
     *,
     opener: urllib.request.OpenerDirector | None = None,
-    max_bytes: int = MAX_PROVIDER_RESPONSE_BYTES,
+    max_bytes: int | None = None,
 ) -> bytes:
+    limit = MAX_PROVIDER_RESPONSE_BYTES if max_bytes is None else max_bytes
     try:
         if opener is None:
             with urllib.request.urlopen(request, timeout=timeout) as response:
-                return _read_bounded(response, max_bytes)
+                return _read_bounded(response, limit)
         with opener.open(request, timeout=timeout) as response:
-            return _read_bounded(response, max_bytes)
+            return _read_bounded(response, limit)
     except InvocationPortError:
         raise
     except urllib.error.HTTPError as exc:
