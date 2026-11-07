@@ -163,3 +163,22 @@ def test_authenticated_api_pins_verified_peer_and_denies_redirect() -> None:
     assert any(isinstance(x, media_http._DenyMediaRedirect) for x in args)
     pinned = next(x for x in args if isinstance(x, media_http._PinnedHTTPSHandler))
     assert pinned._ip == "93.184.216.34"
+
+
+def test_oversized_media_json_body_rejected_without_http(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(media_http, "MAX_PROVIDER_REQUEST_BYTES", 20)
+    with (
+        patch("urllib.request.urlopen", side_effect=AssertionError("unexpected network")) as http,
+        patch("socket.getaddrinfo", side_effect=AssertionError("unexpected DNS")) as dns,
+        pytest.raises(InvocationPortError, match="request_too_large"),
+    ):
+        media_http.http_bytes(
+            "https://api.openai.com/v1/images/generations",
+            payload={"prompt": "too many characters in this media request"},
+            headers={"Authorization": "Bearer SYNTHETIC-TEST-NOT-REAL"},
+            method="POST",
+        )
+    http.assert_not_called()
+    dns.assert_not_called()
