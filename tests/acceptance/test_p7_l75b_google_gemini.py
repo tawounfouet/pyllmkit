@@ -57,7 +57,14 @@ from pyllmkit.domain.inference import (
     InferenceRunState,
     ParameterSupport,
 )
-from pyllmkit.domain.interactions import Content, Message, Role, TextContent
+from pyllmkit.domain.interactions import (
+    Content,
+    ImageContent,
+    MediaSourceRef,
+    Message,
+    Role,
+    TextContent,
+)
 from pyllmkit.domain.modalities import Modality, ModalitySet
 from pyllmkit.domain.models import Model, ModelFamily, ModelId, ModelIdentity
 from pyllmkit.domain.providers import InferenceProvider, ProviderId
@@ -562,3 +569,27 @@ def test_cloud_destination_is_checked_again_after_app_validation() -> None:
         ProviderProfile.XAI, ProviderConnectionConfig.xai(REF).endpoint_url,
         ProviderConnectionConfig.xai(REF).endpoint_url,
     )
+
+
+def test_gemini_multimodal_negative_mapping_branches_fail_closed() -> None:
+    old = prepared()
+    with pytest.raises(InvocationPortError, match="adapter_protocol_error"):
+        encode_gemini_request(None)  # type: ignore[arg-type]
+    with pytest.raises(InvocationPortError, match="provider_protocol_error"):
+        decode_gemini_response(None, old)  # type: ignore[arg-type]
+
+    invalid_system = Message(
+        Role.SYSTEM,
+        Content((ImageContent(MediaSourceRef("asset", "image-token")),)),
+    )
+    valid_user = Message(Role.USER, Content((TextContent("Salut"),)))
+    bad = replace(
+        old,
+        request=InferenceRequest(old.request.target, (invalid_system, valid_user)),
+    )
+    with pytest.raises(InvocationPortError, match="unsupported_message_structure"):
+        encode_gemini_request(bad)
+
+    missing_finish = b'{"candidates":[{"content":{"parts":[{"text":"Salut"}]}}]}'
+    with pytest.raises(InvocationPortError, match="provider_not_completed"):
+        decode_gemini_response(missing_finish, old)

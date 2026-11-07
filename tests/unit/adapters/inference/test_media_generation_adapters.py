@@ -8,6 +8,7 @@ from __future__ import annotations
 import base64
 import io
 import json
+import socket
 import struct
 import urllib.error
 from typing import Any
@@ -89,7 +90,13 @@ def _invoke(model: str, rec: _Recorder, *, options: MediaGenerationOptions | Non
     service = create_cli_inference_service(
         create_reference_catalog(), mock=False, media_options=options, diagnostics=diagnostics,
     )
-    with patch("urllib.request.urlopen", side_effect=rec):
+    public_dns = [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("93.184.216.34", 443))]
+    with (
+        patch("urllib.request.urlopen", side_effect=rec),
+        patch("urllib.request.build_opener") as fake_opener,
+        patch("socket.getaddrinfo", return_value=public_dns),
+    ):
+        fake_opener.return_value.open.side_effect = rec
         return service.invoke(_request(model, system=system))
 
 
@@ -363,7 +370,7 @@ def test_missing_credential_is_reported(monkeypatch: pytest.MonkeyPatch) -> None
 
 
 def test_openai_image_url_fallback_and_empty_payload() -> None:
-    rec = _Recorder([{"data": [{"url": "https://cdn.test/img.png"}]}, PNG_1x1])
+    rec = _Recorder([{"data": [{"url": "https://files.openai.com/img.png"}]}, PNG_1x1])
     ex = _invoke("dall-e-3", rec)
     assert isinstance(ex.response.output, ImageOutput)
     assert rec.payload(0)["quality"] == "standard"

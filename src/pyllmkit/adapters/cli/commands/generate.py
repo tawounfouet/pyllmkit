@@ -384,7 +384,11 @@ def _execute_generation(
         raise typer.Exit(code=1) from None
     except typer.Exit:
         raise
-    except Exception as exc:
-        panel = build_error_panel("unexpected_error", str(exc))
+    except Exception:
+        # Never echo arbitrary exception text: provider/IO failures may embed secrets.
+        panel = build_error_panel(
+            "unexpected_error",
+            "Erreur interne pendant la génération. Détails masqués pour protéger les secrets.",
+        )
         console.print(panel)
         raise typer.Exit(code=2) from None

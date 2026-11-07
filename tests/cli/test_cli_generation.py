@@ -65,18 +65,16 @@ class TestMediaSaver:
         with pytest.raises(FileNotFoundError):
             save_output_media(out, tmp_path / "dst.wav")
 
-    def test_save_uri_downloads_bytes(self, tmp_path: Path) -> None:
+    def test_save_uri_refuses_untrusted_remote_download(self, tmp_path: Path) -> None:
         target = tmp_path / "downloaded.mp4"
         out = VideoOutput(MediaSourceRef("uri", "https://example.org/sample.mp4"))
+        with (
+            patch("urllib.request.urlopen", side_effect=AssertionError("No network permitted")),
+            pytest.raises(ValueError, match="distant direct interdit"),
+        ):
+            save_output_media(out, target)
+        assert not target.exists()
 
-        mock_resp = MagicMock()
-        mock_resp.read.return_value = b"FAKE_MP4_BYTES"
-        mock_resp.__enter__.return_value = mock_resp
-
-        with patch("urllib.request.urlopen", return_value=mock_resp):
-            result = save_output_media(out, target)
-        assert result == target
-        assert target.read_bytes() == b"FAKE_MP4_BYTES"
 
     def test_save_multipart_output(self, tmp_path: Path) -> None:
         target = tmp_path / "extracted_media.png"
@@ -103,6 +101,21 @@ class TestMediaSaver:
         with pytest.raises(ValueError, match="Format de Data URI invalide"):
             save_output_media(mock_out, tmp_path / "bad.png")
 
+    def test_invalid_base64_is_rejected_without_creating_asset(self, tmp_path: Path) -> None:
+        target = tmp_path / "bad.png"
+        output = ImageOutput(MediaSourceRef("data", "data:image/png;base64,???"))
+        with pytest.raises(ValueError, match="base64 invalide"):
+            save_output_media(output, target)
+        assert not target.exists()
+
+    def test_media_bytes_cap_is_enforced(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr("pyllmkit.adapters.cli.media_saver.MAX_MEDIA_DOWNLOAD_BYTES", 3)
+        output = ImageOutput(MediaSourceRef("data", "data:image/png;base64,YWJjZA=="))
+        target = tmp_path / "oversized.png"
+        with pytest.raises(ValueError, match="volumineux"):
+            save_output_media(output, target)
+        assert not target.exists()
+
     def test_unsupported_media_kind_raises_error(self, tmp_path: Path) -> None:
         mock_out = MagicMock(spec=ImageOutput)
         mock_out.media = MagicMock(kind="asset", value="opaque-id")
@@ -116,6 +129,18 @@ class TestMediaSaver:
 
 class TestCliGenerateCommands:
     """End-to-end tests for pyllmkit generate subcommands."""
+
+    def test_unexpected_generation_exception_does_not_echo_credentials(self) -> None:
+        with patch(
+            "pyllmkit.adapters.cli.commands.generate.create_cli_inference_service"
+        ) as service_factory:
+            service_factory.return_value.invoke.side_effect = RuntimeError(
+                "unexpected failure with sk-proj-VERYPRIVATE123456789"
+            )
+            result = runner.invoke(app, ["generate", "image", "Une montagne"])
+        assert result.exit_code == 2
+        assert "VERYPRIVATE" not in result.stdout
+        assert "Détails masqués" in result.stdout
 
     def test_generate_image_command_with_out(self, tmp_path: Path) -> None:
         out_file = tmp_path / "generated_cat.png"

@@ -21,7 +21,7 @@ from pyllmkit.adapters.inference.media_http import (
     data_uri,
     extract_prompt,
     fail_output,
-    http_bytes,
+    fetch_provider_media_bytes,
     http_json,
     image_dimensions,
     media_output_kind,
@@ -102,7 +102,7 @@ class XAIMediaAdapter:
         if isinstance(item.get("b64_json"), str) and item["b64_json"]:
             raw = base64.b64decode(item["b64_json"])
         elif isinstance(item.get("url"), str) and item["url"]:
-            raw = http_bytes(item["url"], timeout=self.options.request_timeout_seconds, diagnostics=self.diagnostics)
+            raw = fetch_provider_media_bytes(item["url"], timeout=self.options.request_timeout_seconds, diagnostics=self.diagnostics)
         else:
             raise fail_output(self.diagnostics, "xAI : image vide (modération possible)", "content_filtered")
         mime = sniff_image_mime(raw, str(item.get("mime_type") or "image/jpeg"))
@@ -175,7 +175,7 @@ class XAIMediaAdapter:
         url = video.get("url")
         if not isinstance(url, str) or not url:
             raise fail_output(self.diagnostics, "xAI vidéo : URL vide (refus de modération)", "content_filtered")
-        raw = http_bytes(url, timeout=opts.request_timeout_seconds, diagnostics=self.diagnostics)
+        raw = fetch_provider_media_bytes(url, timeout=opts.request_timeout_seconds, diagnostics=self.diagnostics)
         duration_raw = video.get("duration")
         duration = float(duration_raw) if isinstance(duration_raw, (int, float)) else (
             float(opts.duration_seconds) if opts.duration_seconds else None

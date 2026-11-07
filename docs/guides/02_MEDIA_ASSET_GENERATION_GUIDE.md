@@ -636,7 +636,7 @@ Pour un modèle d'un fournisseur déjà pris en charge (OpenAI, Google, xAI) et 
 2. Déclarer le déploiement dans `reference_models_data` de [`catalog.py`](../../src/pyllmkit/adapters/cli/catalog.py) : `("gpt-image-3", "openai", "openai", "cloud", "global")`.
 3. Aucune modification de routage n'est nécessaire : le `MediaRoutingAdapter` dirige automatiquement le modèle vers l'adaptateur média de son fournisseur selon `modalities_out`.
 4. Unités de tarif reconnues par `compute_run_cost` : `image` (par image, `output_cost`), `1M characters` (TTS, `input_cost`), `second` (vidéo, `output_cost`). Laissez `null` tant que le prix n'est pas vérifié.
-5. Si le modèle utilise une API différente (nouveau point d'accès ou nouveau format de réponse), ajoutez une branche dans l'adaptateur du fournisseur, sur le modèle de `_omni_video` dans `google_media.py`, et des tests hors réseau dans `tests/unit/adapters/inference/test_media_generation_adapters.py` (HTTP simulé en patchant `urllib.request.urlopen`).
+5. Si le modèle utilise une API différente (nouveau point d'accès ou nouveau format de réponse), ajoutez une branche dans l'adaptateur du fournisseur, sur le modèle de `_omni_video` dans `google_media.py`, et des tests hors réseau dans `tests/unit/adapters/inference/test_media_generation_adapters.py` (HTTP simulé avec des mocks `urllib.request` et des résolutions DNS synthétiques).
 
 ---
 
@@ -646,7 +646,10 @@ Pour un modèle d'un fournisseur déjà pris en charge (OpenAI, Google, xAI) et 
 - **Secrets** : `.pyllmkit.yaml` est exclu de Git. Les messages d'erreur des fournisseurs sont assainis avant affichage : clé utilisée remplacée par `***`, motifs de clés (`sk-...`, `xai-...`, `AIza...`, `AQ....`) masqués, texte tronqué à 400 caractères.
 - **Prompt** : seuls les messages utilisateur sont envoyés comme prompt média. Le prompt système de la configuration n'est jamais transmis à un générateur d'image ou de voix.
 - **Historique** : métadonnées uniquement par défaut ; prompt archivé seulement avec `--record-content`.
-- **URL temporaires** : les vidéos xAI et Veo sont téléchargées dès la fin du job (les URL expirent ; Google conserve les vidéos Veo 2 jours).
+- **URL temporaires** : les médias distants ne sont récupérés par les adaptateurs que depuis des hôtes HTTPS fournisseurs approuvés, après vérification DNS, avec connexion IP épinglée, TLS et refus des redirects/proxies. Une URL de CDN inconnue échoue explicitement : sa prise en charge requiert une décision d'autorisation et des tests.
+- **Saver CLI** : le téléchargement direct de `MediaSourceRef(kind="uri")` est interdit ; seules les données locales ou déjà matérialisées et vérifiées sont écrites.
+- **Limites** : 16 MiB par fichier local de requête, 1 MiB pour les requêtes texte, 24 MiB pour une requête multimodale encodée, 160 MiB par réponse API et 100 MiB par téléchargement de média. Les données media peuvent occuper plus de mémoire en base64. Ces limites ne sont pas des garanties de budget financier.
+- **Garantie** : ces garde-fous ont été vérifiés hors ligne par tests. Une homologation live de bout en bout, incluant limites fournisseur, coûts, taux et disponibilité des CDN, n'a pas été effectuée ici.
 - **Mémoire** : le média transite en mémoire sous forme de data URI base64 avant écriture. Une vidéo 1080p de 15 s reste de l'ordre de quelques dizaines de Mo.
 - **Filigranes** : les contenus Google (Veo, Omni, Gemini Image) portent un filigrane SynthID invisible.
 

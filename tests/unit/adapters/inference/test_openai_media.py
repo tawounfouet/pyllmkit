@@ -2,6 +2,7 @@
 
 import io
 import json
+import socket
 import urllib.error
 from unittest.mock import MagicMock, patch
 
@@ -40,7 +41,13 @@ def test_openai_media_dalle_image_generation_success(fake_openai_env: None) -> N
     mock_resp.read.return_value = json.dumps(mock_resp_payload).encode("utf-8")
     mock_resp.__enter__.return_value = mock_resp
 
-    with patch("urllib.request.urlopen", return_value=mock_resp):
+    with (
+        patch("socket.getaddrinfo", return_value=[
+            (socket.AF_INET, socket.SOCK_STREAM, 6, "", ("93.184.216.34", 443)),
+        ]),
+        patch("urllib.request.build_opener") as opener,
+    ):
+        opener.return_value.open.return_value = mock_resp
         execution = service.invoke(req)
 
     assert execution.response is not None
@@ -66,7 +73,13 @@ def test_openai_media_tts_generation_success(fake_openai_env: None) -> None:
     mock_resp.read.return_value = b"FAKE_MP3_AUDIO_BYTES"
     mock_resp.__enter__.return_value = mock_resp
 
-    with patch("urllib.request.urlopen", return_value=mock_resp):
+    with (
+        patch("socket.getaddrinfo", return_value=[
+            (socket.AF_INET, socket.SOCK_STREAM, 6, "", ("93.184.216.34", 443)),
+        ]),
+        patch("urllib.request.build_opener") as opener,
+    ):
+        opener.return_value.open.return_value = mock_resp
         execution = service.invoke(req)
 
     assert execution.response is not None
@@ -87,7 +100,13 @@ def test_openai_media_handles_401_error(fake_openai_env: None) -> None:
     )
 
     err = urllib.error.HTTPError("https://api.openai.com/v1/images/generations", 401, "Unauthorized", {}, io.BytesIO(b"{}"))
-    with patch("urllib.request.urlopen", side_effect=err):
+    with (
+        patch("socket.getaddrinfo", return_value=[
+            (socket.AF_INET, socket.SOCK_STREAM, 6, "", ("93.184.216.34", 443)),
+        ]),
+        patch("urllib.request.build_opener") as opener,
+    ):
+        opener.return_value.open.side_effect = err
         execution = service.invoke(req)
 
     assert execution.run.failure is not None

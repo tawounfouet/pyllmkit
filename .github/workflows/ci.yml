@@ -39,22 +39,22 @@ jobs:
           python -m pytest -q tests/acceptance/test_p7_l72_secure_adapter_registry.py --cov=pyllmkit.adapters.inference.security --cov=pyllmkit.adapters.inference.registry --cov=pyllmkit.adapters.inference.routing --cov=pyllmkit.adapters.inference.errors --cov=pyllmkit.protocols.credentials --cov-branch --cov-report=term-missing --cov-fail-under=95
       - name: P7 L7.3 Ollama mapping and transport branch coverage
         run: |
-          python -m pytest -q tests/acceptance/test_p7_l73_ollama_adapter.py --cov=pyllmkit.adapters.inference.ollama --cov=pyllmkit.adapters.inference.ollama_mapping --cov-branch --cov-report=term-missing --cov-fail-under=95
+          python -m pytest -q tests/acceptance/test_p7_l73_ollama_adapter.py tests/acceptance/test_multimodal_inference_mapping.py --cov=pyllmkit.adapters.inference.ollama --cov=pyllmkit.adapters.inference.ollama_mapping --cov-branch --cov-report=term-missing --cov-fail-under=95
       - name: P7 L7.4 OpenAI Responses adapter and mapping coverage
         run: |
-          python -m pytest -q tests/acceptance/test_p7_l74_openai_responses.py --cov=pyllmkit.adapters.inference.openai_responses --cov=pyllmkit.adapters.inference.openai_responses_mapping --cov-branch --cov-report=term-missing --cov-fail-under=95
+          python -m pytest -q tests/acceptance/test_p7_l74_openai_responses.py tests/acceptance/test_multimodal_inference_mapping.py --cov=pyllmkit.adapters.inference.openai_responses --cov=pyllmkit.adapters.inference.openai_responses_mapping --cov-branch --cov-report=term-missing --cov-fail-under=95
       - name: P7 L7.5 Anthropic Messages adapter and mapping coverage
         run: |
-          python -m pytest -q tests/acceptance/test_p7_l75_anthropic_messages.py --cov=pyllmkit.adapters.inference.anthropic_messages --cov=pyllmkit.adapters.inference.anthropic_messages_mapping --cov-branch --cov-report=term-missing --cov-fail-under=95
+          python -m pytest -q tests/acceptance/test_p7_l75_anthropic_messages.py tests/acceptance/test_multimodal_inference_mapping.py --cov=pyllmkit.adapters.inference.anthropic_messages --cov=pyllmkit.adapters.inference.anthropic_messages_mapping --cov-branch --cov-report=term-missing --cov-fail-under=95
       - name: P7 L7.5b Gemini and common cloud HTTP branch coverage
         run: |
-          python -m pytest -q tests/acceptance/test_p7_l75b_google_gemini.py --cov=pyllmkit.adapters.inference.google_gemini --cov=pyllmkit.adapters.inference.google_gemini_mapping --cov=pyllmkit.adapters.inference.cloud_http --cov-branch --cov-report=term-missing --cov-fail-under=95
+          python -m pytest -q tests/acceptance/test_p7_l75b_google_gemini.py tests/acceptance/test_multimodal_inference_mapping.py tests/acceptance/test_p7_l74_openai_responses.py tests/acceptance/test_p7_l75_anthropic_messages.py tests/acceptance/test_p7_l75c_xai_responses.py tests/acceptance/test_p7_l75d_mistral_chat.py --cov=pyllmkit.adapters.inference.google_gemini --cov=pyllmkit.adapters.inference.google_gemini_mapping --cov=pyllmkit.adapters.inference.cloud_http --cov-branch --cov-report=term-missing --cov-fail-under=95
       - name: P7 L7.5c xAI Responses mapping and adapter branch coverage
         run: |
-          python -m pytest -q tests/acceptance/test_p7_l75c_xai_responses.py --cov=pyllmkit.adapters.inference.xai_responses --cov=pyllmkit.adapters.inference.xai_responses_mapping --cov-branch --cov-report=term-missing --cov-fail-under=95
+          python -m pytest -q tests/acceptance/test_p7_l75c_xai_responses.py tests/acceptance/test_multimodal_inference_mapping.py --cov=pyllmkit.adapters.inference.xai_responses --cov=pyllmkit.adapters.inference.xai_responses_mapping --cov-branch --cov-report=term-missing --cov-fail-under=95
       - name: P7 L7.5d Mistral Chat mapping and adapter branch coverage
         run: |
-          python -m pytest -q tests/acceptance/test_p7_l75d_mistral_chat.py --cov=pyllmkit.adapters.inference.mistral_chat --cov=pyllmkit.adapters.inference.mistral_chat_mapping --cov-branch --cov-report=term-missing --cov-fail-under=95
+          python -m pytest -q tests/acceptance/test_p7_l75d_mistral_chat.py tests/acceptance/test_multimodal_inference_mapping.py --cov=pyllmkit.adapters.inference.mistral_chat --cov=pyllmkit.adapters.inference.mistral_chat_mapping --cov-branch --cov-report=term-missing --cov-fail-under=95
       - name: P7 L7.6 six-provider stream mapping and transport branch coverage
         run: |
           python -m pytest -q tests/acceptance/test_p7_l76_native_streaming.py tests/acceptance/test_p7_l76_security_lifecycle.py tests/acceptance/test_p7_l77_stream_resilience.py --cov=pyllmkit.adapters.inference.native_stream_mapping --cov=pyllmkit.adapters.inference.native_stream_transport --cov=pyllmkit.application.inference.streaming --cov-branch --cov-report=term-missing --cov-fail-under=90

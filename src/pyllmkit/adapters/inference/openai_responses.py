@@ -13,6 +13,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 from pyllmkit.adapters.inference.errors import normalize_http_failure
+from pyllmkit.adapters.inference.media_mapping import request_bytes_limit
 from pyllmkit.adapters.inference.openai_responses_mapping import (
     decode_openai_responses_response,
     encode_openai_responses_request,
@@ -78,7 +79,7 @@ def _authorize_secret(
 
 def _prepare(prepared: PreparedInvocation) -> bytes:
     body = encode_openai_responses_request(prepared)
-    if len(body) > _MAX_REQUEST_BYTES:
+    if len(body) > request_bytes_limit(prepared):
         raise InvocationPortError("request_too_large")
     return body
 

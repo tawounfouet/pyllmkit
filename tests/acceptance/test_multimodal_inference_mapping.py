@@ -334,3 +334,32 @@ def test_media_mapping_helpers_coverage(tmp_path: Path) -> None:
     mock_prep.resolution.deployment.modalities = None
     check_part_modality(mock_prep, ImageContent(MediaSourceRef("asset", "a")))
 
+
+
+def test_multimodal_wire_request_limit_is_separate_from_text_limit(tmp_path: Path) -> None:
+    from pyllmkit.adapters.inference.media_mapping import (
+        MAX_MULTIMODAL_REQUEST_BYTES,
+        MAX_MULTIMODAL_SOURCE_BYTES,
+        MAX_TEXT_REQUEST_BYTES,
+        request_bytes_limit,
+    )
+
+    text = (Message(Role.USER, Content((TextContent("hello"),))),)
+    prep_text = _setup_multimodal_prepared("ollama", ("text",), text, "llama3.2:1b")
+    assert request_bytes_limit(prep_text) == MAX_TEXT_REQUEST_BYTES
+    image = (Message(Role.USER, Content((
+        TextContent("describe"),
+        ImageContent(MediaSourceRef("data", "data:image/png;base64,YWJj")),
+    ))),)
+    prep_image = _setup_multimodal_prepared("ollama", ("text", "image"), image, "llava")
+    assert request_bytes_limit(prep_image) == MAX_MULTIMODAL_REQUEST_BYTES
+
+    huge = tmp_path / "too-large.png"
+    with huge.open("wb") as target:
+        target.truncate(MAX_MULTIMODAL_SOURCE_BYTES + 1)
+    request = (Message(Role.USER, Content((
+        ImageContent(MediaSourceRef("file", str(huge))),
+    ))),)
+    prepared = _setup_multimodal_prepared("ollama", ("text", "image"), request, "llava")
+    with pytest.raises(InvocationPortError, match="request_too_large"):
+        encode_ollama_request(prepared)

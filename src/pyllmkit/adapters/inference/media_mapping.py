@@ -15,6 +15,21 @@ from pyllmkit.domain.interactions import (
     VideoContent,
 )
 
+# The old 1 MiB text boundary is intentionally unchanged. Base64-encoded
+# multimodal messages require a separate, explicit and still finite budget.
+MAX_MULTIMODAL_SOURCE_BYTES = 16 * 1024 * 1024
+MAX_MULTIMODAL_REQUEST_BYTES = 24 * 1024 * 1024
+MAX_TEXT_REQUEST_BYTES = 1_048_576
+
+
+def request_bytes_limit(prepared: PreparedInvocation) -> int:
+    """Select the bounded wire-body budget from the validated request modalities."""
+    for message in prepared.request.messages:
+        if any(type(part) in (ImageContent, AudioContent, VideoContent)
+               for part in message.content.parts):
+            return MAX_MULTIMODAL_REQUEST_BYTES
+    return MAX_TEXT_REQUEST_BYTES
+
 
 def check_part_modality(prepared: PreparedInvocation, part: ContentPart) -> None:
     """Verify that the deployment explicitly accepts the part modality.
@@ -35,6 +50,8 @@ def extract_media_base64_and_mime(
     """Extract (base64_payload, mime_type) from a MediaSourceRef without network I/O."""
     if source.kind == "data":
         val = source.value
+        if len(val) > MAX_MULTIMODAL_REQUEST_BYTES:
+            raise InvocationPortError("request_too_large")
         header, _, payload = val.partition(",")
         mime = default_mime
         is_b64 = False
@@ -55,9 +72,14 @@ def extract_media_base64_and_mime(
         path = Path(source.value)
         if not path.is_file():
             raise InvocationPortError("media_file_not_found")
+        if path.stat().st_size > MAX_MULTIMODAL_SOURCE_BYTES:
+            raise InvocationPortError("request_too_large")
         guessed, _ = mimetypes.guess_type(source.value)
         mime = guessed or default_mime
-        b64_str = base64.b64encode(path.read_bytes()).decode("ascii")
+        data = path.read_bytes()
+        if len(data) > MAX_MULTIMODAL_SOURCE_BYTES:
+            raise InvocationPortError("request_too_large")
+        b64_str = base64.b64encode(data).decode("ascii")
         return b64_str, mime
 
     if source.kind in ("uri", "asset"):

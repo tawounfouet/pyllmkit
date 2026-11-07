@@ -14,7 +14,7 @@ from pyllmkit.domain.interactions import (
     VideoContent,
 )
 
-MAX_MEDIA_FILE_BYTES = 100 * 1024 * 1024  # 100 MB max
+MAX_MEDIA_FILE_BYTES = 16 * 1024 * 1024  # 16 MiB; fits the 24 MiB base64 wire budget
 
 
 def create_media_source_ref_from_input(raw: str) -> MediaSourceRef:
