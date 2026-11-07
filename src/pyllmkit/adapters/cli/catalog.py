@@ -174,9 +174,21 @@ def create_reference_catalog() -> InMemoryCatalog:
 
     # Ingestion des modèles découverts via 'pyllmkit models sync'
     discovered = load_discovered_models()
+    # Legacy ModelId has no provider scope. Never pick an arbitrary API when two
+    # observed providers expose the same ID: only the M1 read model can resolve
+    # those entries with explicit --provider.
+    observed_providers: dict[str, set[str]] = {}
+    for row in discovered:
+        observed_id = row.get("id")
+        provider = row.get("provider")
+        if observed_id and provider:
+            observed_providers.setdefault(observed_id, set()).add(provider)
+    ambiguous = {
+        mid for mid, providers in observed_providers.items() if len(providers) > 1
+    }
     for item in discovered:
         mid_str = item.get("id")
-        if not mid_str:
+        if not mid_str or mid_str in ambiguous:
             continue
         mid = ModelId(mid_str)
         if catalog.models.get(mid) is not None:
