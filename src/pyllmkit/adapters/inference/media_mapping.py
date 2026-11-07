@@ -12,10 +12,8 @@ from pyllmkit.domain.interactions import (
     ContentPart,
     ImageContent,
     MediaSourceRef,
-    TextContent,
     VideoContent,
 )
-
 
 # The old 1 MiB text boundary is intentionally unchanged. Base64-encoded
 # multimodal messages require a separate, explicit and still finite budget.
