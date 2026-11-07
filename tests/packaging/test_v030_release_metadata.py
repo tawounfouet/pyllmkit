@@ -1,8 +1,8 @@
 """Pin the owner-authorized v0.3.0 source-tag metadata without live calls."""
 
+import tomllib
 from importlib.metadata import version
 from pathlib import Path
-import tomllib
 
 ROOT = Path(__file__).resolve().parents[2]
 
