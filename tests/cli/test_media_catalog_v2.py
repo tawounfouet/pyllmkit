@@ -31,6 +31,7 @@ from pyllmkit.adapters.cli.media_catalog_v2 import (
     diff_media_catalog,
     effective_lifecycle,
     load_media_catalog,
+    merge_media_catalog,
     parse_media_catalog,
     reconcile_observed_ids,
 )
@@ -318,3 +319,68 @@ def test_sync_emits_private_incomplete_versioned_snapshot(tmp_path: Path, monkey
     assert cache.observed_ids()["openai"] == {"gpt-image-2"}
     assert all(not item.complete for item in cache.observations)
     assert "sk-synthetic" not in (tmp_path / "discovered_models_v2.json").read_text()
+
+
+def test_catalog_extension_never_overwrites_a_verified_existing_route() -> None:
+    base = load_media_catalog()
+    payload = _document()
+    payload["revision"] = "user-extension"
+    copy_route = copy.deepcopy(payload["models"][0])
+    copy_route["billing_provider"] = "unknown-billing-service"
+    payload["models"] = [copy_route]
+    extension = parse_media_catalog(payload)
+    with pytest.raises(ValueError, match="verified_route_overwrite_forbidden"):
+        merge_media_catalog(base, extension)
+
+
+def test_catalog_extension_with_explicit_aggregator_route_is_accepted() -> None:
+    base = load_media_catalog()
+    payload = _document()
+    payload["revision"] = "test-aggregator"
+    item = copy.deepcopy(payload["models"][0])
+    item["public_model_id"] = "alternative-photo-model"
+    item["native_model_id"] = "vendor-model-v1"
+    item["model_owner"] = "creator"
+    item["api_provider"] = "fal"
+    item["billing_provider"] = "fal"
+    item["deployment_channel"] = "aggregator"
+    item["aliases"] = ["photo-fast"]
+    item["source_url"] = "https://fal.ai/models"
+    payload["models"] = [item]
+    extension = parse_media_catalog(payload)
+    combined = merge_media_catalog(base, extension)
+    assert len(combined.models) == 24
+    route = combined.find("photo-fast", provider="fal")
+    assert route is not None
+    assert route.model_owner == "creator"
+    assert route.api_provider == "fal"
+    assert route.billing_provider == "fal"
+    assert route.native_model_id == "vendor-model-v1"
+    assert len(base.models) == 23
+
+
+def test_gemini_alias_sync_uses_canonical_google_snapshot(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from pyllmkit.adapters.cli.config import CliConfig
+
+    monkeypatch.setenv("GEMINI_API_KEY", "AIzaSYNTHETIC")
+    monkeypatch.setattr(
+        "pyllmkit.adapters.cli.discovery.get_config",
+        lambda: CliConfig(api_keys={}),
+    )
+    monkeypatch.setattr(
+        "pyllmkit.adapters.cli.discovery.get_discovered_models_path",
+        lambda local=False: tmp_path / "discovered_models.json",
+    )
+    resp = MagicMock()
+    resp.read.return_value = b'{"models":[{"name":"models/gemini-3.1-flash-image"}]}'
+    resp.__enter__.return_value = resp
+    with patch(
+        "pyllmkit.adapters.cli.discovery._open_discovery_request", return_value=resp,
+    ):
+        total, results = sync_configured_providers(target_provider="gemini")
+    assert total == 1
+    assert results["gemini"]["status"] == "success"
+    saved = load_discovery_snapshot(tmp_path / "discovered_models_v2.json")
+    assert saved.observed_ids() == {"google": {"gemini-3.1-flash-image"}}
