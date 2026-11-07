@@ -2,11 +2,12 @@
 
 import base64
 import os
-import urllib.request
+import re
 from datetime import datetime
 from pathlib import Path
 
 from pyllmkit.adapters.cli.config import get_config
+from pyllmkit.adapters.inference.media_http import MAX_MEDIA_DOWNLOAD_BYTES
 from pyllmkit.domain.inference import (
     AudioOutput,
     ImageOutput,
@@ -81,7 +82,8 @@ def get_default_asset_path(
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     short_id = run_id[:8] if run_id else "gen"
-    prefix = f"{model_name.replace('/', '_').replace(':', '_')}_" if model_name else ""
+    safe_model = re.sub(r"[^A-Za-z0-9._-]", "_", model_name or "").lstrip(".")[:80]
+    prefix = f"{safe_model}_" if safe_model else ""
     filename = f"{prefix}{timestamp}_{short_id}{ext}"
 
     target_dir = base_dir / category
@@ -110,7 +112,16 @@ def save_output_media(output: InferenceOutput, target_path: Path | str) -> Path:
             if "," not in media_ref.value:
                 raise ValueError("Format de Data URI invalide pour l'extraction binaire")
             _, b64_payload = media_ref.value.split(",", 1)
-            raw_bytes = base64.b64decode(b64_payload)
+            if len(b64_payload) > ((MAX_MEDIA_DOWNLOAD_BYTES + 2) // 3) * 4 + 8:
+                raise ValueError("Média encodé trop volumineux")
+            try:
+                raw_bytes = base64.b64decode(b64_payload, validate=True)
+            except ValueError:
+                raise ValueError("Data URI base64 invalide") from None
+            except base64.binascii.Error:
+                raise ValueError("Data URI base64 invalide") from None
+            if len(raw_bytes) > MAX_MEDIA_DOWNLOAD_BYTES:
+                raise ValueError("Média décodé trop volumineux")
             path.write_bytes(raw_bytes)
             return path
 
@@ -118,13 +129,18 @@ def save_output_media(output: InferenceOutput, target_path: Path | str) -> Path:
             src_file = Path(media_ref.value).expanduser().resolve()
             if not src_file.exists():
                 raise FileNotFoundError(f"Fichier source introuvable : {src_file}")
-            path.write_bytes(src_file.read_bytes())
+            if src_file.stat().st_size > MAX_MEDIA_DOWNLOAD_BYTES:
+                raise ValueError("Fichier source trop volumineux")
+            payload = src_file.read_bytes()
+            if len(payload) > MAX_MEDIA_DOWNLOAD_BYTES:
+                raise ValueError("Fichier source trop volumineux")
+            path.write_bytes(payload)
             return path
 
         if media_ref.kind == "uri":
-            with urllib.request.urlopen(media_ref.value, timeout=30) as resp:
-                path.write_bytes(resp.read())
-            return path
+            # An arbitrary response URL is not a trusted download authority.
+            # Provider adapters materialize vetted assets to data URIs first.
+            raise ValueError("Téléchargement distant direct interdit pour les médias non vérifiés")
 
         raise ValueError(f"Type de référence média non matérialisable : '{media_ref.kind}'")
 
