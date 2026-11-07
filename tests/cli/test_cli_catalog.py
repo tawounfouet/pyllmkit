@@ -452,16 +452,14 @@ def test_compute_run_cost_comprehensive() -> None:
 
     # Non-token media costs (Images, TTS, Video)
     cost_dalle, lbl_dalle = compute_run_cost("dall-e-3", None, None, output_media_units=2)
-    assert cost_dalle == 0.08
-    assert "2 images" in lbl_dalle
+    assert (cost_dalle, lbl_dalle) == (None, "-")  # retired, no live quote
 
     cost_tts, lbl_tts = compute_run_cost("tts-1", None, None, input_characters=2000)
     assert cost_tts == 0.03
     assert "2000 caractères" in lbl_tts
 
     cost_veo, lbl_veo = compute_run_cost("veo-2", None, None, output_media_seconds=4.0)
-    assert cost_veo == 0.60
-    assert "4.0s vidéo" in lbl_veo
+    assert (cost_veo, lbl_veo) == (None, "-")  # retired, no live quote
 
 
 def test_build_usage_panel_with_cache_and_reasoning() -> None:
