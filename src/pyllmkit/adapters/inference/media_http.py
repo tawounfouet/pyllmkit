@@ -19,11 +19,11 @@ import socket
 import struct
 import urllib.error
 import urllib.request
-from ipaddress import ip_address
-from urllib.parse import urlsplit
 from collections.abc import Mapping
 from dataclasses import dataclass, field
+from ipaddress import ip_address
 from typing import Any, Literal
+from urllib.parse import urlsplit
 
 from pyllmkit.adapters.inference.security import ProviderConnectionConfig
 from pyllmkit.application.inference import InvocationPortError, PreparedInvocation
