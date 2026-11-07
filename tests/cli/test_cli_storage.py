@@ -58,7 +58,7 @@ def test_cli_runs_list_and_inspect(tmp_path: Path, monkeypatch: pytest.MonkeyPat
     assert "Aucune exécution enregistrée" in res_empty.output
 
     # Run inference which records to DB
-    res_run = runner.invoke(app, ["run", "Bonjour pour l'historique"])
+    res_run = runner.invoke(app, ["run", "Bonjour pour l'historique", "--record-content"])
     assert res_run.exit_code == 0
 
     # List shows recorded run
