@@ -453,7 +453,7 @@ def test_compute_run_cost_comprehensive() -> None:
 
 def test_build_usage_panel_with_cache_and_reasoning() -> None:
     """Test build_usage_panel with cached tokens and reasoning tokens."""
-    from datetime import datetime, timezone
+    from datetime import UTC, datetime
     from unittest.mock import MagicMock
 
     from pyllmkit.adapters.cli.formatting.panels import build_usage_panel
