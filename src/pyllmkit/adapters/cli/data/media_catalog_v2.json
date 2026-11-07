@@ -1,0 +1,789 @@
+{
+  "schema_version": 2,
+  "revision": "m1-2026-11-07.1",
+  "updated_at": "2026-11-07",
+  "models": [
+    {
+      "public_model_id": "dall-e-3",
+      "native_model_id": "dall-e-3",
+      "model_owner": "openai",
+      "api_provider": "openai",
+      "billing_provider": "openai",
+      "deployment_channel": "direct",
+      "lifecycle": "retired",
+      "availability": "catalog_only",
+      "aliases": [],
+      "capabilities": {
+        "tasks": [
+          "text_to_image"
+        ],
+        "modalities_in": [
+          "text"
+        ],
+        "modalities_out": [
+          "image"
+        ],
+        "resolutions": [],
+        "duration_seconds": [],
+        "codecs": [],
+        "aspect_ratios": [],
+        "languages": [],
+        "voices": [],
+        "max_outputs": null,
+        "reference_image": null,
+        "api_sync": null,
+        "api_async": null
+      },
+      "source_url": "https://developers.openai.com/api/docs/deprecations",
+      "verified_at": "2026-11-07"
+    },
+    {
+      "public_model_id": "dall-e-2",
+      "native_model_id": "dall-e-2",
+      "model_owner": "openai",
+      "api_provider": "openai",
+      "billing_provider": "openai",
+      "deployment_channel": "direct",
+      "lifecycle": "retired",
+      "availability": "catalog_only",
+      "aliases": [],
+      "capabilities": {
+        "tasks": [
+          "text_to_image"
+        ],
+        "modalities_in": [
+          "text"
+        ],
+        "modalities_out": [
+          "image"
+        ],
+        "resolutions": [],
+        "duration_seconds": [],
+        "codecs": [],
+        "aspect_ratios": [],
+        "languages": [],
+        "voices": [],
+        "max_outputs": null,
+        "reference_image": null,
+        "api_sync": null,
+        "api_async": null
+      },
+      "source_url": "https://developers.openai.com/api/docs/deprecations",
+      "verified_at": "2026-11-07"
+    },
+    {
+      "public_model_id": "tts-1",
+      "native_model_id": "tts-1",
+      "model_owner": "openai",
+      "api_provider": "openai",
+      "billing_provider": "openai",
+      "deployment_channel": "direct",
+      "lifecycle": "deprecated",
+      "availability": "catalog_only",
+      "aliases": [],
+      "capabilities": {
+        "tasks": [
+          "text_to_speech"
+        ],
+        "modalities_in": [
+          "text"
+        ],
+        "modalities_out": [
+          "audio"
+        ],
+        "resolutions": [],
+        "duration_seconds": [],
+        "codecs": [],
+        "aspect_ratios": [],
+        "languages": [],
+        "voices": [],
+        "max_outputs": null,
+        "reference_image": null,
+        "api_sync": null,
+        "api_async": null
+      },
+      "source_url": "https://openai.com/api/pricing/",
+      "verified_at": "2026-11-07"
+    },
+    {
+      "public_model_id": "tts-1-hd",
+      "native_model_id": "tts-1-hd",
+      "model_owner": "openai",
+      "api_provider": "openai",
+      "billing_provider": "openai",
+      "deployment_channel": "direct",
+      "lifecycle": "deprecated",
+      "availability": "catalog_only",
+      "aliases": [],
+      "capabilities": {
+        "tasks": [
+          "text_to_speech"
+        ],
+        "modalities_in": [
+          "text"
+        ],
+        "modalities_out": [
+          "audio"
+        ],
+        "resolutions": [],
+        "duration_seconds": [],
+        "codecs": [],
+        "aspect_ratios": [],
+        "languages": [],
+        "voices": [],
+        "max_outputs": null,
+        "reference_image": null,
+        "api_sync": null,
+        "api_async": null
+      },
+      "source_url": "https://openai.com/api/pricing/",
+      "verified_at": "2026-11-07"
+    },
+    {
+      "public_model_id": "imagen-3",
+      "native_model_id": "imagen-3.0-generate-002",
+      "model_owner": "google",
+      "api_provider": "google",
+      "billing_provider": "google",
+      "deployment_channel": "direct",
+      "lifecycle": "retired",
+      "availability": "catalog_only",
+      "aliases": [],
+      "capabilities": {
+        "tasks": [
+          "text_to_image"
+        ],
+        "modalities_in": [
+          "text"
+        ],
+        "modalities_out": [
+          "image"
+        ],
+        "resolutions": [],
+        "duration_seconds": [],
+        "codecs": [],
+        "aspect_ratios": [],
+        "languages": [],
+        "voices": [],
+        "max_outputs": null,
+        "reference_image": null,
+        "api_sync": null,
+        "api_async": null
+      },
+      "source_url": "https://ai.google.dev/gemini-api/docs/deprecations",
+      "verified_at": "2026-11-07"
+    },
+    {
+      "public_model_id": "veo-2",
+      "native_model_id": "veo-2.0-generate-001",
+      "model_owner": "google",
+      "api_provider": "google",
+      "billing_provider": "google",
+      "deployment_channel": "direct",
+      "lifecycle": "retired",
+      "availability": "catalog_only",
+      "aliases": [],
+      "capabilities": {
+        "tasks": [
+          "text_to_video"
+        ],
+        "modalities_in": [
+          "text"
+        ],
+        "modalities_out": [
+          "video"
+        ],
+        "resolutions": [],
+        "duration_seconds": [],
+        "codecs": [],
+        "aspect_ratios": [],
+        "languages": [],
+        "voices": [],
+        "max_outputs": null,
+        "reference_image": null,
+        "api_sync": null,
+        "api_async": null
+      },
+      "source_url": "https://ai.google.dev/gemini-api/docs/deprecations",
+      "verified_at": "2026-11-07"
+    },
+    {
+      "public_model_id": "gpt-image-1-mini",
+      "native_model_id": "gpt-image-1-mini",
+      "model_owner": "openai",
+      "api_provider": "openai",
+      "billing_provider": "openai",
+      "deployment_channel": "direct",
+      "lifecycle": "deprecated",
+      "availability": "catalog_only",
+      "aliases": [],
+      "capabilities": {
+        "tasks": [
+          "text_to_image"
+        ],
+        "modalities_in": [
+          "text"
+        ],
+        "modalities_out": [
+          "image"
+        ],
+        "resolutions": [],
+        "duration_seconds": [],
+        "codecs": [],
+        "aspect_ratios": [],
+        "languages": [],
+        "voices": [],
+        "max_outputs": null,
+        "reference_image": null,
+        "api_sync": null,
+        "api_async": null
+      },
+      "source_url": "https://platform.openai.com/docs/models",
+      "verified_at": "2026-11-07"
+    },
+    {
+      "public_model_id": "gpt-image-1.5",
+      "native_model_id": "gpt-image-1.5",
+      "model_owner": "openai",
+      "api_provider": "openai",
+      "billing_provider": "openai",
+      "deployment_channel": "direct",
+      "lifecycle": "deprecated",
+      "availability": "catalog_only",
+      "aliases": [],
+      "capabilities": {
+        "tasks": [
+          "text_to_image"
+        ],
+        "modalities_in": [
+          "text"
+        ],
+        "modalities_out": [
+          "image"
+        ],
+        "resolutions": [],
+        "duration_seconds": [],
+        "codecs": [],
+        "aspect_ratios": [],
+        "languages": [],
+        "voices": [],
+        "max_outputs": null,
+        "reference_image": null,
+        "api_sync": null,
+        "api_async": null
+      },
+      "source_url": "https://platform.openai.com/docs/models",
+      "verified_at": "2026-11-07"
+    },
+    {
+      "public_model_id": "gpt-image-2",
+      "native_model_id": "gpt-image-2",
+      "model_owner": "openai",
+      "api_provider": "openai",
+      "billing_provider": "openai",
+      "deployment_channel": "direct",
+      "lifecycle": "current",
+      "availability": "catalog_only",
+      "aliases": [],
+      "capabilities": {
+        "tasks": [
+          "text_to_image"
+        ],
+        "modalities_in": [
+          "text"
+        ],
+        "modalities_out": [
+          "image"
+        ],
+        "resolutions": [],
+        "duration_seconds": [],
+        "codecs": [],
+        "aspect_ratios": [],
+        "languages": [],
+        "voices": [],
+        "max_outputs": null,
+        "reference_image": null,
+        "api_sync": null,
+        "api_async": null
+      },
+      "source_url": "https://platform.openai.com/docs/models",
+      "verified_at": "2026-11-07"
+    },
+    {
+      "public_model_id": "gpt-4o-mini-tts",
+      "native_model_id": "gpt-4o-mini-tts",
+      "model_owner": "openai",
+      "api_provider": "openai",
+      "billing_provider": "openai",
+      "deployment_channel": "direct",
+      "lifecycle": "deprecated",
+      "availability": "catalog_only",
+      "aliases": [],
+      "capabilities": {
+        "tasks": [
+          "text_to_speech"
+        ],
+        "modalities_in": [
+          "text"
+        ],
+        "modalities_out": [
+          "audio"
+        ],
+        "resolutions": [],
+        "duration_seconds": [],
+        "codecs": [],
+        "aspect_ratios": [],
+        "languages": [],
+        "voices": [],
+        "max_outputs": null,
+        "reference_image": null,
+        "api_sync": null,
+        "api_async": null
+      },
+      "source_url": "https://platform.openai.com/docs/models",
+      "verified_at": "2026-11-07"
+    },
+    {
+      "public_model_id": "gemini-2.5-flash-image",
+      "native_model_id": "gemini-2.5-flash-image",
+      "model_owner": "google",
+      "api_provider": "google",
+      "billing_provider": "google",
+      "deployment_channel": "direct",
+      "lifecycle": "retired",
+      "availability": "catalog_only",
+      "aliases": [],
+      "capabilities": {
+        "tasks": [
+          "text_to_image"
+        ],
+        "modalities_in": [
+          "text"
+        ],
+        "modalities_out": [
+          "image"
+        ],
+        "resolutions": [],
+        "duration_seconds": [],
+        "codecs": [],
+        "aspect_ratios": [],
+        "languages": [],
+        "voices": [],
+        "max_outputs": null,
+        "reference_image": null,
+        "api_sync": null,
+        "api_async": null
+      },
+      "source_url": "https://ai.google.dev/gemini-api/docs/deprecations",
+      "verified_at": "2026-11-07"
+    },
+    {
+      "public_model_id": "gemini-3.1-flash-image",
+      "native_model_id": "gemini-3.1-flash-image",
+      "model_owner": "google",
+      "api_provider": "google",
+      "billing_provider": "google",
+      "deployment_channel": "direct",
+      "lifecycle": "current",
+      "availability": "catalog_only",
+      "aliases": [],
+      "capabilities": {
+        "tasks": [
+          "text_to_image"
+        ],
+        "modalities_in": [
+          "text"
+        ],
+        "modalities_out": [
+          "image"
+        ],
+        "resolutions": [],
+        "duration_seconds": [],
+        "codecs": [],
+        "aspect_ratios": [],
+        "languages": [],
+        "voices": [],
+        "max_outputs": null,
+        "reference_image": null,
+        "api_sync": null,
+        "api_async": null
+      },
+      "source_url": "https://ai.google.dev/gemini-api/docs/models",
+      "verified_at": "2026-11-07"
+    },
+    {
+      "public_model_id": "gemini-3-pro-image",
+      "native_model_id": "gemini-3-pro-image",
+      "model_owner": "google",
+      "api_provider": "google",
+      "billing_provider": "google",
+      "deployment_channel": "direct",
+      "lifecycle": "current",
+      "availability": "catalog_only",
+      "aliases": [],
+      "capabilities": {
+        "tasks": [
+          "text_to_image"
+        ],
+        "modalities_in": [
+          "text"
+        ],
+        "modalities_out": [
+          "image"
+        ],
+        "resolutions": [],
+        "duration_seconds": [],
+        "codecs": [],
+        "aspect_ratios": [],
+        "languages": [],
+        "voices": [],
+        "max_outputs": null,
+        "reference_image": null,
+        "api_sync": null,
+        "api_async": null
+      },
+      "source_url": "https://ai.google.dev/gemini-api/docs/models",
+      "verified_at": "2026-11-07"
+    },
+    {
+      "public_model_id": "gemini-nano-banana-2.1",
+      "native_model_id": "gemini-nano-banana-2.1",
+      "model_owner": "google",
+      "api_provider": "google",
+      "billing_provider": "google",
+      "deployment_channel": "direct",
+      "lifecycle": "unverified",
+      "availability": "catalog_only",
+      "aliases": [],
+      "capabilities": {
+        "tasks": [
+          "text_to_image"
+        ],
+        "modalities_in": [
+          "text"
+        ],
+        "modalities_out": [
+          "image"
+        ],
+        "resolutions": [],
+        "duration_seconds": [],
+        "codecs": [],
+        "aspect_ratios": [],
+        "languages": [],
+        "voices": [],
+        "max_outputs": null,
+        "reference_image": null,
+        "api_sync": null,
+        "api_async": null
+      },
+      "source_url": "https://ai.google.dev/gemini-api/docs/models",
+      "verified_at": "2026-11-07"
+    },
+    {
+      "public_model_id": "gemini-2.5-flash-preview-tts",
+      "native_model_id": "gemini-2.5-flash-preview-tts",
+      "model_owner": "google",
+      "api_provider": "google",
+      "billing_provider": "google",
+      "deployment_channel": "direct",
+      "lifecycle": "unknown",
+      "availability": "catalog_only",
+      "aliases": [],
+      "capabilities": {
+        "tasks": [
+          "text_to_speech"
+        ],
+        "modalities_in": [
+          "text"
+        ],
+        "modalities_out": [
+          "audio"
+        ],
+        "resolutions": [],
+        "duration_seconds": [],
+        "codecs": [],
+        "aspect_ratios": [],
+        "languages": [],
+        "voices": [],
+        "max_outputs": null,
+        "reference_image": null,
+        "api_sync": null,
+        "api_async": null
+      },
+      "source_url": "https://ai.google.dev/gemini-api/docs/models",
+      "verified_at": "2026-11-07"
+    },
+    {
+      "public_model_id": "gemini-3.8-flash-tts",
+      "native_model_id": "gemini-3.8-flash-tts",
+      "model_owner": "google",
+      "api_provider": "google",
+      "billing_provider": "google",
+      "deployment_channel": "direct",
+      "lifecycle": "current",
+      "availability": "catalog_only",
+      "aliases": [],
+      "capabilities": {
+        "tasks": [
+          "text_to_speech"
+        ],
+        "modalities_in": [
+          "text"
+        ],
+        "modalities_out": [
+          "audio"
+        ],
+        "resolutions": [],
+        "duration_seconds": [],
+        "codecs": [],
+        "aspect_ratios": [],
+        "languages": [],
+        "voices": [],
+        "max_outputs": null,
+        "reference_image": null,
+        "api_sync": null,
+        "api_async": null
+      },
+      "source_url": "https://ai.google.dev/gemini-api/docs/models",
+      "verified_at": "2026-11-07"
+    },
+    {
+      "public_model_id": "grok-imagine-image",
+      "native_model_id": "grok-imagine-image",
+      "model_owner": "xai",
+      "api_provider": "xai",
+      "billing_provider": "xai",
+      "deployment_channel": "direct",
+      "lifecycle": "current",
+      "availability": "catalog_only",
+      "aliases": [],
+      "capabilities": {
+        "tasks": [
+          "text_to_image"
+        ],
+        "modalities_in": [
+          "text"
+        ],
+        "modalities_out": [
+          "image"
+        ],
+        "resolutions": [],
+        "duration_seconds": [],
+        "codecs": [],
+        "aspect_ratios": [],
+        "languages": [],
+        "voices": [],
+        "max_outputs": null,
+        "reference_image": null,
+        "api_sync": null,
+        "api_async": null
+      },
+      "source_url": "https://docs.x.ai/developers/models",
+      "verified_at": "2026-11-07"
+    },
+    {
+      "public_model_id": "grok-imagine-image-2.0",
+      "native_model_id": "grok-imagine-image-2.0",
+      "model_owner": "xai",
+      "api_provider": "xai",
+      "billing_provider": "xai",
+      "deployment_channel": "direct",
+      "lifecycle": "current",
+      "availability": "catalog_only",
+      "aliases": [],
+      "capabilities": {
+        "tasks": [
+          "text_to_image"
+        ],
+        "modalities_in": [
+          "text"
+        ],
+        "modalities_out": [
+          "image"
+        ],
+        "resolutions": [],
+        "duration_seconds": [],
+        "codecs": [],
+        "aspect_ratios": [],
+        "languages": [],
+        "voices": [],
+        "max_outputs": null,
+        "reference_image": null,
+        "api_sync": null,
+        "api_async": null
+      },
+      "source_url": "https://docs.x.ai/developers/models",
+      "verified_at": "2026-11-07"
+    },
+    {
+      "public_model_id": "grok-imagine-video",
+      "native_model_id": "grok-imagine-video",
+      "model_owner": "xai",
+      "api_provider": "xai",
+      "billing_provider": "xai",
+      "deployment_channel": "direct",
+      "lifecycle": "current",
+      "availability": "catalog_only",
+      "aliases": [],
+      "capabilities": {
+        "tasks": [
+          "text_to_video"
+        ],
+        "modalities_in": [
+          "text"
+        ],
+        "modalities_out": [
+          "video"
+        ],
+        "resolutions": [],
+        "duration_seconds": [],
+        "codecs": [],
+        "aspect_ratios": [],
+        "languages": [],
+        "voices": [],
+        "max_outputs": null,
+        "reference_image": null,
+        "api_sync": null,
+        "api_async": null
+      },
+      "source_url": "https://docs.x.ai/developers/models",
+      "verified_at": "2026-11-07"
+    },
+    {
+      "public_model_id": "grok-imagine-video-1.5",
+      "native_model_id": "grok-imagine-video-1.5",
+      "model_owner": "xai",
+      "api_provider": "xai",
+      "billing_provider": "xai",
+      "deployment_channel": "direct",
+      "lifecycle": "current",
+      "availability": "catalog_only",
+      "aliases": [],
+      "capabilities": {
+        "tasks": [
+          "text_to_video"
+        ],
+        "modalities_in": [
+          "text"
+        ],
+        "modalities_out": [
+          "video"
+        ],
+        "resolutions": [],
+        "duration_seconds": [],
+        "codecs": [],
+        "aspect_ratios": [],
+        "languages": [],
+        "voices": [],
+        "max_outputs": null,
+        "reference_image": null,
+        "api_sync": null,
+        "api_async": null
+      },
+      "source_url": "https://docs.x.ai/developers/models",
+      "verified_at": "2026-11-07"
+    },
+    {
+      "public_model_id": "gemini-omni-1.2-flash",
+      "native_model_id": "gemini-omni-1.2-flash",
+      "model_owner": "google",
+      "api_provider": "google",
+      "billing_provider": "google",
+      "deployment_channel": "direct",
+      "lifecycle": "unknown",
+      "availability": "catalog_only",
+      "aliases": [],
+      "capabilities": {
+        "tasks": [
+          "text_to_video"
+        ],
+        "modalities_in": [
+          "text"
+        ],
+        "modalities_out": [
+          "video"
+        ],
+        "resolutions": [],
+        "duration_seconds": [],
+        "codecs": [],
+        "aspect_ratios": [],
+        "languages": [],
+        "voices": [],
+        "max_outputs": null,
+        "reference_image": null,
+        "api_sync": null,
+        "api_async": null
+      },
+      "source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-omni-flash",
+      "verified_at": "2026-11-07"
+    },
+    {
+      "public_model_id": "gemini-omni-1.1-flash",
+      "native_model_id": "gemini-omni-1.1-flash",
+      "model_owner": "google",
+      "api_provider": "google",
+      "billing_provider": "google",
+      "deployment_channel": "direct",
+      "lifecycle": "current",
+      "availability": "catalog_only",
+      "aliases": [],
+      "capabilities": {
+        "tasks": [
+          "text_to_video"
+        ],
+        "modalities_in": [
+          "text"
+        ],
+        "modalities_out": [
+          "video"
+        ],
+        "resolutions": [],
+        "duration_seconds": [],
+        "codecs": [],
+        "aspect_ratios": [],
+        "languages": [],
+        "voices": [],
+        "max_outputs": null,
+        "reference_image": null,
+        "api_sync": null,
+        "api_async": null
+      },
+      "source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-omni-flash",
+      "verified_at": "2026-11-07"
+    },
+    {
+      "public_model_id": "veo-3.1-lite-generate-preview",
+      "native_model_id": "veo-3.1-lite-generate-preview",
+      "model_owner": "google",
+      "api_provider": "google",
+      "billing_provider": "google",
+      "deployment_channel": "direct",
+      "lifecycle": "current",
+      "availability": "catalog_only",
+      "aliases": [],
+      "capabilities": {
+        "tasks": [
+          "text_to_video"
+        ],
+        "modalities_in": [
+          "text"
+        ],
+        "modalities_out": [
+          "video"
+        ],
+        "resolutions": [],
+        "duration_seconds": [],
+        "codecs": [],
+        "aspect_ratios": [],
+        "languages": [],
+        "voices": [],
+        "max_outputs": null,
+        "reference_image": null,
+        "api_sync": null,
+        "api_async": null
+      },
+      "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "verified_at": "2026-11-07"
+    }
+  ]
+}
