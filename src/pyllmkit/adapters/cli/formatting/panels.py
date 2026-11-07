@@ -207,6 +207,10 @@ def build_model_inspect_panel(spec: ModelSpec) -> Panel:
     in_modes = ", ".join(spec.modalities_in) if spec.modalities_in else "text"
     out_modes = ", ".join(spec.modalities_out) if spec.modalities_out else "text"
     features_str = ", ".join(spec.features) if spec.features else "standard"
+    context_label = f"{spec.context_window:,} tokens" if spec.context_window is not None else "Inconnu"
+    output_label = f"{spec.max_output_tokens:,} tokens" if spec.max_output_tokens is not None else "Inconnu"
+    input_price_label = f"${spec.pricing.input_cost:.2f}" if spec.pricing.input_cost is not None else "N/A"
+    output_price_label = f"${spec.pricing.output_cost:.2f}" if spec.pricing.output_cost is not None else "N/A"
 
     cr_str = (
         f"${spec.pricing.cache_read:.2f}"
@@ -222,15 +226,15 @@ def build_model_inspect_panel(spec: ModelSpec) -> Panel:
     lines = [
         f"[bold cyan]Nom du modèle    :[/bold cyan] {spec.name} ([dim]{spec.id}[/dim])",
         f"[bold]Famille / Provider :[/bold] {spec.family.capitalize()} / [yellow]{spec.provider}[/yellow]",
-        f"[bold]Fenêtre Contexte :[/bold] [green]{spec.context_window:,} tokens[/green]",
-        f"[bold]Max Output Tokens:[/bold] [green]{spec.max_output_tokens:,} tokens[/green]",
+        f"[bold]Fenêtre Contexte :[/bold] [green]{context_label}[/green]",
+        f"[bold]Max Output Tokens:[/bold] [green]{output_label}[/green]",
         f"[bold]Modalités In/Out  :[/bold] [yellow]{in_modes}[/yellow] -> [cyan]{out_modes}[/cyan]",
         f"[bold]Fonctionnalités  :[/bold] [magenta]{features_str}[/magenta]",
         "",
         "[bold underline]Tarification standard (par 1M tokens) :[/bold underline]",
         f"  [dim]{format_pricing_provenance(spec.id)}[/dim]",
-        f"  - [bold]Input Tokens  :[/bold] [green]${spec.pricing.input_cost:.2f}[/green]",
-        f"  - [bold]Output Tokens :[/bold] [yellow]${spec.pricing.output_cost:.2f}[/yellow]",
+        f"  - [bold]Input Tokens  :[/bold] [green]{input_price_label}[/green]",
+        f"  - [bold]Output Tokens :[/bold] [yellow]{output_price_label}[/yellow]",
         f"  - [bold]Cache Read    :[/bold] [dim]{cr_str}[/dim]",
     ]
     if spec.pricing.cache_write_12h is not None:
