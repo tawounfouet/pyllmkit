@@ -1,6 +1,6 @@
-# 0.3.0 - Multi-provider Contract Profile v1 (draft S0)
+# 0.3.0 - Multi-provider Contract Profile v1 (text_only_v1)
 
-> Statut : **DRAFT, a ratifier en S1-G1**. Aucun endpoint live certifie.
+> Statut : **RATIFIE PAR LE PROPRIETAIRE POUR LE PERIMETRE OFFLINE - S1/G1 (2026-11-07)**. Aucun endpoint live certifie.
 > Decision liee : [ADR-059](../../adr/ADR-059-multi-provider-conformance-boundary.md).
 > Source : `main@8dd97d5e33108c350e11b3a976926f2138f4e936`.
 
@@ -107,7 +107,7 @@ dans S2, pas dans le profil documentaire de S0.
 
 ## 5. Qualite / securite
 
-- Main non protegee actuellement : issue #22.
+- Protection de main non exigee par decision du proprietaire ; issue #22 close not_planned. Risque residuel accepte, sans protection pretendument active.
 - Frontiere DNS/TLS/SSRF live non certifiee : #36 et #81.
 - Politique de release et publication non autorisee : #35.
 - L'usage de `httpx.MockTransport` est une preuve hermetique
@@ -128,5 +128,10 @@ dans S2, pas dans le profil documentaire de S0.
 - **S5/G5** : flux M5, EOF, post-terminal et cancellation.
 - **S8/G8** : rapport GO/NO-GO technique independant de S9 release.
 
-**Decision** : ce profil est une base de tests **proposee**,
-pas une API finale ratifiee ni une release.
+**Decision** : le proprietaire, developpeur et mainteneur unique, a
+ratifie `text_only_v1` comme contrat de la baseline six-provider
+**text-only offline** le 2026-11-07. Les restrictions et exceptions
+restent applicables ; aucune certification du reseau live, d'une API
+stable publiee ou du tag `v0.3.0` n'en decoule. La revue tierce a ete
+renoncee, pas effectuee. Voir
+[17_OWNER_SELF_ACCEPTANCE_AND_SCOPED_GATES_2026-11-07.md](17_OWNER_SELF_ACCEPTANCE_AND_SCOPED_GATES_2026-11-07.md).
