@@ -65,6 +65,27 @@ POLICY: dict[str, MediaModelPolicy] = {
     "veo-3.1-lite-generate-preview": MediaModelPolicy(
         MediaLifecycle.CURRENT, "https://ai.google.dev/gemini-api/docs/pricing",
     ),
+    "gemini-3-pro-image": MediaModelPolicy(
+        MediaLifecycle.CURRENT, "https://ai.google.dev/gemini-api/docs/models/gemini-3-pro-image",
+    ),
+    "gemini-3.8-flash-tts": MediaModelPolicy(
+        MediaLifecycle.CURRENT, GOOGLE,
+    ),
+    "grok-imagine-image": MediaModelPolicy(
+        MediaLifecycle.CURRENT, "https://docs.x.ai/developers/models/grok-imagine-image",
+    ),
+    "grok-imagine-image-2.0": MediaModelPolicy(
+        MediaLifecycle.CURRENT, "https://docs.x.ai/developers/models/grok-imagine-image-2.0",
+    ),
+    "grok-imagine-video": MediaModelPolicy(
+        MediaLifecycle.CURRENT, "https://docs.x.ai/developers/models/grok-imagine-video",
+    ),
+    "grok-imagine-video-1.5": MediaModelPolicy(
+        MediaLifecycle.CURRENT, "https://docs.x.ai/developers/models/grok-imagine-video-1.5-preview",
+    ),
+    "gemini-omni-1.1-flash": MediaModelPolicy(
+        MediaLifecycle.CURRENT, "https://ai.google.dev/gemini-api/docs/models/gemini-omni-flash",
+    ),
 }
 
 
