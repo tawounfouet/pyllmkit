@@ -15,8 +15,8 @@ _DEFAULT_CATALOG_PATH = Path(__file__).parent / "data" / "models_catalog.json"
 class ModelPricing:
     """Pricing in USD per 1M tokens (or per minute for realtime voice)."""
 
-    input_cost: float
-    output_cost: float
+    input_cost: float | None
+    output_cost: float | None
     cache_read: float | None = None
     cache_write: float | None = None
     cache_write_12h: float | None = None
@@ -31,8 +31,8 @@ class ModelSpec:
     name: str
     family: str
     provider: str
-    context_window: int
-    max_output_tokens: int
+    context_window: int | None
+    max_output_tokens: int | None
     modalities_in: tuple[str, ...]
     modalities_out: tuple[str, ...]
     pricing: ModelPricing
@@ -47,8 +47,8 @@ def _parse_spec_dict(mid: str, raw: dict[str, Any]) -> ModelSpec:
     """Parse raw dictionary entry into immutable ModelSpec."""
     raw_p = raw.get("pricing", {})
     pricing = ModelPricing(
-        input_cost=float(raw_p.get("input_cost", 0.0)),
-        output_cost=float(raw_p.get("output_cost", 0.0)),
+        input_cost=float(raw_p["input_cost"]) if raw_p.get("input_cost") is not None else None,
+        output_cost=float(raw_p["output_cost"]) if raw_p.get("output_cost") is not None else None,
         cache_read=float(raw_p["cache_read"]) if raw_p.get("cache_read") is not None else None,
         cache_write=float(raw_p["cache_write"]) if raw_p.get("cache_write") is not None else None,
         cache_write_12h=float(raw_p["cache_write_12h"]) if raw_p.get("cache_write_12h") is not None else None,
@@ -63,8 +63,12 @@ def _parse_spec_dict(mid: str, raw: dict[str, Any]) -> ModelSpec:
         name=str(raw.get("name", mid)),
         family=str(raw.get("family", "unknown")),
         provider=str(raw.get("provider", "unknown")),
-        context_window=int(raw.get("context_window", 128_000)),
-        max_output_tokens=int(raw.get("max_output_tokens", 8_192)),
+        context_window=(
+            int(raw["context_window"]) if raw.get("context_window") is not None else None
+        ),
+        max_output_tokens=(
+            int(raw["max_output_tokens"]) if raw.get("max_output_tokens") is not None else None
+        ),
         modalities_in=tuple(raw.get("modalities_in", ("text",))),
         modalities_out=tuple(raw.get("modalities_out", ("text",))),
         pricing=pricing,
@@ -191,7 +195,13 @@ def compute_run_cost(
         return None, "-"
 
     spec = get_model_spec(model_name)
-    if spec is None or (input_tokens is None and output_tokens is None):
+    if (
+        spec is None
+        or input_tokens is None
+        or output_tokens is None
+        or spec.pricing.input_cost is None
+        or spec.pricing.output_cost is None
+    ):
         return None, "-"
 
     in_count = int(input_tokens) if isinstance(input_tokens, (int, float)) else 0
