@@ -6,6 +6,8 @@ import typer
 from rich import box
 from rich.table import Table
 
+from pyllmkit.adapters.inference.media_lifecycle import MediaLifecycle, media_model_policy
+
 from ..catalog import create_reference_catalog
 from ..console import console
 from ..discovery import sync_configured_providers
@@ -66,6 +68,14 @@ def inspect_model(
 
     panel = build_model_inspect_panel(spec)
     console.print(panel)
+    lifecycle = media_model_policy(model_id)
+    if lifecycle.state is not MediaLifecycle.UNKNOWN:
+        console.print(f"[bold]Cycle de vie :[/bold] {lifecycle.state.value}")
+        if lifecycle.shutdown_date is not None:
+            console.print(f"[bold]Retrait annoncé :[/bold] {lifecycle.shutdown_date.isoformat()}")
+        if lifecycle.replacement:
+            console.print(f"[bold]Remplacement candidat :[/bold] {lifecycle.replacement}")
+        console.print(f"[dim]Source : {lifecycle.source_url}[/dim]")
 
 
 @models_app.command(name="sync")
