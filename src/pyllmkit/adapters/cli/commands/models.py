@@ -18,14 +18,14 @@ from ..catalog import create_reference_catalog
 from ..console import console
 from ..discovery import get_discovered_models_path, sync_configured_providers
 from ..discovery_snapshot_v2 import load_discovery_snapshot, snapshot_path
+from ..formatting.panels import build_model_inspect_panel
+from ..formatting.tables import build_models_table
 from ..media_catalog_v2 import (
     diff_media_catalog,
     effective_lifecycle,
     load_media_catalog,
     reconcile_observed_ids,
 )
-from ..formatting.panels import build_model_inspect_panel
-from ..formatting.tables import build_models_table
 from ..model_specs import get_model_spec
 
 models_app = typer.Typer(
@@ -189,7 +189,7 @@ def media_availability(
         for item in selected
     ]
     if json_output:
-        console.print(json.dumps({
+        typer.echo(json.dumps({
             "schema_version": 2, "revision": catalog.revision,
             "observation_revision": snapshot.revision,
             "models": rows, "account_access_verified": False,
@@ -250,7 +250,7 @@ def diff_models(
         console.print(f"[red]Comparaison impossible : {exc}[/red]")
         raise typer.Exit(code=2) from None
     if json_output:
-        console.print(json.dumps(report, ensure_ascii=False))
+        typer.echo(json.dumps(report, ensure_ascii=False))
         return
     console.print(f"[bold]Diff catalogue :[/bold] {report['kind']}")
     if against is not None:
