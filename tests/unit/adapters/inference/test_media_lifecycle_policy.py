@@ -96,7 +96,7 @@ def test_offline_legacy_mock_remains_available(tmp_path: object) -> None:
 
 def test_lifecycle_listing_never_needs_network() -> None:
     with patch("socket.getaddrinfo", side_effect=AssertionError("unexpected DNS")):
-        result = CliRunner().invoke(app, ["models", "lifecycle"])
+        result = CliRunner().invoke(app, ["models", "lifecycle"], env={"COLUMNS": "240"})
     assert result.exit_code == 0
     assert "dall-e-3" in result.stdout
     assert "2027-01-06" in result.stdout
