@@ -1,6 +1,7 @@
 """Secure local filesystem materialization for generated inference outputs."""
 
 import base64
+import binascii
 import os
 import re
 from datetime import datetime
@@ -118,7 +119,7 @@ def save_output_media(output: InferenceOutput, target_path: Path | str) -> Path:
                 raw_bytes = base64.b64decode(b64_payload, validate=True)
             except ValueError:
                 raise ValueError("Data URI base64 invalide") from None
-            except base64.binascii.Error:
+            except binascii.Error:
                 raise ValueError("Data URI base64 invalide") from None
             if len(raw_bytes) > MAX_MEDIA_DOWNLOAD_BYTES:
                 raise ValueError("Média décodé trop volumineux")
