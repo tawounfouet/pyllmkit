@@ -29,6 +29,7 @@ from ..console import console
 from ..formatting.errors import build_error_panel
 from ..formatting.live_stream import aconsume_and_render_stream
 from ..formatting.panels import build_stream_usage_panel
+from ..media_input import parse_cli_media_parts
 from ..service import create_cli_async_streaming_service
 from ..storage import RunRecord, SqliteRunStore
 
@@ -85,6 +86,18 @@ def stream_command(
         bool,
         typer.Option("--record-content", help="Consentir au stockage local du prompt et du flux"),
     ] = False,
+    image: Annotated[
+        list[str] | None,
+        typer.Option("--image", "-i", help="Chemin(s) de fichier image ou URL à attacher"),
+    ] = None,
+    audio: Annotated[
+        str | None,
+        typer.Option("--audio", "-a", help="Chemin de fichier audio ou URL à attacher"),
+    ] = None,
+    video: Annotated[
+        str | None,
+        typer.Option("--video", "-v", help="Chemin de fichier vidéo ou URL à attacher"),
+    ] = None,
 ) -> None:
     """Consommer une inférence en direct avec affichage incrémental (streaming)."""
     cfg = get_config()
@@ -111,7 +124,15 @@ def stream_command(
     messages_list = []
     if system:
         messages_list.append(Message(Role.SYSTEM, Content((TextContent(system.strip()),))))
-    messages_list.append(Message(Role.USER, Content((TextContent(prompt.strip()),))))
+
+    try:
+        media_parts = parse_cli_media_parts(images=image, audio=audio, video=video)
+    except (FileNotFoundError, ValueError) as err:
+        console.print(f"[red]Erreur d'attachement multimédia :[/red] {err}")
+        raise typer.Exit(code=2) from None
+
+    user_parts = [TextContent(prompt.strip())] + media_parts
+    messages_list.append(Message(Role.USER, Content(tuple(user_parts))))
 
     request = InferenceRequest(
         target=ModelTarget(ModelId(model.strip())),
@@ -140,13 +161,26 @@ def stream_command(
             reas_tok = summary.usage.reasoning_tokens if summary.usage else None
 
             # Formatage ChatML / OpenAI JSONL pour Fine-Tuning
-            messages_payload = [
-                {
-                    "role": m.role.value,
-                    "content": getattr(m.content.parts[0], "text", "") if m.content.parts else "",
-                }
-                for m in request.messages
-            ]
+            def _format_part_for_storage(part: object) -> dict[str, object]:
+                if hasattr(part, "text"):
+                    return {"type": "text", "text": getattr(part, "text", "")}
+                if hasattr(part, "source"):
+                    src = part.source
+                    return {
+                        "type": getattr(part, "kind", "media"),
+                        "source": {"kind": getattr(src, "kind", "uri"), "value": getattr(src, "value", "")},
+                    }
+                return {"type": getattr(part, "kind", "unknown")}
+
+            messages_payload = []
+            for m in request.messages:
+                if len(m.content.parts) == 1 and hasattr(m.content.parts[0], "text"):
+                    messages_payload.append({"role": m.role.value, "content": getattr(m.content.parts[0], "text", "")})
+                else:
+                    messages_payload.append({
+                        "role": m.role.value,
+                        "content": [_format_part_for_storage(p) for p in m.content.parts],
+                    })
             if summary.text:
                 messages_payload.append({"role": "assistant", "content": summary.text})
             msgs_json = json.dumps(messages_payload, ensure_ascii=False) if record_content else None
@@ -190,6 +224,7 @@ def stream_command(
                 model_name=model,
                 provider_name=prov_name,
                 exit_code=summary.exit_code,
+                modalities=[p.kind for p in user_parts],
             )
             console.print(usage_panel)
 

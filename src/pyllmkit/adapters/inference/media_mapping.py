@@ -1,0 +1,109 @@
+"""Passive media reference encoding helpers for inference adapters."""
+
+from __future__ import annotations
+
+import base64
+import mimetypes
+from pathlib import Path
+
+from pyllmkit.application.inference import InvocationPortError, PreparedInvocation
+from pyllmkit.domain.interactions import (
+    AudioContent,
+    ContentPart,
+    ImageContent,
+    MediaSourceRef,
+    VideoContent,
+)
+
+
+def check_part_modality(prepared: PreparedInvocation, part: ContentPart) -> None:
+    """Verify that the deployment explicitly accepts the part modality.
+
+    If the deployment declares input modalities and does not accept part.modality,
+    raise InvocationPortError('unsupported_input_modality').
+    """
+    modalities = prepared.resolution.deployment.modalities
+    if modalities is not None:
+        if modalities.accepts_input(part.modality) is False:
+            raise InvocationPortError("unsupported_input_modality")
+
+
+def extract_media_base64_and_mime(
+    source: MediaSourceRef,
+    default_mime: str,
+) -> tuple[str, str]:
+    """Extract (base64_payload, mime_type) from a MediaSourceRef without network I/O."""
+    if source.kind == "data":
+        val = source.value
+        header, _, payload = val.partition(",")
+        mime = default_mime
+        is_b64 = False
+        if header.startswith("data:"):
+            meta = header[5:]
+            parts = meta.split(";")
+            if parts[0]:
+                mime = parts[0]
+            if "base64" in parts:
+                is_b64 = True
+        if is_b64:
+            b64_str = payload
+        else:
+            b64_str = base64.b64encode(payload.encode("utf-8")).decode("ascii")
+        return b64_str, mime
+
+    if source.kind == "file":
+        path = Path(source.value)
+        if not path.is_file():
+            raise InvocationPortError("media_file_not_found")
+        guessed, _ = mimetypes.guess_type(source.value)
+        mime = guessed or default_mime
+        b64_str = base64.b64encode(path.read_bytes()).decode("ascii")
+        return b64_str, mime
+
+    if source.kind in ("uri", "asset"):
+        # For uri or asset when base64 is strictly needed (offline boundary)
+        raise InvocationPortError("unsupported_media_source")
+
+    raise InvocationPortError("unsupported_media_source")
+
+
+def resolve_media_url_or_data(
+    source: MediaSourceRef,
+    default_mime: str,
+) -> tuple[str, str]:
+    """Resolve a URL (or data URI) and mime type suitable for OpenAI / xAI / Mistral."""
+    if source.kind in ("uri", "asset"):
+        guessed, _ = mimetypes.guess_type(source.value)
+        return source.value, guessed or default_mime
+
+    if source.kind == "data":
+        header, _, _ = source.value.partition(",")
+        mime = default_mime
+        if header.startswith("data:"):
+            meta = header[5:].split(";")[0]
+            if meta:
+                mime = meta
+        return source.value, mime
+
+    if source.kind == "file":
+        b64_str, mime = extract_media_base64_and_mime(source, default_mime)
+        return f"data:{mime};base64,{b64_str}", mime
+
+    raise InvocationPortError("unsupported_media_source")
+
+
+def default_mime_for_part(part: ContentPart) -> str:
+    """Return canonical fallback MIME type for a given ContentPart."""
+    if isinstance(part, ImageContent):
+        return "image/png"
+    if isinstance(part, AudioContent):
+        if part.format == "wav":
+            return "audio/wav"
+        if part.format == "mp3":
+            return "audio/mp3"
+        return "audio/wav"
+    if isinstance(part, VideoContent):
+        if part.format == "mov":
+            return "video/quicktime"
+        return "video/mp4"
+    return "application/octet-stream"

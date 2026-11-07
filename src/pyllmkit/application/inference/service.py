@@ -28,9 +28,8 @@ from pyllmkit.domain.inference import (
     InferenceRunId,
     evaluate_request_support,
 )
-from pyllmkit.domain.interactions import TextContent
 from pyllmkit.domain.modalities import Modality
-from pyllmkit.domain.registry import DeploymentRequirement
+from pyllmkit.domain.registry import DeploymentRequirement, NoCompatibleDeploymentError
 from pyllmkit.protocols.inference import AsyncInferencePort, InferencePort
 
 
@@ -102,21 +101,41 @@ class _InvocationPipeline:
         target = request.target
         if isinstance(target, EndpointTarget):
             raise InvocationPreconditionError("target_not_routable")
-        if any(
-            type(part) is not TextContent
-            for message in request.messages
-            for part in message.content.parts
-        ):
-            raise InvocationPreconditionError("unsupported_input_modality")
 
-        text = frozenset((Modality("text"),))
-        resolution = self._resolver.resolve(
-            target,
-            DeploymentRequirement(
-                required_input_modalities=text,
-                required_output_modalities=text,
-            ),
+        req_inputs = frozenset(
+            part.modality for message in request.messages for part in message.content.parts
         )
+        text = frozenset((Modality("text"),))
+        try:
+            resolution = self._resolver.resolve(
+                target,
+                DeploymentRequirement(
+                    required_input_modalities=req_inputs,
+                    required_output_modalities=text,
+                ),
+            )
+        except NoCompatibleDeploymentError as exc:
+            # Fallback for models whose native output modality is non-text (image, audio, video)
+            resolved = False
+            for fallback_mod in (Modality("image"), Modality("audio"), Modality("video")):
+                try:
+                    resolution = self._resolver.resolve(
+                        target,
+                        DeploymentRequirement(
+                            required_input_modalities=req_inputs,
+                            required_output_modalities=frozenset((fallback_mod,)),
+                        ),
+                    )
+                    resolved = True
+                    break
+                except NoCompatibleDeploymentError:
+                    continue
+            if not resolved:
+                if exc.report and any(
+                    "INPUT_MODALITY_NOT_CONFIRMED" in r.reasons for r in exc.report.rejected
+                ):
+                    raise InvocationPreconditionError("unsupported_input_modality") from exc
+                raise
         alias = self._aliases.get(resolution.deployment.id)
         if alias is None:
             raise InvocationPreconditionError("native_model_binding_missing")

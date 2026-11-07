@@ -16,6 +16,13 @@ ERROR_HINTS = {
     "unsupported_input_modality": "Le modèle ne prend pas en charge la modalité demandée (seul le texte est supporté dans ce profil).",
     "target_not_routable": "La cible spécifiée ne peut être routée vers aucun déploiement actif.",
     "native_model_binding_missing": "Aucun alias natif configuré pour ce déploiement.",
+    "model_not_found": "Modèle inconnu ou non accessible avec cette clé chez le fournisseur. Vérifiez l'identifiant (ex: dall-e-3 est retiré, utilisez gpt-image-1-mini) ou vos droits d'accès.",
+    "credential_unavailable": "Clé d'API absente ou refusée. Renseignez api_keys dans .pyllmkit.yaml ou la variable d'environnement du fournisseur.",
+    "content_filtered": "La requête ou le média généré a été bloqué par la modération du fournisseur. Reformulez le prompt.",
+    "unsupported_provider_output": "Le fournisseur n'a renvoyé aucun média exploitable.",
+    "unsupported_capability": "Ce fournisseur ou modèle ne prend pas en charge ce type de génération.",
+    "live_authorization_required": "Appel réseau non autorisé : ajoutez --live pour exécuter réellement la génération.",
+    "invalid_prompt_file": "Fichier prompt inutilisable (introuvable, vide, non UTF-8 ou en-tête invalide).",
     "run_not_found": "Aucune exécution archivée ne correspond à cet identifiant. Utilisez 'pyllmkit runs list' pour afficher les Run IDs existants.",
 }
 

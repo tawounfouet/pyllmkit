@@ -450,6 +450,19 @@ def test_compute_run_cost_comprehensive() -> None:
     assert val_cached is not None and val_cached < val
     assert " in + " in lbl_cached
 
+    # Non-token media costs (Images, TTS, Video)
+    cost_dalle, lbl_dalle = compute_run_cost("dall-e-3", None, None, output_media_units=2)
+    assert cost_dalle == 0.08
+    assert "2 images" in lbl_dalle
+
+    cost_tts, lbl_tts = compute_run_cost("tts-1", None, None, input_characters=2000)
+    assert cost_tts == 0.03
+    assert "2000 caractères" in lbl_tts
+
+    cost_veo, lbl_veo = compute_run_cost("veo-2", None, None, output_media_seconds=4.0)
+    assert cost_veo == 0.60
+    assert "4.0s vidéo" in lbl_veo
+
 
 def test_build_usage_panel_with_cache_and_reasoning() -> None:
     """Test build_usage_panel with cached tokens and reasoning tokens."""
@@ -531,6 +544,55 @@ def test_build_response_and_stream_panels() -> None:
     mock_exec_text.response.output.text = "Bonjour le monde"
     p_text = build_response_panel(mock_exec_text, "gpt-4o")
     assert "Bonjour le monde" in str(p_text.renderable)
+
+    # Media outputs rendering
+    from pyllmkit.domain.inference import (
+        AudioOutput,
+        ImageOutput,
+        MultiPartOutput,
+        TextOutput,
+        VideoOutput,
+    )
+    from pyllmkit.domain.interactions import MediaSourceRef
+
+    mock_exec_img = MagicMock()
+    mock_exec_img.response.output = ImageOutput(
+        MediaSourceRef("data", "data:image/png;base64,abc"),
+        width=1024,
+        height=1024,
+        revised_prompt="DALL-E prompt",
+    )
+    p_img = build_response_panel(mock_exec_img, "dall-e-3")
+    assert "Image générée avec succès" in str(p_img.renderable)
+    assert "1024x1024" in str(p_img.renderable)
+
+    mock_exec_aud = MagicMock()
+    mock_exec_aud.response.output = AudioOutput(
+        MediaSourceRef("uri", "https://example.org/audio.mp3"),
+        duration_seconds=4.2,
+        transcript="Transcription",
+    )
+    p_aud = build_response_panel(mock_exec_aud, "tts-1")
+    assert "Audio généré avec succès" in str(p_aud.renderable)
+    assert "4.2 s" in str(p_aud.renderable)
+
+    mock_exec_vid = MagicMock()
+    mock_exec_vid.response.output = VideoOutput(
+        MediaSourceRef("uri", "https://example.org/vid.mp4"),
+        duration_seconds=5.0,
+        width=1920,
+        height=1080,
+    )
+    p_vid = build_response_panel(mock_exec_vid, "veo-2")
+    assert "Vidéo générée avec succès" in str(p_vid.renderable)
+    assert "1920x1080" in str(p_vid.renderable)
+
+    mock_exec_multi = MagicMock()
+    mock_exec_multi.response.output = MultiPartOutput(
+        (TextOutput("Legende"), mock_exec_img.response.output)
+    )
+    p_multi = build_response_panel(mock_exec_multi, "gpt-4o-omni")
+    assert "Réponse multimodale composite" in str(p_multi.renderable)
 
     # 3. build_stream_usage_panel success with TTFT & cost
     p_stream = build_stream_usage_panel(

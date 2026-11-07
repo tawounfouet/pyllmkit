@@ -9,6 +9,7 @@ import typer
 from .commands import (
     config_app,
     deployments_app,
+    generate_app,
     models_app,
     providers_app,
     resolve_command,
@@ -42,6 +43,7 @@ app.command(
 )(stream_command)
 app.add_typer(runs_app, name="runs")
 app.add_typer(tools_app, name="tools")
+app.add_typer(generate_app, name="generate")
 
 
 def _get_version() -> str:

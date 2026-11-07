@@ -2,6 +2,7 @@
 
 from .config import config_app
 from .deployments import deployments_app
+from .generate import generate_app
 from .models import models_app
 from .providers import providers_app
 from .resolve import resolve_command
@@ -15,6 +16,7 @@ __all__ = [
     "providers_app",
     "models_app",
     "deployments_app",
+    "generate_app",
     "resolve_command",
     "run_command",
     "runs_app",

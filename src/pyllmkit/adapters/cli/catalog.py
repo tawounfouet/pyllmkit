@@ -15,6 +15,25 @@ from pyllmkit.domain.models import Model, ModelFamily, ModelId, ModelIdentity
 from pyllmkit.domain.providers import InferenceProvider, ProviderId
 
 from .discovery import load_discovered_models
+from .model_specs import get_model_spec
+
+_PROVIDER_MODALITIES: dict[str, tuple[str, ...]] = {
+    "google": ("text", "image", "audio", "video"),
+    "openai": ("text", "image", "audio"),
+    "anthropic": ("text", "image"),
+    "xai": ("text", "image"),
+    "mistral": ("text", "image"),
+    "ollama": ("text", "image"),
+}
+
+_PROVIDER_OUTPUT_MODALITIES: dict[str, tuple[str, ...]] = {
+    "google": ("text", "image", "audio", "video"),
+    "openai": ("text", "image", "audio"),
+    "anthropic": ("text",),
+    "xai": ("text", "image", "video"),
+    "mistral": ("text",),
+    "ollama": ("text",),
+}
 
 
 def create_reference_catalog() -> InMemoryCatalog:
@@ -76,6 +95,31 @@ def create_reference_catalog() -> InMemoryCatalog:
         ("grok-2", "xai", "xai", "cloud", "global"),
         ("grok-2-mini", "xai", "xai", "cloud", "global"),
         ("grok-beta", "xai", "xai", "cloud", "global"),
+
+        # Media Generation (OpenAI, Google)
+        ("dall-e-3", "openai", "openai", "cloud", "global"),
+        ("dall-e-2", "openai", "openai", "cloud", "global"),
+        ("tts-1", "openai", "openai", "cloud", "global"),
+        ("tts-1-hd", "openai", "openai", "cloud", "global"),
+        ("imagen-3", "google", "google", "cloud", "global"),
+        ("veo-2", "google", "google", "cloud", "global"),
+        # Media generation models exposed by the live provider APIs (2026-11)
+        ("gpt-image-1-mini", "openai", "openai", "cloud", "global"),
+        ("gpt-image-1.5", "openai", "openai", "cloud", "global"),
+        ("gpt-image-2", "openai", "openai", "cloud", "global"),
+        ("gpt-4o-mini-tts", "openai", "openai", "cloud", "global"),
+        ("gemini-2.5-flash-image", "google", "google", "cloud", "global"),
+        ("gemini-3.1-flash-image", "google", "google", "cloud", "global"),
+        ("gemini-3-pro-image", "google", "google", "cloud", "global"),
+        ("gemini-nano-banana-2.1", "google", "google", "cloud", "global"),
+        ("gemini-2.5-flash-preview-tts", "google", "google", "cloud", "global"),
+        ("gemini-3.8-flash-tts", "google", "google", "cloud", "global"),
+        ("grok-imagine-image", "xai", "xai", "cloud", "global"),
+        ("grok-imagine-image-2.0", "xai", "xai", "cloud", "global"),
+        ("grok-imagine-video", "xai", "xai", "cloud", "global"),
+        ("grok-imagine-video-1.5", "xai", "xai", "cloud", "global"),
+        ("gemini-omni-1.2-flash", "google", "google", "cloud", "global"),
+        ("gemini-omni-1.1-flash", "google", "google", "cloud", "global"),
     ]
 
     for model_name, family, provider_name, runtime, region in reference_models_data:
@@ -83,19 +127,34 @@ def create_reference_catalog() -> InMemoryCatalog:
         did = DeploymentId(f"dep-{model_name}")
         pid = None if provider_name == "ollama" else ProviderId(provider_name)
 
+        spec = get_model_spec(model_name)
+        if spec is not None:
+            in_mods = frozenset(Modality(m) for m in spec.modalities_in)
+            out_mods = frozenset(Modality(m) for m in spec.modalities_out)
+            model_modes = ModalitySet(in_mods, out_mods)
+        else:
+            model_modes = text_modes
+
         if catalog.models.get(mid) is None:
             catalog.models.register(
                 Model(
                     mid,
                     ModelIdentity(ModelFamily(family)),
                     capabilities=streaming_cap,
-                    modalities=text_modes,
+                    modalities=model_modes,
                 )
             )
 
         if pid is not None and catalog.providers.get(pid) is None:
+            prov_in = frozenset(
+                Modality(m) for m in _PROVIDER_MODALITIES.get(provider_name, ("text",))
+            )
+            prov_out = frozenset(
+                Modality(m) for m in _PROVIDER_OUTPUT_MODALITIES.get(provider_name, ("text",))
+            )
+            prov_modes = ModalitySet(prov_in, prov_out)
             catalog.providers.register(
-                InferenceProvider(pid, provider_name, modalities=text_modes)
+                InferenceProvider(pid, provider_name, modalities=prov_modes)
             )
 
         if catalog.deployments.get(did) is None:
@@ -106,7 +165,7 @@ def create_reference_catalog() -> InMemoryCatalog:
                     pid,
                     DeploymentStatus.AVAILABLE,
                     capabilities=streaming_cap,
-                    modalities=text_modes,
+                    modalities=model_modes,
                     runtime=runtime,
                     region=region,
                 )
@@ -130,18 +189,30 @@ def create_reference_catalog() -> InMemoryCatalog:
         did = DeploymentId(f"dep-{mid_str}")
         pid = None if prov_str == "ollama" else ProviderId(prov_str)
 
+        spec = get_model_spec(mid_str)
+        if spec is not None:
+            in_mods = frozenset(Modality(m) for m in spec.modalities_in)
+            out_mods = frozenset(Modality(m) for m in spec.modalities_out)
+            disc_modes = ModalitySet(in_mods, out_mods)
+        else:
+            disc_modes = text_modes
+
         catalog.models.register(
             Model(
                 mid,
                 ModelIdentity(ModelFamily(fam_str)),
                 capabilities=streaming_cap,
-                modalities=text_modes,
+                modalities=disc_modes,
             )
         )
 
         if pid is not None and catalog.providers.get(pid) is None:
+            prov_in = frozenset(
+                Modality(m) for m in _PROVIDER_MODALITIES.get(prov_str, ("text",))
+            )
+            prov_modes = ModalitySet(prov_in, frozenset({Modality("text")}))
             catalog.providers.register(
-                InferenceProvider(pid, prov_str, modalities=text_modes)
+                InferenceProvider(pid, prov_str, modalities=prov_modes)
             )
 
         if catalog.deployments.get(did) is None:
@@ -152,7 +223,7 @@ def create_reference_catalog() -> InMemoryCatalog:
                     pid,
                     DeploymentStatus.AVAILABLE,
                     capabilities=streaming_cap,
-                    modalities=text_modes,
+                    modalities=disc_modes,
                     runtime=run_str,
                     region=reg_str,
                 )

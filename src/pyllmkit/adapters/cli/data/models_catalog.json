@@ -3924,5 +3924,566 @@
     "description": "Modèle ultra économique et rapide Gemini 2.5 Flash Lite.",
     "source_url": "https://ai.google.dev/pricing",
     "last_verified": "2026-11-06"
+  },
+  "dall-e-3": {
+    "id": "dall-e-3",
+    "name": "DALL-E 3",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 4000,
+    "max_output_tokens": null,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "image"
+    ],
+    "pricing": {
+      "input_cost": null,
+      "output_cost": 0.04,
+      "unit": "image"
+    },
+    "features": [
+      "image_generation"
+    ],
+    "description": "Modèle de génération d'images haute fidélité d'OpenAI. Retiré de l'API OpenAI (préférer gpt-image-*).",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-07"
+  },
+  "dall-e-2": {
+    "id": "dall-e-2",
+    "name": "DALL-E 2",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 1000,
+    "max_output_tokens": null,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "image"
+    ],
+    "pricing": {
+      "input_cost": null,
+      "output_cost": 0.02,
+      "unit": "image"
+    },
+    "features": [
+      "image_generation"
+    ],
+    "description": "Modèle historique de génération d'images d'OpenAI. Retiré de l'API OpenAI (préférer gpt-image-*).",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-07"
+  },
+  "tts-1": {
+    "id": "tts-1",
+    "name": "TTS-1",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 4096,
+    "max_output_tokens": null,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "audio"
+    ],
+    "pricing": {
+      "input_cost": 15.0,
+      "output_cost": null,
+      "unit": "1M characters"
+    },
+    "features": [
+      "text_to_speech"
+    ],
+    "description": "Modèle de synthèse vocale rapide optimisé pour la faible latence.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-07"
+  },
+  "tts-1-hd": {
+    "id": "tts-1-hd",
+    "name": "TTS-1 HD",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": 4096,
+    "max_output_tokens": null,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "audio"
+    ],
+    "pricing": {
+      "input_cost": 30.0,
+      "output_cost": null,
+      "unit": "1M characters"
+    },
+    "features": [
+      "text_to_speech"
+    ],
+    "description": "Modèle de synthèse vocale haute définition d'OpenAI.",
+    "source_url": "https://openai.com/api/pricing/",
+    "last_verified": "2026-11-07"
+  },
+  "imagen-3": {
+    "id": "imagen-3",
+    "name": "Imagen 3",
+    "family": "google",
+    "provider": "google",
+    "context_window": 2048,
+    "max_output_tokens": null,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "image"
+    ],
+    "pricing": {
+      "input_cost": null,
+      "output_cost": 0.03,
+      "unit": "image"
+    },
+    "features": [
+      "image_generation"
+    ],
+    "description": "Modèle de génération d'images photoréalistes de Google DeepMind. Accès requis au modèle Imagen (non exposé par toutes les clés Gemini API).",
+    "source_url": "https://cloud.google.com/vertex-ai/generative-ai/pricing",
+    "last_verified": "2026-11-07"
+  },
+  "veo-2": {
+    "id": "veo-2",
+    "name": "Veo 2",
+    "family": "google",
+    "provider": "google",
+    "context_window": 2048,
+    "max_output_tokens": null,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "video"
+    ],
+    "pricing": {
+      "input_cost": null,
+      "output_cost": 0.15,
+      "unit": "second"
+    },
+    "features": [
+      "video_generation"
+    ],
+    "description": "Modèle de génération vidéo cinématique de Google DeepMind. Accès requis au modèle Veo (non exposé par toutes les clés Gemini API). Préférer gemini-omni-1.2-flash (Veo 3.1 preview arrêté le 2026-10-22).",
+    "source_url": "https://deepmind.google/technologies/veo/",
+    "last_verified": "2026-11-07"
+  },
+  "gpt-image-1-mini": {
+    "id": "gpt-image-1-mini",
+    "name": "GPT Image 1 Mini",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": null,
+    "max_output_tokens": null,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "image"
+    ],
+    "pricing": {
+      "input_cost": null,
+      "output_cost": null,
+      "unit": "image"
+    },
+    "features": [
+      "image_generation"
+    ],
+    "description": "Génération d'images économique OpenAI (Images API).",
+    "source_url": "https://platform.openai.com/docs/models",
+    "last_verified": "2026-11-07"
+  },
+  "gpt-image-1.5": {
+    "id": "gpt-image-1.5",
+    "name": "GPT Image 1.5",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": null,
+    "max_output_tokens": null,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "image"
+    ],
+    "pricing": {
+      "input_cost": null,
+      "output_cost": null,
+      "unit": "image"
+    },
+    "features": [
+      "image_generation"
+    ],
+    "description": "Génération d'images OpenAI (Images API).",
+    "source_url": "https://platform.openai.com/docs/models",
+    "last_verified": "2026-11-07"
+  },
+  "gpt-image-2": {
+    "id": "gpt-image-2",
+    "name": "GPT Image 2",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": null,
+    "max_output_tokens": null,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "image"
+    ],
+    "pricing": {
+      "input_cost": null,
+      "output_cost": null,
+      "unit": "image"
+    },
+    "features": [
+      "image_generation"
+    ],
+    "description": "Génération d'images haute fidélité OpenAI (Images API).",
+    "source_url": "https://platform.openai.com/docs/models",
+    "last_verified": "2026-11-07"
+  },
+  "gpt-4o-mini-tts": {
+    "id": "gpt-4o-mini-tts",
+    "name": "GPT-4o mini TTS",
+    "family": "openai",
+    "provider": "openai",
+    "context_window": null,
+    "max_output_tokens": null,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "audio"
+    ],
+    "pricing": {
+      "input_cost": null,
+      "output_cost": null,
+      "unit": "1M characters"
+    },
+    "features": [
+      "text_to_speech"
+    ],
+    "description": "Synthèse vocale OpenAI pilotable par instructions de style.",
+    "source_url": "https://platform.openai.com/docs/models",
+    "last_verified": "2026-11-07"
+  },
+  "gemini-2.5-flash-image": {
+    "id": "gemini-2.5-flash-image",
+    "name": "Gemini 2.5 Flash Image",
+    "family": "google",
+    "provider": "google",
+    "context_window": null,
+    "max_output_tokens": null,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "image"
+    ],
+    "pricing": {
+      "input_cost": null,
+      "output_cost": null,
+      "unit": "image"
+    },
+    "features": [
+      "image_generation"
+    ],
+    "description": "Génération d'images Gemini (generateContent, modalité IMAGE).",
+    "source_url": "https://ai.google.dev/gemini-api/docs/models",
+    "last_verified": "2026-11-07"
+  },
+  "gemini-3.1-flash-image": {
+    "id": "gemini-3.1-flash-image",
+    "name": "Gemini 3.1 Flash Image",
+    "family": "google",
+    "provider": "google",
+    "context_window": null,
+    "max_output_tokens": null,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "image"
+    ],
+    "pricing": {
+      "input_cost": null,
+      "output_cost": null,
+      "unit": "image"
+    },
+    "features": [
+      "image_generation"
+    ],
+    "description": "Génération d'images Gemini 3.1 Flash.",
+    "source_url": "https://ai.google.dev/gemini-api/docs/models",
+    "last_verified": "2026-11-07"
+  },
+  "gemini-3-pro-image": {
+    "id": "gemini-3-pro-image",
+    "name": "Gemini 3 Pro Image",
+    "family": "google",
+    "provider": "google",
+    "context_window": null,
+    "max_output_tokens": null,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "image"
+    ],
+    "pricing": {
+      "input_cost": null,
+      "output_cost": null,
+      "unit": "image"
+    },
+    "features": [
+      "image_generation"
+    ],
+    "description": "Génération d'images Gemini 3 Pro.",
+    "source_url": "https://ai.google.dev/gemini-api/docs/models",
+    "last_verified": "2026-11-07"
+  },
+  "gemini-nano-banana-2.1": {
+    "id": "gemini-nano-banana-2.1",
+    "name": "Nano Banana 2.1",
+    "family": "google",
+    "provider": "google",
+    "context_window": null,
+    "max_output_tokens": null,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "image"
+    ],
+    "pricing": {
+      "input_cost": null,
+      "output_cost": null,
+      "unit": "image"
+    },
+    "features": [
+      "image_generation"
+    ],
+    "description": "Modèle image principal Gemini (Nano Banana 2.1).",
+    "source_url": "https://ai.google.dev/gemini-api/docs/models",
+    "last_verified": "2026-11-07"
+  },
+  "gemini-2.5-flash-preview-tts": {
+    "id": "gemini-2.5-flash-preview-tts",
+    "name": "Gemini 2.5 Flash TTS (preview)",
+    "family": "google",
+    "provider": "google",
+    "context_window": null,
+    "max_output_tokens": null,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "audio"
+    ],
+    "pricing": {
+      "input_cost": null,
+      "output_cost": null,
+      "unit": "1M characters"
+    },
+    "features": [
+      "text_to_speech"
+    ],
+    "description": "Synthèse vocale Gemini (WAV 24 kHz mono).",
+    "source_url": "https://ai.google.dev/gemini-api/docs/models",
+    "last_verified": "2026-11-07"
+  },
+  "gemini-3.8-flash-tts": {
+    "id": "gemini-3.8-flash-tts",
+    "name": "Gemini 3.8 Flash TTS",
+    "family": "google",
+    "provider": "google",
+    "context_window": null,
+    "max_output_tokens": null,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "audio"
+    ],
+    "pricing": {
+      "input_cost": null,
+      "output_cost": null,
+      "unit": "1M characters"
+    },
+    "features": [
+      "text_to_speech"
+    ],
+    "description": "Synthèse vocale Gemini 3.8 (WAV 24 kHz mono).",
+    "source_url": "https://ai.google.dev/gemini-api/docs/models",
+    "last_verified": "2026-11-07"
+  },
+  "grok-imagine-image": {
+    "id": "grok-imagine-image",
+    "name": "Grok Imagine Image",
+    "family": "xai",
+    "provider": "xai",
+    "context_window": null,
+    "max_output_tokens": null,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "image"
+    ],
+    "pricing": {
+      "input_cost": null,
+      "output_cost": null,
+      "unit": "image"
+    },
+    "features": [
+      "image_generation"
+    ],
+    "description": "Génération d'images xAI.",
+    "source_url": "https://docs.x.ai/developers/models",
+    "last_verified": "2026-11-07"
+  },
+  "grok-imagine-image-2.0": {
+    "id": "grok-imagine-image-2.0",
+    "name": "Grok Imagine Image 2.0",
+    "family": "xai",
+    "provider": "xai",
+    "context_window": null,
+    "max_output_tokens": null,
+    "modalities_in": [
+      "text"
+    ],
+    "modalities_out": [
+      "image"
+    ],
+    "pricing": {
+      "input_cost": null,
+      "output_cost": null,
+      "unit": "image"
+    },
+    "features": [
+      "image_generation"
+    ],
+    "description": "Génération d'images xAI 2.0.",
+    "source_url": "https://docs.x.ai/developers/models",
+    "last_verified": "2026-11-07"
+  },
+  "grok-imagine-video": {
+    "id": "grok-imagine-video",
+    "name": "Grok Imagine Video",
+    "family": "xai",
+    "provider": "xai",
+    "context_window": null,
+    "max_output_tokens": null,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "video"
+    ],
+    "pricing": {
+      "input_cost": null,
+      "output_cost": null,
+      "unit": "second"
+    },
+    "features": [
+      "video_generation"
+    ],
+    "description": "Génération vidéo xAI (job asynchrone, MP4).",
+    "source_url": "https://docs.x.ai/developers/models",
+    "last_verified": "2026-11-07"
+  },
+  "grok-imagine-video-1.5": {
+    "id": "grok-imagine-video-1.5",
+    "name": "Grok Imagine Video 1.5",
+    "family": "xai",
+    "provider": "xai",
+    "context_window": null,
+    "max_output_tokens": null,
+    "modalities_in": [
+      "text",
+      "image"
+    ],
+    "modalities_out": [
+      "video"
+    ],
+    "pricing": {
+      "input_cost": null,
+      "output_cost": null,
+      "unit": "second"
+    },
+    "features": [
+      "video_generation"
+    ],
+    "description": "Génération vidéo xAI 1.5 (jusqu'à 1080p).",
+    "source_url": "https://docs.x.ai/developers/models",
+    "last_verified": "2026-11-07"
+  },
+  "gemini-omni-1.2-flash": {
+    "id": "gemini-omni-1.2-flash",
+    "name": "Gemini Omni 1.2 Flash",
+    "family": "google",
+    "provider": "google",
+    "context_window": null,
+    "max_output_tokens": null,
+    "modalities_in": [
+      "text",
+      "image",
+      "video"
+    ],
+    "modalities_out": [
+      "video"
+    ],
+    "pricing": {
+      "input_cost": null,
+      "output_cost": null,
+      "unit": "second"
+    },
+    "features": [
+      "video_generation"
+    ],
+    "description": "Génération vidéo Google avec audio natif (Interactions API, 3 à 15 s, 360p à 4K).",
+    "source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-omni-flash",
+    "last_verified": "2026-11-07"
+  },
+  "gemini-omni-1.1-flash": {
+    "id": "gemini-omni-1.1-flash",
+    "name": "Gemini Omni 1.1 Flash",
+    "family": "google",
+    "provider": "google",
+    "context_window": null,
+    "max_output_tokens": null,
+    "modalities_in": [
+      "text",
+      "image",
+      "video"
+    ],
+    "modalities_out": [
+      "video"
+    ],
+    "pricing": {
+      "input_cost": null,
+      "output_cost": null,
+      "unit": "second"
+    },
+    "features": [
+      "video_generation"
+    ],
+    "description": "Génération vidéo Google (redirigé vers 1.2 le 2026-12-03).",
+    "source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-omni-flash",
+    "last_verified": "2026-11-07"
   }
 }

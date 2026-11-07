@@ -69,10 +69,44 @@ def test_invalid_uri_syntax_scheme_and_paths_are_rejected(uri: str) -> None:
         MediaSourceRef(kind="uri", value=uri)
 
 
-@pytest.mark.parametrize("kind", ["", "url", "file", "inline", "base64", None, 12])
+@pytest.mark.parametrize("kind", ["", "url", "blob", "inline", "base64", "stream", None, 12])
 def test_unknown_or_untyped_kind_rejected(kind: object) -> None:
     with pytest.raises(DomainValidationError, match="kind"):
         MediaSourceRef(kind=cast(str, kind), value="id-123")
+
+
+def test_file_reference_validation() -> None:
+    ref = MediaSourceRef(kind="file", value="/tmp/image.png")
+    assert ref.kind == "file"
+    assert ref.value == "/tmp/image.png"
+    assert "image.png" not in repr(ref)
+
+    with pytest.raises(DomainValidationError, match="MediaSourceRef.file"):
+        MediaSourceRef(kind="file", value="")
+    with pytest.raises(DomainValidationError, match="MediaSourceRef.file"):
+        MediaSourceRef(kind="file", value="   ")
+    with pytest.raises(DomainValidationError, match="null bytes"):
+        MediaSourceRef(kind="file", value="/tmp/image\x00.png")
+
+
+def test_data_uri_reference_validation() -> None:
+    valid_data = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+    ref = MediaSourceRef(kind="data", value=valid_data)
+    assert ref.kind == "data"
+    assert ref.value == valid_data
+    assert "base64" not in repr(ref)
+
+    for invalid in [
+        "",
+        "data:",
+        "data:image/png",
+        "data:image/png;base64",
+        "data:image/png with space,AAAA",
+        "data:image/png,\nAAAA",
+        "https://example.org/a.png",
+    ]:
+        with pytest.raises(DomainValidationError, match="data URI"):
+            MediaSourceRef(kind="data", value=invalid)
 
 
 def test_media_reference_is_frozen_value_and_has_no_data_bytes() -> None:

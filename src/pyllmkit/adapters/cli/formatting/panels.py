@@ -8,17 +8,96 @@ from pyllmkit.adapters.cli.model_specs import (
     format_pricing_provenance,
 )
 from pyllmkit.application.inference.contracts import InferenceExecution
+from pyllmkit.domain.inference import (
+    AudioOutput,
+    ImageOutput,
+    MultiPartOutput,
+    TextOutput,
+    VideoOutput,
+)
 
 
 def build_response_panel(execution: InferenceExecution, model_name: str) -> Panel:
-    """Format a successful InferenceResponse with output text."""
+    """Format a successful InferenceResponse with output text or media summary."""
     response = execution.response
     if response is None:
         return Panel("[dim]Aucune réponse générée[/dim]", title="Réponse", border_style="yellow")
 
-    text = response.output.text
+    output = response.output
+    if isinstance(output, TextOutput) or (hasattr(output, "text") and not isinstance(output, (ImageOutput, AudioOutput, VideoOutput, MultiPartOutput))):
+        return Panel(
+            getattr(output, "text", str(output)),
+            title=f"Réponse du modèle [{model_name}]",
+            border_style="green",
+        )
+    if isinstance(output, ImageOutput):
+        dims = (
+            f"{output.width}x{output.height}"
+            if output.width and output.height
+            else "Non spécifiées"
+        )
+        lines = [
+            "[bold green]Image générée avec succès ![/bold green]",
+            f"[bold]Type MIME   :[/bold] {output.mime_type}",
+            f"[bold]Dimensions  :[/bold] {dims}",
+        ]
+        if output.revised_prompt:
+            lines.append(f"[bold]Prompt révisé :[/bold] [italic]{output.revised_prompt}[/italic]")
+        return Panel(
+            "\n".join(lines),
+            title=f"Réponse du modèle [{model_name}] (Image)",
+            border_style="green",
+        )
+    if isinstance(output, AudioOutput):
+        dur = f"{output.duration_seconds:.1f} s" if output.duration_seconds is not None else "Non spécifiée"
+        lines = [
+            "[bold green]Audio généré avec succès ![/bold green]",
+            f"[bold]Type MIME   :[/bold] {output.mime_type}",
+            f"[bold]Durée       :[/bold] {dur}",
+        ]
+        if output.transcript:
+            lines.append(f"[bold]Transcription :[/bold] {output.transcript}")
+        return Panel(
+            "\n".join(lines),
+            title=f"Réponse du modèle [{model_name}] (Audio)",
+            border_style="green",
+        )
+    if isinstance(output, VideoOutput):
+        dur = f"{output.duration_seconds:.1f} s" if output.duration_seconds is not None else "Non spécifiée"
+        dims = (
+            f"{output.width}x{output.height}"
+            if output.width and output.height
+            else "Non spécifiées"
+        )
+        lines = [
+            "[bold green]Vidéo générée avec succès ![/bold green]",
+            f"[bold]Type MIME   :[/bold] {output.mime_type}",
+            f"[bold]Durée       :[/bold] {dur}",
+            f"[bold]Dimensions  :[/bold] {dims}",
+        ]
+        return Panel(
+            "\n".join(lines),
+            title=f"Réponse du modèle [{model_name}] (Vidéo)",
+            border_style="green",
+        )
+    if isinstance(output, MultiPartOutput):
+        lines = ["[bold green]Réponse multimodale composite générée avec succès ![/bold green]"]
+        for idx, part in enumerate(output.parts, 1):
+            if isinstance(part, TextOutput):
+                lines.append(f"[bold]Partie {idx} (Texte) :[/bold] {part.text}")
+            elif isinstance(part, ImageOutput):
+                lines.append(f"[bold]Partie {idx} (Image) :[/bold] {part.mime_type}")
+            elif isinstance(part, AudioOutput):
+                lines.append(f"[bold]Partie {idx} (Audio) :[/bold] {part.mime_type}")
+            elif isinstance(part, VideoOutput):
+                lines.append(f"[bold]Partie {idx} (Vidéo) :[/bold] {part.mime_type}")
+        return Panel(
+            "\n".join(lines),
+            title=f"Réponse du modèle [{model_name}] (Composite)",
+            border_style="green",
+        )
     return Panel(
-        text,
+        str(output),
         title=f"Réponse du modèle [{model_name}]",
         border_style="green",
     )
@@ -100,17 +179,43 @@ def build_usage_panel(
         f"[bold]Tokens In/Out :[/bold] {tokens_display}",
     ])
 
+    modalities_counts: dict[str, int] = {}
+    if hasattr(run, "request") and hasattr(run.request, "messages"):
+        for msg in run.request.messages:
+            for part in msg.content.parts:
+                k = getattr(part, "kind", "text")
+                modalities_counts[k] = modalities_counts.get(k, 0) + 1
+    if any(k != "text" for k in modalities_counts):
+        mod_desc = ", ".join(
+            f"{k} ({c})" if c > 1 else k for k, c in sorted(modalities_counts.items())
+        )
+        stats.append(f"[bold]Modalités     :[/bold] [magenta]{mod_desc}[/magenta]")
+
     if resolved_model:
+        in_chars = getattr(response.usage, "input_characters", None) if (response and response.usage) else None
+        out_units = getattr(response.usage, "output_media_units", None) if (response and response.usage) else None
+        out_seconds = getattr(response.usage, "output_media_seconds", None) if (response and response.usage) else None
+
+        output_obj = getattr(response, "output", None) if response else None
+        if output_obj is not None:
+            if getattr(output_obj, "kind", None) == "image" and out_units is None:
+                out_units = 1
+            elif getattr(output_obj, "kind", None) in {"audio", "video"} and out_seconds is None:
+                out_seconds = getattr(output_obj, "duration_seconds", None)
+
         _, cost_str = compute_run_cost(
             resolved_model,
             in_tokens,
             out_tokens,
             cached_tokens=cached_tokens,
+            input_characters=in_chars,
+            output_media_units=out_units,
+            output_media_seconds=out_seconds,
         )
         if cost_str != "-":
             stats.append(f"[bold]Coût estimé   :[/bold] [bold green]{cost_str}[/bold green]")
             stats.append(f"[dim]{format_pricing_provenance(resolved_model)}[/dim]")
-        elif in_tokens is not None or out_tokens is not None:
+        elif in_tokens is not None or out_tokens is not None or out_units is not None:
             stats.append("[bold]Coût estimé   :[/bold] [dim]N/A (modèle hors catalogue tarifaire)[/dim]")
 
     return Panel(
@@ -132,6 +237,7 @@ def build_stream_usage_panel(
     model_name: str | None = None,
     provider_name: str | None = None,
     exit_code: int = 0,
+    modalities: list[str] | None = None,
 ) -> Panel:
     """Format execution metrics and FinOps cost for streaming sessions."""
     finish_code = finish_reason
@@ -181,6 +287,13 @@ def build_stream_usage_panel(
         f"[bold]Finish Reason :[/bold] [cyan]{finish_code}[/cyan]",
         f"[bold]Tokens In/Out :[/bold] {tokens_display}",
     ])
+
+    if modalities and any(m != "text" for m in modalities):
+        counts: dict[str, int] = {}
+        for m in modalities:
+            counts[m] = counts.get(m, 0) + 1
+        desc = ", ".join(f"{k} ({c})" if c > 1 else k for k, c in sorted(counts.items()))
+        stats.append(f"[bold]Modalités     :[/bold] [magenta]{desc}[/magenta]")
 
     if model_name:
         _, cost_str = compute_run_cost(

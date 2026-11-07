@@ -9,10 +9,13 @@ build/
 dist/
 .coverage
 .DS_Store
-# PyLLMKit local configuration, SQLite database and exports
+# PyLLMKit local configuration, SQLite database, exports and assets
 .pyllmkit*
 .pyllmkit/
 *.db
 exports/
+assets/**
+!assets/**/
+!assets/**/.gitkeep
 *.jsonl
 

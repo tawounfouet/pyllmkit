@@ -26,7 +26,7 @@ from pyllmkit.adapters.inference.strict_json import (
 )
 from pyllmkit.adapters.inference.xai_responses_mapping import decode_xai_responses_response
 from pyllmkit.application.inference import InvocationPortError, PreparedInvocation
-from pyllmkit.domain.inference import InferenceResponse
+from pyllmkit.domain.inference import InferenceResponse, TextOutput
 
 _MAX_TEXT_BYTES = 8 * 1024 * 1024
 _MAX_DELTA_BYTES = 1_048_576
@@ -96,7 +96,7 @@ class NativeStreamDecoder:
     def _finalize(self, response: InferenceResponse) -> None:
         if self._completed:
             raise InvocationPortError("provider_protocol_error")
-        if response.output.text != self._text():
+        if not isinstance(response.output, TextOutput) or response.output.text != self._text():
             raise InvocationPortError("provider_stream_mismatch")
         self._last_response = response
         self._completed = True

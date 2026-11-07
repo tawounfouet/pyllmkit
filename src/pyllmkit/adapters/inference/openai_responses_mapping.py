@@ -9,6 +9,12 @@ from __future__ import annotations
 import json
 import re
 
+from pyllmkit.adapters.inference.media_mapping import (
+    check_part_modality,
+    default_mime_for_part,
+    extract_media_base64_and_mime,
+    resolve_media_url_or_data,
+)
 from pyllmkit.adapters.inference.strict_json import (
     decode_provider_json_object,
     matches_model_alias,
@@ -22,7 +28,7 @@ from pyllmkit.domain.inference import (
     TextOutput,
     Usage,
 )
-from pyllmkit.domain.interactions import Role, TextContent
+from pyllmkit.domain.interactions import AudioContent, ImageContent, Role, TextContent, VideoContent
 
 _MODEL_ALIAS = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:/+\-]{0,127}\Z")
 _SUPPORTED_GENERATION = frozenset({"temperature", "top_p", "max_output_tokens"})
@@ -36,16 +42,40 @@ def encode_openai_responses_request(prepared: PreparedInvocation) -> bytes:
     if type(alias) is not str or _MODEL_ALIAS.fullmatch(alias) is None:
         raise InvocationPortError("invalid_model_alias")
 
-    inputs: list[dict[str, str]] = []
+    inputs: list[dict[str, object]] = []
     for message in prepared.request.messages:
         if message.role not in (Role.SYSTEM, Role.DEVELOPER, Role.USER, Role.ASSISTANT):
             raise InvocationPortError("unsupported_message_role")
-        if len(message.content.parts) != 1:
+
+        if len(message.content.parts) > 1 and all(type(p) is TextContent for p in message.content.parts):
             raise InvocationPortError("unsupported_content_structure")
-        part = message.content.parts[0]
-        if type(part) is not TextContent:
-            raise InvocationPortError("unsupported_input_modality")
-        inputs.append({"role": message.role.value, "content": part.text})
+
+        if len(message.content.parts) == 1 and type(message.content.parts[0]) is TextContent:
+            check_part_modality(prepared, message.content.parts[0])
+            inputs.append({"role": message.role.value, "content": message.content.parts[0].text})
+            continue
+
+        content_parts: list[dict[str, object]] = []
+        for part in message.content.parts:
+            check_part_modality(prepared, part)
+            if type(part) is TextContent:
+                content_parts.append({"type": "input_text", "text": part.text})
+            elif type(part) is ImageContent:
+                url, _ = resolve_media_url_or_data(part.source, default_mime_for_part(part))
+                content_parts.append({"type": "input_image", "image_url": url})
+            elif type(part) is AudioContent:
+                b64, mime = extract_media_base64_and_mime(part.source, default_mime_for_part(part))
+                fmt = part.format or ("wav" if "wav" in mime else "mp3")
+                content_parts.append({
+                    "type": "input_audio",
+                    "input_audio": {"data": b64, "format": fmt},
+                })
+            elif type(part) is VideoContent:
+                raise InvocationPortError("unsupported_capability")
+            else:
+                raise InvocationPortError("unsupported_input_modality")
+
+        inputs.append({"role": message.role.value, "content": content_parts})
 
     payload: dict[str, object] = {
         "model": alias,

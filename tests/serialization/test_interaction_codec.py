@@ -164,7 +164,7 @@ def test_unknown_text_and_image_part_fields_rejected() -> None:
         message_from_dict(raw)
 
 
-@pytest.mark.parametrize("bad", ["audio", "document", "tool_call", "unknown", None, 3])
+@pytest.mark.parametrize("bad", ["document", "tool_call", "pdf", "unknown", None, 3])
 def test_unsupported_part_kind_rejected(bad: object) -> None:
     raw = _valid_payload()
     _parts(raw)[0]["kind"] = bad
@@ -202,8 +202,12 @@ def test_source_unknown_field_rejected_and_missing_field_rejected() -> None:
 
 
 @pytest.mark.parametrize("kind,value", [
-    ("file", "file:///tmp/image.png"),
-    ("data", "data:image/png;base64,AAAA"),
+    ("blob", "opaque-blob"),
+    ("file", ""),
+    ("file", "   "),
+    ("file", "/path/\x00null"),
+    ("data", "invalid-uri"),
+    ("data", "data:without_comma"),
     ("uri", "file:///etc/passwd"),
     ("uri", "https:///missing-host"),
     ("asset", ""),
@@ -251,3 +255,66 @@ def test_decoder_rejects_non_string_mapping_keys() -> None:
     raw[cast(str, 42)] = "bad-key"
     with pytest.raises(DomainValidationError, match="string keys"):
         message_from_dict(raw)
+
+
+def test_audio_and_video_content_roundtrip() -> None:
+    from pyllmkit.domain.interactions import AudioContent, VideoContent
+
+    audio = AudioContent(MediaSourceRef("asset", "rec-01"), format="wav")
+    audio_no_fmt = AudioContent(MediaSourceRef("uri", "https://example.org/sound.mp3"))
+    video = VideoContent(MediaSourceRef("file", "/path/video.mp4"), format="mp4")
+    video_no_fmt = VideoContent(MediaSourceRef("data", "data:video/mp4;base64,AAAA"))
+
+    message = Message(
+        role=Role.USER,
+        content=Content((audio, audio_no_fmt, video, video_no_fmt)),
+    )
+    encoded = message_to_dict(message)
+    decoded = message_from_dict(encoded)
+    assert decoded == message
+
+    # Check structure
+    parts = cast(list[dict[str, object]], cast(dict[str, object], encoded["content"])["parts"])
+    assert parts[0]["format"] == "wav"
+    assert "format" not in parts[1]
+    assert parts[2]["format"] == "mp4"
+    assert "format" not in parts[3]
+
+
+def test_audio_and_video_content_validation_errors() -> None:
+    # Invalid format in audio
+    bad_audio_payload = {
+        "schema_version": 1,
+        "object_type": "message",
+        "role": "user",
+        "content": {
+            "parts": [
+                {
+                    "kind": "audio",
+                    "source": {"kind": "asset", "value": "a1"},
+                    "format": 123,
+                }
+            ]
+        },
+    }
+    with pytest.raises(DomainValidationError, match="format"):
+        message_from_dict(bad_audio_payload)
+
+    # Unknown field in video
+    bad_video_payload = {
+        "schema_version": 1,
+        "object_type": "message",
+        "role": "user",
+        "content": {
+            "parts": [
+                {
+                    "kind": "video",
+                    "source": {"kind": "asset", "value": "v1"},
+                    "unknown_field": True,
+                }
+            ]
+        },
+    }
+    with pytest.raises(DomainValidationError, match="unknown fields"):
+        message_from_dict(bad_video_payload)
+

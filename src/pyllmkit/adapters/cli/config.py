@@ -33,6 +33,7 @@ class StorageConfig:
 
     history_db: Path | None = None
     export_dir: Path | None = None
+    assets_dir: Path | None = None
 
 
 @dataclass
@@ -246,6 +247,7 @@ def _extract_config_data(raw: dict[str, Any], base_dir: Path | None = None) -> t
     storage_dict = raw.get("storage") or {}
     history_db = None
     export_dir = None
+    assets_dir = None
     if isinstance(storage_dict, dict):
         if storage_dict.get("history_db"):
             p = Path(str(storage_dict["history_db"])).expanduser()
@@ -259,6 +261,12 @@ def _extract_config_data(raw: dict[str, Any], base_dir: Path | None = None) -> t
                 export_dir = (base_dir / p).resolve()
             else:
                 export_dir = p.resolve()
+        if storage_dict.get("assets_dir"):
+            p = Path(str(storage_dict["assets_dir"])).expanduser()
+            if not p.is_absolute() and base_dir is not None:
+                assets_dir = (base_dir / p).resolve()
+            else:
+                assets_dir = p.resolve()
 
     defaults_dict = raw.get("defaults") or {}
     defaults = DefaultsConfig()
@@ -273,7 +281,7 @@ def _extract_config_data(raw: dict[str, Any], base_dir: Path | None = None) -> t
         )
         defaults.live = bool(defaults_dict.get("live", False))
 
-    return api_keys, StorageConfig(history_db=history_db, export_dir=export_dir), defaults
+    return api_keys, StorageConfig(history_db=history_db, export_dir=export_dir, assets_dir=assets_dir), defaults
 
 
 def load_config(custom_path: Path | str | None = None) -> CliConfig:
@@ -341,6 +349,7 @@ def load_config(custom_path: Path | str | None = None) -> CliConfig:
         merged_storage = StorageConfig(
             history_db=local_storage.history_db or global_storage.history_db,
             export_dir=local_storage.export_dir or global_storage.export_dir,
+            assets_dir=local_storage.assets_dir or global_storage.assets_dir,
         )
         merged_defaults = DefaultsConfig(
             model=local_defaults.model or global_defaults.model,
@@ -388,6 +397,10 @@ def load_and_apply_config(custom_path: Path | str | None = None) -> CliConfig:
     # Inject history_db if set and not already overridden by PYLLMKIT_HISTORY_DB
     if cfg.storage.history_db and not os.environ.get("PYLLMKIT_HISTORY_DB"):
         os.environ["PYLLMKIT_HISTORY_DB"] = str(cfg.storage.history_db)
+
+    # Inject assets_dir if set and not already overridden by PYLLMKIT_ASSETS_DIR
+    if cfg.storage.assets_dir and not os.environ.get("PYLLMKIT_ASSETS_DIR"):
+        os.environ["PYLLMKIT_ASSETS_DIR"] = str(cfg.storage.assets_dir)
 
     _ACTIVE_CONFIG = cfg
     return cfg

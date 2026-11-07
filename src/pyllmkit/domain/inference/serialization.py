@@ -13,13 +13,22 @@ from typing import cast
 
 from pyllmkit.domain.errors import DomainValidationError
 from pyllmkit.domain.interactions import Message, message_from_dict, message_to_dict
+from pyllmkit.domain.interactions.media import MediaSourceRef
 from pyllmkit.domain.models import ModelId
 
 from .config import GenerationConfig
 from .failure import InferenceFailure
 from .finish import FinishReason, FinishReasonCode
 from .identifiers import InferenceRunId
-from .output import TextOutput
+from .output import (
+    AudioOutput,
+    ImageOutput,
+    InferenceOutput,
+    MultiPartOutput,
+    SingleOutput,
+    TextOutput,
+    VideoOutput,
+)
 from .request import InferenceRequest
 from .response import InferenceResponse
 from .run import InferenceRun, InferenceRunState
@@ -49,7 +58,18 @@ _RUN_FIELDS = frozenset(
     }
 )
 _TARGET_FIELDS = frozenset({"kind", "value"})
-_OUTPUT_FIELDS = frozenset({"kind", "text"})
+_OUTPUT_TEXT_FIELDS = frozenset({"kind", "text"})
+_OUTPUT_IMAGE_FIELDS = frozenset(
+    {"kind", "media", "mime_type", "width", "height", "revised_prompt"}
+)
+_OUTPUT_AUDIO_FIELDS = frozenset(
+    {"kind", "media", "mime_type", "duration_seconds", "transcript"}
+)
+_OUTPUT_VIDEO_FIELDS = frozenset(
+    {"kind", "media", "mime_type", "duration_seconds", "width", "height"}
+)
+_OUTPUT_MULTIPART_FIELDS = frozenset({"kind", "parts"})
+_MEDIA_FIELDS = frozenset({"kind", "value"})
 _REASON_FIELDS = frozenset({"code", "native_reason"})
 _FAILURE_FIELDS = frozenset({"code"})
 _CONFIG_FIELDS = frozenset(
@@ -58,12 +78,18 @@ _CONFIG_FIELDS = frozenset(
         "stop_sequences", "presence_penalty", "frequency_penalty",
     }
 )
-_USAGE_FIELDS = frozenset(
+_USAGE_CANONICAL_FIELDS = frozenset(
     {
         "input_tokens", "output_tokens", "total_tokens", "reasoning_tokens",
         "cached_input_tokens",
     }
 )
+_USAGE_EXTENDED_FIELDS = frozenset(
+    {
+        "input_characters", "output_media_units", "output_media_seconds",
+    }
+)
+_USAGE_ALL_FIELDS = _USAGE_CANONICAL_FIELDS | _USAGE_EXTENDED_FIELDS
 _FLOAT_FIELDS = frozenset(
     {"temperature", "top_p", "presence_penalty", "frequency_penalty"}
 )
@@ -255,17 +281,28 @@ def _reason_from_dict(value: object) -> FinishReason:
 
 
 def _usage_to_dict(usage: Usage) -> dict[str, object]:
-    return {
+    result: dict[str, object] = {
         "input_tokens": usage.input_tokens,
         "output_tokens": usage.output_tokens,
         "total_tokens": usage.total_tokens,
         "reasoning_tokens": usage.reasoning_tokens,
         "cached_input_tokens": usage.cached_input_tokens,
     }
+    if usage.input_characters is not None:
+        result["input_characters"] = usage.input_characters
+    if usage.output_media_units is not None:
+        result["output_media_units"] = usage.output_media_units
+    if usage.output_media_seconds is not None:
+        result["output_media_seconds"] = usage.output_media_seconds
+    return result
 
 
 def _usage_from_dict(value: object) -> Usage:
-    data = _fields(value, _USAGE_FIELDS, "usage")
+    data = _object(value, "usage")
+    if set(data) - _USAGE_ALL_FIELDS:
+        raise DomainValidationError("usage contains unknown fields")
+    if _USAGE_CANONICAL_FIELDS - set(data):
+        raise DomainValidationError("usage is missing required fields")
     return Usage(
         input_tokens=_optional_integer(data["input_tokens"], "input_tokens"),
         output_tokens=_optional_integer(data["output_tokens"], "output_tokens"),
@@ -274,7 +311,114 @@ def _usage_from_dict(value: object) -> Usage:
         cached_input_tokens=_optional_integer(
             data["cached_input_tokens"], "cached_input_tokens"
         ),
+        input_characters=_optional_integer(
+            data.get("input_characters"), "input_characters"
+        ) if "input_characters" in data else None,
+        output_media_units=_optional_integer(
+            data.get("output_media_units"), "output_media_units"
+        ) if "output_media_units" in data else None,
+        output_media_seconds=_optional_float(
+            data.get("output_media_seconds"), "output_media_seconds"
+        ) if "output_media_seconds" in data else None,
     )
+
+
+def _output_to_dict(output: InferenceOutput) -> dict[str, object]:
+    if type(output) is TextOutput:
+        return {"kind": "text", "text": output.text}
+    if type(output) is ImageOutput:
+        return {
+            "kind": "image",
+            "media": {"kind": output.media.kind, "value": output.media.value},
+            "mime_type": output.mime_type,
+            "width": output.width,
+            "height": output.height,
+            "revised_prompt": output.revised_prompt,
+        }
+    if type(output) is AudioOutput:
+        return {
+            "kind": "audio",
+            "media": {"kind": output.media.kind, "value": output.media.value},
+            "mime_type": output.mime_type,
+            "duration_seconds": output.duration_seconds,
+            "transcript": output.transcript,
+        }
+    if type(output) is VideoOutput:
+        return {
+            "kind": "video",
+            "media": {"kind": output.media.kind, "value": output.media.value},
+            "mime_type": output.mime_type,
+            "duration_seconds": output.duration_seconds,
+            "width": output.width,
+            "height": output.height,
+        }
+    if type(output) is MultiPartOutput:
+        return {
+            "kind": "multipart",
+            "parts": [_output_to_dict(part) for part in output.parts],
+        }
+    raise DomainValidationError("unsupported Inference output type")
+
+
+def _output_from_dict(raw: object) -> InferenceOutput:
+    data = _object(raw, "output")
+    if "kind" not in data:
+        raise DomainValidationError("output is missing required fields")
+    kind = _text(data["kind"], "output.kind")
+    if kind == "text":
+        data_fields = _fields(data, _OUTPUT_TEXT_FIELDS, "output")
+        return TextOutput(_text(data_fields["text"], "output.text"))
+    if kind == "image":
+        data_fields = _fields(data, _OUTPUT_IMAGE_FIELDS, "output")
+        media_fields = _fields(data_fields["media"], _MEDIA_FIELDS, "output.media")
+        return ImageOutput(
+            media=MediaSourceRef(
+                kind=_text(media_fields["kind"], "output.media.kind"),
+                value=_text(media_fields["value"], "output.media.value"),
+            ),
+            mime_type=_text(data_fields["mime_type"], "output.mime_type"),
+            width=_optional_integer(data_fields["width"], "output.width"),
+            height=_optional_integer(data_fields["height"], "output.height"),
+            revised_prompt=_optional_text(data_fields["revised_prompt"], "output.revised_prompt"),
+        )
+    if kind == "audio":
+        data_fields = _fields(data, _OUTPUT_AUDIO_FIELDS, "output")
+        media_fields = _fields(data_fields["media"], _MEDIA_FIELDS, "output.media")
+        return AudioOutput(
+            media=MediaSourceRef(
+                kind=_text(media_fields["kind"], "output.media.kind"),
+                value=_text(media_fields["value"], "output.media.value"),
+            ),
+            mime_type=_text(data_fields["mime_type"], "output.mime_type"),
+            duration_seconds=_optional_float(data_fields["duration_seconds"], "output.duration_seconds"),
+            transcript=_optional_text(data_fields["transcript"], "output.transcript"),
+        )
+    if kind == "video":
+        data_fields = _fields(data, _OUTPUT_VIDEO_FIELDS, "output")
+        media_fields = _fields(data_fields["media"], _MEDIA_FIELDS, "output.media")
+        return VideoOutput(
+            media=MediaSourceRef(
+                kind=_text(media_fields["kind"], "output.media.kind"),
+                value=_text(media_fields["value"], "output.media.value"),
+            ),
+            mime_type=_text(data_fields["mime_type"], "output.mime_type"),
+            duration_seconds=_optional_float(data_fields["duration_seconds"], "output.duration_seconds"),
+            width=_optional_integer(data_fields["width"], "output.width"),
+            height=_optional_integer(data_fields["height"], "output.height"),
+        )
+    if kind == "multipart":
+        data_fields = _fields(data, _OUTPUT_MULTIPART_FIELDS, "output")
+        raw_parts = data_fields["parts"]
+        if not isinstance(raw_parts, list) or not raw_parts:
+            raise DomainValidationError("output.parts must be a non-empty list")
+        parts: list[SingleOutput] = []
+        for p in raw_parts:
+            part_obj = _output_from_dict(p)
+            if not isinstance(part_obj, (TextOutput, ImageOutput, AudioOutput, VideoOutput)):
+                raise DomainValidationError("output.parts cannot nest multipart output")
+            parts.append(part_obj)
+        return MultiPartOutput(parts=tuple(parts))
+    raise DomainValidationError("unsupported Inference output kind")
 
 
 def response_to_dict(response: InferenceResponse) -> dict[str, object]:
@@ -285,7 +429,7 @@ def response_to_dict(response: InferenceResponse) -> dict[str, object]:
         "schema_version": INFERENCE_SCHEMA_VERSION,
         "object_type": "inference_response",
         "run_id": response.run_id.value,
-        "output": {"kind": "text", "text": response.output.text},
+        "output": _output_to_dict(response.output),
         "finish_reason": (
             _reason_to_dict(response.finish_reason)
             if response.finish_reason is not None else None
@@ -297,13 +441,11 @@ def response_to_dict(response: InferenceResponse) -> dict[str, object]:
 def response_from_dict(payload: Mapping[str, object]) -> InferenceResponse:
     """Decode Response strictly without inferring finish reason or Usage totals."""
     data = _envelope(payload, _RESPONSE_FIELDS, "inference_response")
-    output = _fields(data["output"], _OUTPUT_FIELDS, "output")
-    if _text(output["kind"], "output.kind") != "text":
-        raise DomainValidationError("unsupported Inference output kind")
+    output = _output_from_dict(data["output"])
     raw_reason, raw_usage = data["finish_reason"], data["usage"]
     return InferenceResponse(
         run_id=InferenceRunId(_text(data["run_id"], "run_id")),
-        output=TextOutput(_text(output["text"], "output.text")),
+        output=output,
         finish_reason=_reason_from_dict(raw_reason) if raw_reason is not None else None,
         usage=_usage_from_dict(raw_usage) if raw_usage is not None else None,
     )

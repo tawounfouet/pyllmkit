@@ -13,7 +13,7 @@ from ..config import get_config
 from ..console import console
 from ..formatting.errors import build_error_panel
 from ..model_specs import compute_run_cost, format_pricing_provenance, get_model_spec
-from ..storage import SqliteRunStore
+from ..storage import RunRecord, SqliteRunStore
 
 runs_app = typer.Typer(
     name="runs",
@@ -58,13 +58,17 @@ def runs_list(
         out_t = str(rec.output_tokens) if rec.output_tokens is not None else "-"
         tokens_str = f"{in_t} / {out_t}"
 
+        billable = _is_billable(rec)
         tot_cost, _ = compute_run_cost(
             rec.model_id,
             rec.input_tokens,
             rec.output_tokens,
             cached_tokens=rec.cached_tokens,
-        )
-        if tot_cost is not None:
+            output_media_units=_media_units(rec),
+        ) if billable else (None, "-")
+        if not billable:
+            cost_cell = "-"
+        elif tot_cost is not None:
             cost_cell = f"${tot_cost:.5f}" if tot_cost > 0 else "$0.00"
         elif rec.input_tokens is not None or rec.output_tokens is not None:
             cost_cell = "N/A"
@@ -149,13 +153,20 @@ def runs_inspect(
     if record.reasoning_tokens is not None:
         details.append(f"[bold]Reasoning Tok.:[/bold] [magenta]{record.reasoning_tokens}[/magenta]")
 
-    _, cost_str = compute_run_cost(
-        record.model_id,
-        record.input_tokens,
-        record.output_tokens,
-        cached_tokens=record.cached_tokens,
-    )
-    if cost_str != "-":
+    if not _is_billable(record):
+        cost_str = "-"
+    else:
+        _, cost_str = compute_run_cost(
+            record.model_id,
+            record.input_tokens,
+            record.output_tokens,
+            cached_tokens=record.cached_tokens,
+            output_media_units=_media_units(record),
+        )
+    if not _is_billable(record):
+        state_note = "simulation" if "(mock)" in (record.provider or "") else f"run {record.state}"
+        details.append(f"[bold]Coût estimé   :[/bold] [dim]- ({state_note}, non facturé)[/dim]")
+    elif cost_str != "-":
         details.append(f"[bold]Coût estimé   :[/bold] [bold green]{cost_str}[/bold green]")
         details.append(f"[dim]{format_pricing_provenance(record.model_id)}[/dim]")
     elif record.input_tokens is not None or record.output_tokens is not None:
@@ -283,3 +294,16 @@ def runs_purge_content(
         raise typer.Exit(code=1)
     count = SqliteRunStore().purge_content(run_id)
     console.print(f"[green]{count} run(s) expurgé(s).[/green]")
+
+
+def _is_billable(rec: RunRecord) -> bool:
+    """Only completed live runs carry an estimated provider cost."""
+    return rec.state == "completed" and "(mock)" not in (rec.provider or "")
+
+
+def _media_units(rec: RunRecord) -> int | None:
+    """Completed live image runs produce exactly one image (n=1) in PyLLMKit."""
+    spec = get_model_spec(rec.model_id)
+    if spec is not None and spec.pricing.unit == "image":
+        return 1
+    return None

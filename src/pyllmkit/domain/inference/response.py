@@ -6,7 +6,14 @@ from pyllmkit.domain.errors import DomainValidationError
 
 from .finish import FinishReason
 from .identifiers import InferenceRunId
-from .output import TextOutput
+from .output import (
+    AudioOutput,
+    ImageOutput,
+    InferenceOutput,
+    MultiPartOutput,
+    TextOutput,
+    VideoOutput,
+)
 from .usage import Usage
 
 
@@ -19,15 +26,17 @@ class InferenceResponse:
     """
 
     run_id: InferenceRunId
-    output: TextOutput = field(repr=False)
+    output: InferenceOutput = field(repr=False)
     finish_reason: FinishReason | None = None
     usage: Usage | None = None
 
     def __post_init__(self) -> None:
         if type(self.run_id) is not InferenceRunId:
             raise DomainValidationError("InferenceResponse.run_id must be InferenceRunId")
-        if type(self.output) is not TextOutput:
-            raise DomainValidationError("InferenceResponse.output must be TextOutput")
+        if not isinstance(
+            self.output, (TextOutput, ImageOutput, AudioOutput, VideoOutput, MultiPartOutput)
+        ):
+            raise DomainValidationError("InferenceResponse.output must be InferenceOutput")
         if self.finish_reason is not None and type(self.finish_reason) is not FinishReason:
             raise DomainValidationError(
                 "InferenceResponse.finish_reason must be FinishReason or None"

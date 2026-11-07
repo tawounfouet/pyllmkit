@@ -9,6 +9,11 @@ from __future__ import annotations
 import json
 import re
 
+from pyllmkit.adapters.inference.media_mapping import (
+    check_part_modality,
+    default_mime_for_part,
+    extract_media_base64_and_mime,
+)
 from pyllmkit.adapters.inference.strict_json import (
     decode_provider_json_object,
     matches_model_alias,
@@ -22,7 +27,7 @@ from pyllmkit.domain.inference import (
     TextOutput,
     Usage,
 )
-from pyllmkit.domain.interactions import Role, TextContent
+from pyllmkit.domain.interactions import AudioContent, ImageContent, Role, TextContent, VideoContent
 
 _ALLOWED_RESPONSE_FIELDS = frozenset({
     "model", "created_at", "message", "done", "done_reason",
@@ -50,17 +55,40 @@ def encode_ollama_request(prepared: PreparedInvocation) -> bytes:
     model = prepared.native_model_alias
     if re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/+\\-]{0,127}", model) is None:
         raise InvocationPortError("invalid_model_alias")
-    messages: list[dict[str, str]] = []
+    messages: list[dict[str, object]] = []
     for message in prepared.request.messages:
         if message.role not in (Role.SYSTEM, Role.USER, Role.ASSISTANT):
             raise InvocationPortError("unsupported_message_role")
-        # Joining multiple text parts would erase part boundaries.
-        if len(message.content.parts) != 1:
+
+        if len(message.content.parts) > 1 and all(type(p) is TextContent for p in message.content.parts):
             raise InvocationPortError("unsupported_content_structure")
-        part = message.content.parts[0]
-        if type(part) is not TextContent:
-            raise InvocationPortError("unsupported_input_modality")
-        messages.append({"role": message.role.value, "content": part.text})
+
+        if len(message.content.parts) == 1 and type(message.content.parts[0]) is TextContent:
+            check_part_modality(prepared, message.content.parts[0])
+            messages.append({"role": message.role.value, "content": message.content.parts[0].text})
+            continue
+
+        text_blocks: list[str] = []
+        images: list[str] = []
+        for part in message.content.parts:
+            check_part_modality(prepared, part)
+            if type(part) is TextContent:
+                text_blocks.append(part.text)
+            elif type(part) is ImageContent:
+                b64, _ = extract_media_base64_and_mime(part.source, default_mime_for_part(part))
+                images.append(b64)
+            elif type(part) in (AudioContent, VideoContent):
+                raise InvocationPortError("unsupported_capability")
+            else:
+                raise InvocationPortError("unsupported_input_modality")
+
+        msg_dict: dict[str, object] = {
+            "role": message.role.value,
+            "content": "".join(text_blocks),
+        }
+        if images:
+            msg_dict["images"] = images
+        messages.append(msg_dict)
 
     payload: dict[str, object] = {
         "model": model,

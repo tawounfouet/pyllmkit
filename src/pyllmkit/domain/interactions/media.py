@@ -33,6 +33,17 @@ def _valid_uri_host(host: str) -> bool:
     return all(bool(_DNS_LABEL.fullmatch(label)) for label in normalized.split("."))
 
 
+def _validate_data_uri(value: str) -> None:
+    """Validate a passive data URI syntax (RFC 2397); never decode bytes."""
+    if (
+        not value
+        or not value.startswith("data:")
+        or "," not in value
+        or any(c.isspace() or ord(c) < 32 for c in value)
+    ):
+        raise DomainValidationError("MediaSourceRef.data must be a syntactically valid data URI")
+
+
 def _validate_http_uri(value: str) -> None:
     """Validate a passive HTTP(S) URI; never resolve or fetch the host."""
     if (
@@ -72,13 +83,20 @@ class MediaSourceRef:
     value: str
 
     def __post_init__(self) -> None:
-        if not isinstance(self.kind, str) or self.kind not in {"uri", "asset"}:
-            raise DomainValidationError("MediaSourceRef.kind must be 'uri' or 'asset'")
+        if not isinstance(self.kind, str) or self.kind not in {"uri", "asset", "file", "data"}:
+            raise DomainValidationError("MediaSourceRef.kind must be 'uri', 'asset', 'file', or 'data'")
         if not isinstance(self.value, str):
             raise DomainValidationError("MediaSourceRef.value must be a string")
         if self.kind == "asset":
             if not self.value.strip():
                 raise DomainValidationError("MediaSourceRef.asset must be nonblank")
+        elif self.kind == "file":
+            if not self.value.strip():
+                raise DomainValidationError("MediaSourceRef.file must be nonblank")
+            if "\x00" in self.value:
+                raise DomainValidationError("MediaSourceRef.file must not contain null bytes")
+        elif self.kind == "data":
+            _validate_data_uri(self.value)
         else:
             _validate_http_uri(self.value)
 

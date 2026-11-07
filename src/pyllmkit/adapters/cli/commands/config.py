@@ -77,6 +77,7 @@ def config_show() -> None:
     # Chemins de stockage
     history_db = cfg.storage.history_db or Path.home() / ".config" / "pyllmkit" / "history.db"
     export_dir = cfg.storage.export_dir or Path.cwd()
+    assets_dir = cfg.storage.assets_dir or Path.cwd() / "assets"
 
     is_local_db = (
         cfg.config_path is not None
@@ -87,6 +88,11 @@ def config_show() -> None:
         cfg.config_path is not None
         and cfg.storage.export_dir is not None
         and export_dir.is_relative_to(cfg.config_path.parent)
+    )
+    is_local_assets = (
+        cfg.config_path is not None
+        and cfg.storage.assets_dir is not None
+        and assets_dir.is_relative_to(cfg.config_path.parent)
     )
 
     storage_table = Table(title="Chemins de Stockage")
@@ -102,6 +108,11 @@ def config_show() -> None:
         "Dossier d'export par défaut",
         "[green]Local (.pyllmkit.yaml)[/green]" if is_local_export else "[dim]Défaut (courant)[/dim]",
         str(export_dir),
+    )
+    storage_table.add_row(
+        "Dossier des artifacts / assets",
+        "[green]Local (.pyllmkit.yaml)[/green]" if is_local_assets else "[dim]Défaut (./assets)[/dim]",
+        str(assets_dir),
     )
     console.print(storage_table)
 

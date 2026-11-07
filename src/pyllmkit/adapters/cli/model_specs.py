@@ -189,15 +189,53 @@ def compute_run_cost(
     input_tokens: int | None,
     output_tokens: int | None,
     cached_tokens: int | None = None,
+    *,
+    input_characters: int | None = None,
+    output_media_units: int | None = None,
+    output_media_seconds: float | None = None,
 ) -> tuple[float | None, str]:
-    """Compute estimated dollar cost for token usage and format human readable string."""
+    """Compute estimated dollar cost for token or non-token media usage."""
     if not isinstance(model_name, str) or not model_name:
         return None, "-"
 
     spec = get_model_spec(model_name)
+    if spec is None:
+        return None, "-"
+
+    unit = spec.pricing.unit
+
+    # Non-token media models (Images)
+    if unit == "image":
+        # Unknown quantity means unknown cost: never assume one image.
+        if spec.pricing.output_cost is None or output_media_units is None or output_media_units <= 0:
+            return None, "-"
+        count = int(output_media_units)
+        total = count * spec.pricing.output_cost
+        cost_str = f"${total:.4f} ({count} image{'s' if count > 1 else ''})"
+        return total, cost_str
+
+    # Non-token media models (Text-to-Speech characters)
+    if unit == "1M characters":
+        if spec.pricing.input_cost is None or input_characters is None or input_characters < 0:
+            return None, "-"
+        chars = int(input_characters)
+        total = (chars / 1_000_000) * spec.pricing.input_cost
+        cost_str = f"${total:.5f} ({chars} caractères)"
+        return total, cost_str
+
+    # Non-token media models (Video seconds)
+    if unit == "second":
+        # Unknown duration means unknown cost: never assume 5 seconds.
+        if spec.pricing.output_cost is None or output_media_seconds is None or output_media_seconds <= 0:
+            return None, "-"
+        seconds = float(output_media_seconds)
+        total = seconds * spec.pricing.output_cost
+        cost_str = f"${total:.4f} ({seconds:.1f}s vidéo)"
+        return total, cost_str
+
+    # Token-based pricing
     if (
-        spec is None
-        or input_tokens is None
+        input_tokens is None
         or output_tokens is None
         or spec.pricing.input_cost is None
         or spec.pricing.output_cost is None

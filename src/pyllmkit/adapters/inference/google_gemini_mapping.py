@@ -5,6 +5,11 @@ from __future__ import annotations
 import json
 import re
 
+from pyllmkit.adapters.inference.media_mapping import (
+    check_part_modality,
+    default_mime_for_part,
+    extract_media_base64_and_mime,
+)
 from pyllmkit.adapters.inference.strict_json import decode_provider_json_object
 from pyllmkit.application.inference import InvocationPortError, PreparedInvocation
 from pyllmkit.domain.capabilities import SupportLevel
@@ -15,7 +20,7 @@ from pyllmkit.domain.inference import (
     TextOutput,
     Usage,
 )
-from pyllmkit.domain.interactions import Role, TextContent
+from pyllmkit.domain.interactions import AudioContent, ImageContent, Role, TextContent, VideoContent
 
 _ALIAS = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}\Z")
 _FIELDS = {
@@ -50,24 +55,43 @@ def encode_gemini_request(prepared: PreparedInvocation) -> bytes:
     system: str | None = None
     previous: Role | None = None
     for index, message in enumerate(prepared.request.messages):
-        if len(message.content.parts) != 1:
-            raise InvocationPortError("unsupported_content_structure")
-        part = message.content.parts[0]
-        if type(part) is not TextContent:
-            raise InvocationPortError("unsupported_input_modality")
         if message.role is Role.SYSTEM:
             if index != 0 or system is not None:
                 raise InvocationPortError("unsupported_message_structure")
-            system = part.text
+            if len(message.content.parts) != 1 or type(message.content.parts[0]) is not TextContent:
+                raise InvocationPortError("unsupported_message_structure")
+            system = message.content.parts[0].text
             continue
         if message.role not in (Role.USER, Role.ASSISTANT):
             raise InvocationPortError("unsupported_message_role")
         if (previous is None and message.role is not Role.USER) or previous is message.role:
             raise InvocationPortError("unsupported_message_structure")
+
+        if len(message.content.parts) > 1 and all(type(p) is TextContent for p in message.content.parts):
+            raise InvocationPortError("unsupported_content_structure")
+
+        parts_list: list[dict[str, object]] = []
+        for part in message.content.parts:
+            check_part_modality(prepared, part)
+            if isinstance(part, TextContent):
+                parts_list.append({"text": part.text})
+            elif isinstance(part, (ImageContent, AudioContent, VideoContent)):
+                source = part.source
+                mime = default_mime_for_part(part)
+                if source.kind in ("uri", "asset"):
+                    parts_list.append({"fileData": {"fileUri": source.value, "mimeType": mime}})
+                elif source.kind in ("data", "file"):
+                    b64, detected_mime = extract_media_base64_and_mime(source, mime)
+                    parts_list.append({"inlineData": {"mimeType": detected_mime, "data": b64}})
+                else:
+                    raise InvocationPortError("unsupported_media_source")
+            else:
+                raise InvocationPortError("unsupported_input_modality")
+
         previous = message.role
         history.append({
             "role": "user" if message.role is Role.USER else "model",
-            "parts": [{"text": part.text}],
+            "parts": parts_list,
         })
     if not history or previous is not Role.USER:
         raise InvocationPortError("unsupported_message_structure")

@@ -5,6 +5,11 @@ from __future__ import annotations
 import json
 import re
 
+from pyllmkit.adapters.inference.media_mapping import (
+    check_part_modality,
+    default_mime_for_part,
+    resolve_media_url_or_data,
+)
 from pyllmkit.adapters.inference.strict_json import (
     decode_provider_json_object,
     matches_model_alias,
@@ -18,7 +23,7 @@ from pyllmkit.domain.inference import (
     TextOutput,
     Usage,
 )
-from pyllmkit.domain.interactions import Role, TextContent
+from pyllmkit.domain.interactions import AudioContent, ImageContent, Role, TextContent, VideoContent
 
 _ALIAS = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:/+-]{0,127}\Z")
 _SAFE_REASON = re.compile(r"[a-z][a-z0-9_]{0,39}\Z")
@@ -40,18 +45,40 @@ def encode_mistral_chat_request(prepared: PreparedInvocation) -> bytes:
     alias = prepared.native_model_alias
     if type(alias) is not str or _ALIAS.fullmatch(alias) is None:
         raise InvocationPortError("invalid_model_alias")
-    messages: list[dict[str, str]] = []
+    messages: list[dict[str, object]] = []
     for position, message in enumerate(prepared.request.messages):
         if message.role not in (Role.SYSTEM, Role.USER, Role.ASSISTANT):
             raise InvocationPortError("unsupported_message_role")
-        if message.role is Role.SYSTEM and position != 0:
-            raise InvocationPortError("unsupported_message_structure")
-        if len(message.content.parts) != 1:
+        if message.role is Role.SYSTEM:
+            if position != 0:
+                raise InvocationPortError("unsupported_message_structure")
+            if len(message.content.parts) != 1 or type(message.content.parts[0]) is not TextContent:
+                raise InvocationPortError("unsupported_message_structure")
+            messages.append({"role": "system", "content": message.content.parts[0].text})
+            continue
+
+        if len(message.content.parts) > 1 and all(type(p) is TextContent for p in message.content.parts):
             raise InvocationPortError("unsupported_content_structure")
-        part = message.content.parts[0]
-        if type(part) is not TextContent:
-            raise InvocationPortError("unsupported_input_modality")
-        messages.append({"role": message.role.value, "content": part.text})
+
+        if len(message.content.parts) == 1 and type(message.content.parts[0]) is TextContent:
+            check_part_modality(prepared, message.content.parts[0])
+            messages.append({"role": message.role.value, "content": message.content.parts[0].text})
+            continue
+
+        content_parts: list[dict[str, object]] = []
+        for part in message.content.parts:
+            check_part_modality(prepared, part)
+            if type(part) is TextContent:
+                content_parts.append({"type": "text", "text": part.text})
+            elif type(part) is ImageContent:
+                url, _ = resolve_media_url_or_data(part.source, default_mime_for_part(part))
+                content_parts.append({"type": "image_url", "image_url": url})
+            elif type(part) in (AudioContent, VideoContent):
+                raise InvocationPortError("unsupported_capability")
+            else:
+                raise InvocationPortError("unsupported_input_modality")
+
+        messages.append({"role": message.role.value, "content": content_parts})
     if messages[-1]["role"] != "user":
         raise InvocationPortError("unsupported_message_structure")
     payload: dict[str, object] = {

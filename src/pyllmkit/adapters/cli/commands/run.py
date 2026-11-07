@@ -12,11 +12,15 @@ from pyllmkit.application.inference.contracts import (
 )
 from pyllmkit.domain.capabilities import CapabilitySupport, SupportLevel
 from pyllmkit.domain.inference import (
+    AudioOutput,
     GenerationConfig,
     GenerationSupportSnapshot,
+    ImageOutput,
     InferenceRequest,
     ModelTarget,
+    MultiPartOutput,
     ParameterSupport,
+    VideoOutput,
 )
 from pyllmkit.domain.interactions import Content, Message, Role, TextContent
 from pyllmkit.domain.models import ModelId
@@ -27,6 +31,9 @@ from ..config import get_config
 from ..console import console
 from ..formatting.errors import build_error_panel
 from ..formatting.panels import build_response_panel, build_usage_panel
+from ..media_input import parse_cli_media_parts
+from ..media_saver import get_default_asset_path, save_output_media
+from ..prompt_file import PromptFileError, resolve_prompt
 from ..service import create_cli_inference_service
 from ..storage import RunRecord, SqliteRunStore
 
@@ -56,9 +63,13 @@ def _build_support_snapshot(request: InferenceRequest) -> GenerationSupportSnaps
 
 def run_command(
     prompt: Annotated[
-        str,
-        typer.Argument(help="Texte de l'invite à soumettre au modèle"),
-    ],
+        str | None,
+        typer.Argument(help="Texte de l'invite à soumettre au modèle (ou @chemin.md)"),
+    ] = None,
+    prompt_file: Annotated[
+        str | None,
+        typer.Option("--prompt-file", "-f", help="Fichier .md/.txt contenant le prompt"),
+    ] = None,
     model: Annotated[
         str,
         typer.Option("--model", "-m", help="Identifiant du modèle cible"),
@@ -83,8 +94,35 @@ def run_command(
         bool,
         typer.Option("--record-content", help="Consentir au stockage local du prompt et de la réponse"),
     ] = False,
+    image: Annotated[
+        list[str] | None,
+        typer.Option("--image", "-i", help="Chemin(s) de fichier image ou URL à attacher"),
+    ] = None,
+    audio: Annotated[
+        str | None,
+        typer.Option("--audio", "-a", help="Chemin de fichier audio ou URL à attacher"),
+    ] = None,
+    video: Annotated[
+        str | None,
+        typer.Option("--video", "-v", help="Chemin de fichier vidéo ou URL à attacher"),
+    ] = None,
+    output_file: Annotated[
+        str | None,
+        typer.Option("--output-file", "-o", help="Chemin du fichier où enregistrer la sortie (image, audio, vidéo, texte)"),
+    ] = None,
 ) -> None:
     """Exécuter une inférence textuelle bloquante avec rapport d'usage."""
+    try:
+        prompt_doc = resolve_prompt(prompt, prompt_file)
+    except PromptFileError as exc:
+        console.print(build_error_panel("invalid_prompt_file", str(exc)))
+        raise typer.Exit(code=2) from None
+    if prompt_doc.settings:
+        console.print(
+            "[yellow]En-tête du fichier prompt ignoré par 'run' "
+            "(utilisez 'pyllmkit generate' pour les réglages média).[/yellow]"
+        )
+    prompt = prompt_doc.text
     cfg = get_config()
     # A CLI invocation is offline by default, even if config.defaults.live is true.
     # Only an explicit --live switch may construct a network-capable adapter.
@@ -110,7 +148,15 @@ def run_command(
     messages_list = []
     if system:
         messages_list.append(Message(Role.SYSTEM, Content((TextContent(system.strip()),))))
-    messages_list.append(Message(Role.USER, Content((TextContent(prompt.strip()),))))
+
+    try:
+        media_parts = parse_cli_media_parts(images=image, audio=audio, video=video)
+    except (FileNotFoundError, ValueError) as err:
+        console.print(f"[red]Erreur d'attachement multimédia :[/red] {err}")
+        raise typer.Exit(code=2) from None
+
+    user_parts = [TextContent(prompt.strip())] + media_parts
+    messages_list.append(Message(Role.USER, Content(tuple(user_parts))))
 
     request = InferenceRequest(
         target=ModelTarget(ModelId(model.strip())),
@@ -121,6 +167,7 @@ def run_command(
     try:
         snapshot = _build_support_snapshot(request)
         execution = service.invoke(request, support_snapshot=snapshot)
+        prov_name = resolve_provider_for_model(catalog, model)
 
         # Enregistrement silencieux dans l'historique local pour FinOps / Evals / Observabilité
         try:
@@ -138,7 +185,7 @@ def run_command(
             finish = None
             resp_text = None
             if execution.response:
-                resp_text = execution.response.output.text
+                resp_text = getattr(execution.response.output, "text", None)
                 if execution.response.finish_reason:
                     raw_code = execution.response.finish_reason.code.value
                     finish = raw_code
@@ -160,13 +207,26 @@ def run_command(
             prov_name = resolve_provider_for_model(catalog, model)
 
             # Formatage de l'échange complet au standard ChatML / OpenAI JSONL pour Fine-Tuning
-            messages_payload = [
-                {
-                    "role": m.role.value,
-                    "content": getattr(m.content.parts[0], "text", "") if m.content.parts else "",
-                }
-                for m in request.messages
-            ]
+            def _format_part_for_storage(part: object) -> dict[str, object]:
+                if hasattr(part, "text"):
+                    return {"type": "text", "text": getattr(part, "text", "")}
+                if hasattr(part, "source"):
+                    src = part.source
+                    return {
+                        "type": getattr(part, "kind", "media"),
+                        "source": {"kind": getattr(src, "kind", "uri"), "value": getattr(src, "value", "")},
+                    }
+                return {"type": getattr(part, "kind", "unknown")}
+
+            messages_payload = []
+            for m in request.messages:
+                if len(m.content.parts) == 1 and hasattr(m.content.parts[0], "text"):
+                    messages_payload.append({"role": m.role.value, "content": getattr(m.content.parts[0], "text", "")})
+                else:
+                    messages_payload.append({
+                        "role": m.role.value,
+                        "content": [_format_part_for_storage(p) for p in m.content.parts],
+                    })
             if resp_text:
                 messages_payload.append({"role": "assistant", "content": resp_text})
             msgs_json = json.dumps(messages_payload, ensure_ascii=False) if record_content else None
@@ -208,6 +268,32 @@ def run_command(
 
         console.print(build_response_panel(execution, model))
         console.print(build_usage_panel(execution, model_name=model, provider_name=prov_name))
+
+        if execution.response is not None:
+            target_to_save: str | None = output_file
+            if target_to_save is None:
+                out = execution.response.output
+                is_media = isinstance(out, (ImageOutput, AudioOutput, VideoOutput)) or (
+                    isinstance(out, MultiPartOutput)
+                    and any(isinstance(p, (ImageOutput, AudioOutput, VideoOutput)) for p in out.parts)
+                )
+                if is_media:
+                    target_to_save = str(
+                        get_default_asset_path(
+                            out,
+                            execution.run.run_id.value,
+                            model,
+                        )
+                    )
+
+            if target_to_save is not None:
+                try:
+                    saved_path = save_output_media(execution.response.output, target_to_save)
+                    console.print(
+                        f"[bold green]Fichier sauvegardé avec succès dans :[/bold green] [cyan]{saved_path}[/cyan]"
+                    )
+                except Exception as exc:
+                    console.print(f"[bold red]Erreur lors de la sauvegarde du fichier :[/bold red] {exc}")
     except (InvocationPortError, InvocationPreconditionError) as exc:
         panel = build_error_panel(exc.code)
         console.print(panel)

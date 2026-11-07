@@ -1,5 +1,77 @@
 # Changelog
 
+## [Unreleased] - Support Multimodal Universel (Entrée & Génération de Médias)
+
+### 1. Compréhension Multimodale en Entrée (Input: Images, Audio, Vidéo)
+- **Domaine `interactions`** :
+  - Ajout des types de valeur immuables `AudioContent` et `VideoContent` (héritant de `ContentPart`) avec modality et format canoniques.
+  - Évolution passive de `MediaSourceRef` pour supporter `kind in {"uri", "asset", "file", "data"}` avec validation syntaxique stricte (RFC 2397 pour data URI) et zéro E/S réseau au niveau du domaine.
+  - Codec de sérialisation JSON v1 étendu pour `audio` et `video` avec aller-retour déterministe garanti.
+- **Adaptateurs d'inférence (`adapters/inference`)** :
+  - Déverrouillage multimodal et projection native vers les structures de transport respectives :
+    - **Google Gemini** : support complet Images, Audio et Vidéo (`inlineData` / `fileData`).
+    - **OpenAI** : support Images (`input_image`) et Audio (`input_audio`) ; rejet explicite Vidéo (`unsupported_capability`).
+    - **Anthropic Claude** : support Images (base64 `media_type`) ; rejet Audio/Vidéo (`unsupported_capability`).
+    - **xAI Grok & Mistral** : support Images (`image_url`) ; rejet Audio/Vidéo (`unsupported_capability`).
+    - **Ollama** : support Images (base64 dans `images: []`) ; rejet Audio/Vidéo (`unsupported_capability`).
+  - Filtrage des modalités par déploiement et rejet `unsupported_input_modality` conforme aux contrats M1/P7.
+  - Helper d'infrastructure passif `media_mapping.py` sans dépendance externe (`dependencies = []`).
+- **CLI (`run`, `stream`) & Expérience Utilisateur** :
+  - Nouveaux drapeaux `--image` (`-i`), `--audio` (`-a`), `--video` (`-v`) sur `pyllmkit run` et `pyllmkit stream`.
+  - Résolution des entrées (fichiers locaux, URLs HTTP/HTTPS, Data URIs base64) avec garde de taille (< 100 Mo).
+  - Panneaux Rich : affichage explicite de la ligne `Modalités : text, image, audio, video` dans les métriques d'exécution.
+  - Persistance ChatML : traçabilité des pièces jointes multimédias dans `history.db` pour fine-tuning et audit FinOps.
+
+### 2. Génération Multimodale en Sortie (Output: Text-to-Image, Text-to-Audio/TTS, Text-to-Video)
+- **Domaine `inference`** :
+  - Nouvelles entités immuables `ImageOutput`, `AudioOutput`, `VideoOutput` et `MultiPartOutput` (composites) implémentant `InferenceOutput`.
+  - Extension de `Usage` avec métriques non-tokens : `input_characters`, `output_media_units` (ex: décompte d'images), `output_media_seconds` (durée audio/vidéo).
+  - Codec de sérialisation canonique v2 avec aller-retour sans perte pour toutes les variantes multimédias et structures de données passives `MediaSourceRef`.
+  - Résolution dynamique des modalités dans `service.py` pour supporter automatiquement les modèles générateurs d'images, de voix et de vidéos.
+- **Catalogue & FinOps Non-Tokens** :
+  - Intégration des modèles génératifs de référence dans `models_catalog.json` : `dall-e-3`, `dall-e-2`, `tts-1`, `tts-1-hd`, `imagen-3`, `veo-2`.
+  - Extension du calculateur `compute_run_cost` pour tarifer avec exactitude à l'unité (`unit == "image"`), au volume de caractères (`unit == "1M characters"`), ou à la durée (`unit == "second"`).
+- **CLI & Matérialisation sur Disque (`media_saver.py`, `generate.py`)** :
+  - Nouveau module d'écriture sécurisée `media_saver.py` extrayant les octets binaires depuis les Data URIs, fichiers locaux ou URLs.
+  - Module `mock_assets.py` : génération en pur Python (zéro dépendance) de fichiers de simulation valides et lisibles dans Aperçu, QuickTime et Music (vrai PNG 24-bit 256x256, vrai WAV PCM 16-bit 22kHz 2.0s, conteneur MP4 H.264 2.0s).
+  - Adaptateur live `OpenAIMediaAdapter` et `CompositeOpenAIAdapter` pour la génération réelle en direct avec OpenAI (`/v1/images/generations` pour DALL-E 3 et `/v1/audio/speech` pour TTS) via l'option `--live`.
+  - Option universelle `-o / --output-file` sur `pyllmkit run` pour enregistrer directement le média généré sur disque.
+  - Prise en charge de la configuration `storage.assets_dir` dans `.pyllmkit.yaml` (et variable d'environnement `PYLLMKIT_ASSETS_DIR`).
+  - Sauvegarde automatique par défaut dans `assets/<catégorie>/<modèle>_<timestamp>_<run_id>.<ext>` lorsque `--out / -o` n'est pas spécifié :
+    - `assets/images/` pour les images (`.png`, `.jpg`, `.webp`)
+    - `assets/audios/` pour les audios vocaux (`.wav`, `.mp3`, `.ogg`)
+    - `assets/videos/` pour les vidéos (`.mp4`)
+    - `assets/documents/` pour les documents ou textes
+  - Nouvelle sous-commande dédiée `pyllmkit generate` avec 3 déclinaisons :
+    - `pyllmkit generate image <prompt> --model dall-e-3 [--out <path>] --size 1024x1024 --quality standard [--live]`
+    - `pyllmkit generate audio <prompt> --model tts-1 [--out <path>] --voice alloy [--live]`
+    - `pyllmkit generate video <prompt> --model veo-2 [--out <path>] [--live]`
+  - Panneaux Rich dédiés avec métadonnées spécifiques et statut clair `Fournisseur : <nom> (simulation)` vs `Fournisseur : <nom>`.
+
+### 2bis. Correctifs de la génération live (`pyllmkit generate ... --live`)
+- **Diagnostic** : `dall-e-3`, `dall-e-2`, `imagen-3` et `veo-2` ne sont plus exposés par les API avec les clés du projet (`The model 'dall-e-3' does not exist`, Imagen/Veo absents de `models.list` Gemini). Les valeurs par défaut de `generate` échouaient donc systématiquement, et l'erreur était masquée derrière un `provider_protocol_error` sans détail.
+- **Nouveaux modèles par défaut** (vérifiés en live le 2026-11-07) : `generate image` → `gpt-image-1-mini`, `generate audio` → `gpt-4o-mini-tts`, `generate video` → `grok-imagine-video`.
+- **Catalogue** : ajout de `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`, `gpt-4o-mini-tts`, `gemini-2.5-flash-image`, `gemini-3.1-flash-image`, `gemini-3-pro-image`, `gemini-nano-banana-2.1`, `gemini-2.5-flash-preview-tts`, `gemini-3.8-flash-tts`, `grok-imagine-image`, `grok-imagine-image-2.0`, `grok-imagine-video`, `grok-imagine-video-1.5`. Prix laissés inconnus (`null`) faute de source vérifiée. Les entrées historiques restent utilisables en simulation.
+- **Routage** : `MediaRoutingAdapter` remplace `CompositeOpenAIAdapter` (alias conservé) et choisit l'adaptateur média selon les **modalités de sortie déclarées** du déploiement, et non plus selon des sous-chaînes du nom (`"dall-e"`, `"tts"`). Il est branché pour OpenAI, Google et xAI.
+- **Nouveaux adaptateurs live** (stdlib uniquement, `dependencies = []`) :
+  - `GoogleMediaAdapter` : images Gemini (`generateContent`, `responseModalities` IMAGE, `imageConfig`), TTS Gemini (PCM L16 24 kHz encapsulé en WAV), Imagen (`:predict`) et Veo (`:predictLongRunning` + polling), ces deux derniers si la clé y a accès.
+  - `XAIMediaAdapter` : `grok-imagine-image` (`/v1/images/generations`) et `grok-imagine-video` (job `request_id`, polling `/v1/videos/{id}`, téléchargement immédiat du MP4 temporaire).
+  - `OpenAIMediaAdapter` réécrit : prise en charge de `gpt-image-*` (sans `response_format`), dimensions réelles lues dans l'en-tête PNG/JPEG, MIME `audio/mpeg` standard, `instructions` pour `gpt-4o-mini-tts`.
+- **Options CLI enfin transmises** : `--size`, `--quality`, `--voice` étaient ignorées (valeurs codées en dur). Ajout de `--aspect-ratio`, `--resolution`, `--instructions`, `--duration`, `--poll-timeout`, `--timeout` et `--record-content`.
+- **Prompt** : seuls les messages `user` alimentent le prompt média. Auparavant le premier texte trouvé était utilisé, donc le `system_prompt` de la configuration avec `pyllmkit run`.
+- **Erreurs explicites** : codes `model_not_found`, `content_filtered`, `rate_limited`, `permission_denied`... et ligne `Détails` reprenant le message du fournisseur, assaini (secrets masqués, 400 caractères max) via `MediaDiagnostics`.
+- **Garde-fou** : `generate image -m veo-2` (modèle ne produisant pas le type demandé) est refusé avant tout appel réseau.
+- **Vidéo Google** : Veo 3.1 preview est arrêté depuis le 2026-10-22 (doc officielle `ai.google.dev/gemini-api/docs/veo`). Ajout de `gemini-omni-1.2-flash` et `gemini-omni-1.1-flash` via l'Interactions API (`POST /v1beta/interactions`, `response_format.type = "video"`, réponse synchrone, MP4 base64 dans `steps[].content[]`), avec `--duration` (3 à 15 s), `--resolution` (360p à 4k) et `--aspect-ratio` (16:9, 9:16). Un `veo-*` introuvable suggère désormais `gemini-omni-1.2-flash`.
+- **FinOps** : `compute_run_cost` n'invente plus de quantité inconnue (auparavant 1 image ou 5 s de vidéo par défaut), et `runs list` / `runs inspect` n'estiment plus de coût pour un run échoué ou simulé (ex. `$0.75` affiché sur des `veo-2` en 404).
+- **Historique** : les runs `generate` sont tracés dans `history.db` (`mode = "generate"`, metadata-only, prompt seulement avec `--record-content`).
+
+### 3. Qualification & Intégrité Globale
+- **3 008 tests unitaires, d'acceptation et CLI passants à 100 %** (dont 41 tests hors réseau dédiés aux adaptateurs média et au FinOps).
+- **Couverture de branches globale : 92 %** (`pytest --cov=pyllmkit --cov-branch`). Les gates CI par module sont inchangés.
+- Génération live validée le 2026-11-07 : `gpt-image-1-mini`, `gpt-4o-mini-tts`, `gemini-2.5-flash-image`, `gemini-2.5-flash-preview-tts`, `grok-imagine-image`, `grok-imagine-video`, `gemini-omni-1.2-flash`.
+- **Zéro dépendance d'exécution ajoutée** (`dependencies = []`).
+- **Règle typographique stricte** : aucun tiret cadratin U+2014, standard ASCII U+002D exclusif.
+
 ## [0.3.0] - 2026-11-07
 
 ### Version Git demandée par le mainteneur unique

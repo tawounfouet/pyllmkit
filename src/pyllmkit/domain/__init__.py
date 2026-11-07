@@ -48,6 +48,7 @@ from .inference import (
     validate_request_support,
 )
 from .interactions import (
+    AudioContent,
     Content,
     ContentPart,
     ImageContent,
@@ -55,6 +56,7 @@ from .interactions import (
     Message,
     Role,
     TextContent,
+    VideoContent,
     message_from_dict,
     message_to_dict,
 )
@@ -80,6 +82,7 @@ from .models import (
 )
 
 __all__ = [
+    "AudioContent",
     "Capability",
     "CapabilityConstraint",
     "CapabilityId",
@@ -134,6 +137,7 @@ __all__ = [
     "SupportLevel",
     "TextContent",
     "TextOutput",
+    "VideoContent",
     "artifact_from_dict",
     "evaluate_request_support",
     "artifact_to_dict",

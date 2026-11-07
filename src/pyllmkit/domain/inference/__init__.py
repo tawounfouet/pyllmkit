@@ -13,7 +13,14 @@ from .config import GenerationConfig
 from .failure import InferenceFailure
 from .finish import FinishReason, FinishReasonCode
 from .identifiers import InferenceRunId
-from .output import InferenceOutput, TextOutput
+from .output import (
+    AudioOutput,
+    ImageOutput,
+    InferenceOutput,
+    MultiPartOutput,
+    TextOutput,
+    VideoOutput,
+)
 from .request import InferenceRequest
 from .response import InferenceResponse
 from .run import InferenceRun, InferenceRunState
@@ -62,6 +69,10 @@ __all__ = [
     "run_from_dict",
     "run_to_dict",
     "InferenceRunId",
+    "AudioOutput",
+    "ImageOutput",
+    "VideoOutput",
+    "MultiPartOutput",
     "TextOutput",
     "Usage",
     "ModelTarget",

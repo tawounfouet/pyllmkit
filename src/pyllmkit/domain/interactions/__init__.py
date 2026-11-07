@@ -6,6 +6,7 @@ L2.4: strict independent Interaction JSON codec v1.
 Conversation, provider adapters, tool execution and other media remain deferred.
 """
 
+from .audio import AudioContent
 from .content import Content
 from .image import ImageContent
 from .media import MediaSourceRef
@@ -14,8 +15,10 @@ from .parts import ContentPart
 from .roles import Role
 from .serialization import INTERACTION_SCHEMA_VERSION, message_from_dict, message_to_dict
 from .text import TextContent
+from .video import VideoContent
 
 __all__ = [
+    "AudioContent",
     "Content",
     "ContentPart",
     "ImageContent",
@@ -24,6 +27,7 @@ __all__ = [
     "Message",
     "Role",
     "TextContent",
+    "VideoContent",
     "message_from_dict",
     "message_to_dict",
 ]
