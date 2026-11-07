@@ -42,6 +42,10 @@ assert message.content.parts[0].text == "Bonjour"
 
 **Sur `main`, après le tag `v0.3.0` :** entrées image/audio/vidéo et commandes `pyllmkit generate image|audio|video` (mock par défaut). `--live` nécessite un choix explicite et une clé fournisseur. Pour les modèles médias, `pyllmkit models lifecycle` expose les retraits connus. Les IDs retirés ou non vérifiés sont interdits en live et l'audit [M0](docs/audits/MEDIA_MODEL_AVAILABILITY_AUDIT.md) documente les autres limites. [Guide multimédia](docs/guides/02_MEDIA_ASSET_GENERATION_GUIDE.md) et [limites de sécurité](docs/quality/2026-11-07_MULTIMODAL_SECURITY_AND_CI_REMEDIATION.md).
 
+### Catalogue média v2 sur `main`
+
+Le catalogue média versionné distingue éditeur, API et facturant et ne traite pas un listing fournisseur comme une preuve d'accès. Les commandes `models list --media`, `models availability` et `models diff` fonctionnent hors réseau. `models sync` reste une commande explicite de découverte réseau, sans génération ni prix réputé vérifié. [Architecture M1](docs/architecture/ADR-M1-VERSIONED-MEDIA-CATALOG.md).
+
 ## Architecture
 
 ```text
