@@ -24,7 +24,6 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
 
-from pyllmkit.adapters.inference.media_lifecycle import require_live_media_model
 from pyllmkit.adapters.inference.media_http import (
     MediaDiagnostics,
     MediaGenerationOptions,
@@ -42,6 +41,7 @@ from pyllmkit.adapters.inference.media_http import (
     sniff_image_mime,
     wav_duration_seconds,
 )
+from pyllmkit.adapters.inference.media_lifecycle import require_live_media_model
 from pyllmkit.adapters.inference.security import ProviderConnectionConfig
 from pyllmkit.application.inference import InvocationPortError, PreparedInvocation
 from pyllmkit.domain.inference import (
