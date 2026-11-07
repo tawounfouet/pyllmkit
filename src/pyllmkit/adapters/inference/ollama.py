@@ -12,6 +12,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 from pyllmkit.adapters.inference.errors import normalize_http_failure
+from pyllmkit.adapters.inference.media_mapping import request_bytes_limit
 from pyllmkit.adapters.inference.ollama_mapping import (
     decode_ollama_response,
     encode_ollama_request,
@@ -56,7 +57,7 @@ def _preflight(prepared: PreparedInvocation, config: ProviderConnectionConfig) -
     except SecurityConfigurationError:
         raise InvocationPortError("adapter_connection_invalid") from None
     body = encode_ollama_request(prepared)
-    if len(body) > _MAX_REQUEST_BYTES:
+    if len(body) > request_bytes_limit(prepared):
         raise InvocationPortError("request_too_large")
     return body
 

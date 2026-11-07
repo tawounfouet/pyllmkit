@@ -16,6 +16,7 @@ from pyllmkit.adapters.inference.anthropic_messages_mapping import (
     encode_anthropic_messages_request,
 )
 from pyllmkit.adapters.inference.errors import normalize_http_failure
+from pyllmkit.adapters.inference.media_mapping import request_bytes_limit
 from pyllmkit.adapters.inference.security import ProviderConnectionConfig, ProviderProfile
 from pyllmkit.application.inference import InvocationPortError, PreparedInvocation
 from pyllmkit.domain.inference import InferenceResponse
@@ -59,7 +60,7 @@ def _timeout(prepared: PreparedInvocation, config: ProviderConnectionConfig) -> 
 
 def _body(prepared: PreparedInvocation) -> bytes:
     encoded = encode_anthropic_messages_request(prepared)
-    if len(encoded) > _MAX_REQUEST_BYTES:
+    if len(encoded) > request_bytes_limit(prepared):
         raise InvocationPortError("request_too_large")
     return encoded
 

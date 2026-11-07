@@ -13,6 +13,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 from pyllmkit.adapters.inference.errors import normalize_http_failure
+from pyllmkit.adapters.inference.media_mapping import request_bytes_limit
 from pyllmkit.adapters.inference.security import ProviderConnectionConfig, ProviderProfile
 from pyllmkit.application.inference import InvocationPortError, PreparedInvocation
 from pyllmkit.protocols.credentials import CredentialResolverPort, SecretValue
@@ -70,8 +71,8 @@ def require_live(value: bool) -> None:
         raise InvocationPortError("live_authorization_required")
 
 
-def require_body_limit(body: bytes) -> bytes:
-    if type(body) is not bytes or len(body) > _MAX_REQUEST_BYTES:
+def require_body_limit(body: bytes, *, max_bytes: int = _MAX_REQUEST_BYTES) -> bytes:
+    if type(body) is not bytes or len(body) > max_bytes:
         raise InvocationPortError("request_too_large")
     return body
 
@@ -157,7 +158,7 @@ def cloud_post_sync(
     """Single bounded request; does not decode a provider-specific payload."""
     validate_cloud_connection(config, credentials, profile=profile, base_url=base_url)
     _validate_destination(profile, base_url, url)
-    payload = require_body_limit(body)
+    payload = require_body_limit(body, max_bytes=request_bytes_limit(prepared))
     timeout = _timeout(prepared, config)
     key = _secret(config, credentials)
     httpx = _httpx()
@@ -196,7 +197,7 @@ async def cloud_post_async(
     """Single async request, bounded additionally by a wall-clock deadline."""
     validate_cloud_connection(config, credentials, profile=profile, base_url=base_url)
     _validate_destination(profile, base_url, url)
-    payload = require_body_limit(body)
+    payload = require_body_limit(body, max_bytes=request_bytes_limit(prepared))
     timeout = _timeout(prepared, config)
     key = _secret(config, credentials)
     httpx = _httpx()
