@@ -263,3 +263,29 @@ def test_pricing_ui_explicitly_labels_local_not_live_source() -> None:
     assert "facturation" in note
     assert "non renseignée" in format_pricing_provenance("gpt-4o") or "vérifié" in note
     assert "Prix non disponible" in format_pricing_provenance("not-a-real-model")
+
+
+def test_legacy_history_content_purge_requires_confirmation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Historical opt-ins must be selectively removable without deleting usage."""
+    path = tmp_path / "legacy.db"
+    monkeypatch.setenv("PYLLMKIT_HISTORY_DB", str(path))
+    store = SqliteRunStore(path)
+    store.record_run(_record("legacy-sensitive", datetime.now(UTC)))
+    before = store.get_run("legacy-sensitive")
+    assert before is not None and before.prompt == "private"
+
+    refused = runner.invoke(app, ["runs", "purge-content"])
+    assert refused.exit_code == 1
+    assert store.get_run("legacy-sensitive").prompt == "private"  # type: ignore[union-attr]
+
+    accepted = runner.invoke(app, [
+        "runs", "purge-content", "--run-id", "legacy-sensitive", "--yes",
+    ])
+    assert accepted.exit_code == 0, accepted.output
+    after = store.get_run("legacy-sensitive")
+    assert after is not None
+    assert after.prompt == ""
+    assert after.response_text is None
+    assert after.input_tokens == before.input_tokens

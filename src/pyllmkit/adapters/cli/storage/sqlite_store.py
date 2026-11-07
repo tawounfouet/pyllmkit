@@ -302,6 +302,29 @@ class SqliteRunStore:
             col_names = [col[0] for col in cursor.description]
             return self._row_to_record(col_names, row)
 
+    def purge_content(self, run_id: str | None = None) -> int:
+        """Logically redact historical prompts/responses while retaining run metadata.
+
+        SQLite freed pages, WAL files and backups may retain bytes; this is not
+        guaranteed forensic erasure. Callers must handle encrypted storage/backups.
+        """
+        where = (
+            "(prompt != '' OR response_text IS NOT NULL OR "
+            "system_prompt IS NOT NULL OR messages_json IS NOT NULL)"
+        )
+        args: tuple[str, ...] = ()
+        if run_id is not None:
+            where += " AND run_id = ?"
+            args = (run_id,)
+        with closing(self._get_connection()) as conn:
+            with conn:
+                cursor = conn.execute(
+                    f"UPDATE runs SET prompt = '', response_text = NULL, "
+                    f"system_prompt = NULL, messages_json = NULL WHERE {where}",
+                    args,
+                )
+                return max(0, cursor.rowcount)
+
     def prune_older_than_days(self, days: int, now: datetime | None = None) -> int:
         """Delete dated rows beyond the opt-in retention period; skip invalid dates."""
         if type(days) is not int or not (1 <= days <= 36500):

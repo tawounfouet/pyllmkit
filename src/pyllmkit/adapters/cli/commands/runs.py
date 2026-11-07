@@ -198,8 +198,15 @@ def runs_export(
         int,
         typer.Option("--limit", "-n", help="Nombre maximum de runs à exporter"),
     ] = 1000,
+    allow_content_export: Annotated[
+        bool,
+        typer.Option("--allow-content-export", help="Autoriser cet export de conversations sensibles"),
+    ] = False,
 ) -> None:
-    """Exporter les runs archivés au standard ChatML JSONL (OpenAI, HuggingFace, Axolotl, Unsloth)."""
+    """Exporter les runs archivés au standard ChatML JSONL avec consentement explicite."""
+    if not allow_content_export:
+        console.print("[red]Export refusé : ajouter --allow-content-export.[/red]")
+        raise typer.Exit(code=1)
     store = SqliteRunStore()
     records = store.list_runs(limit=limit)
     if model:
@@ -259,3 +266,20 @@ def runs_prune(
         raise typer.Exit(code=1)
     count = SqliteRunStore().prune_older_than_days(older_than_days)
     console.print(f"[green]{count} run(s) ancien(s) supprimé(s).[/green]")
+
+
+@runs_app.command(name="purge-content", help="Expurger les contenus des runs conservés.")
+def runs_purge_content(
+    yes: Annotated[
+        bool, typer.Option("--yes", help="Confirmer l'expurgation des prompts et réponses"),
+    ] = False,
+    run_id: Annotated[
+        str | None, typer.Option("--run-id", help="Limiter l'expurgation à ce RunId"),
+    ] = None,
+) -> None:
+    """Remove stored conversations, preserving usage and execution metadata."""
+    if not yes:
+        console.print("[yellow]Expurgation refusée : ajouter --yes.[/yellow]")
+        raise typer.Exit(code=1)
+    count = SqliteRunStore().purge_content(run_id)
+    console.print(f"[green]{count} run(s) expurgé(s).[/green]")

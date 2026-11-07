@@ -179,13 +179,16 @@ def test_cli_runs_inspect_json_and_export(tmp_path: Path, monkeypatch: pytest.Mo
     assert '"role": "assistant"' in res_json.output
 
     # Test export to stdout
-    res_exp_stdout = runner.invoke(app, ["runs", "export"])
+    refused_export = runner.invoke(app, ["runs", "export"])
+    assert refused_export.exit_code == 1
+    assert "--allow-content-export" in refused_export.output
+    res_exp_stdout = runner.invoke(app, ["runs", "export", "--allow-content-export"])
     assert res_exp_stdout.exit_code == 0
     assert '{"messages":' in res_exp_stdout.output
 
     # Test export to file
     out_file = tmp_path / "dataset.jsonl"
-    res_exp_file = runner.invoke(app, ["runs", "export", "-o", str(out_file)])
+    res_exp_file = runner.invoke(app, ["runs", "export", "-o", str(out_file), "--allow-content-export"])
     assert res_exp_file.exit_code == 0
     assert out_file.exists()
     content = out_file.read_text(encoding="utf-8")
