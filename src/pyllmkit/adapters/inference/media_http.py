@@ -367,6 +367,8 @@ def fail_output(diagnostics: MediaDiagnostics | None, message: str, code: str = 
 
 
 def data_uri(mime_type: str, raw: bytes) -> str:
+    if len(raw) > MAX_MEDIA_DOWNLOAD_BYTES:
+        raise InvocationPortError("response_too_large")
     return f"data:{mime_type};base64,{base64.b64encode(raw).decode('ascii')}"
 
 
