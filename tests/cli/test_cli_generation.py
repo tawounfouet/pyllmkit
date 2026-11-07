@@ -101,6 +101,21 @@ class TestMediaSaver:
         with pytest.raises(ValueError, match="Format de Data URI invalide"):
             save_output_media(mock_out, tmp_path / "bad.png")
 
+    def test_invalid_base64_is_rejected_without_creating_asset(self, tmp_path: Path) -> None:
+        target = tmp_path / "bad.png"
+        output = ImageOutput(MediaSourceRef("data", "data:image/png;base64,???"))
+        with pytest.raises(ValueError, match="base64 invalide"):
+            save_output_media(output, target)
+        assert not target.exists()
+
+    def test_media_bytes_cap_is_enforced(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr("pyllmkit.adapters.cli.media_saver.MAX_MEDIA_DOWNLOAD_BYTES", 3)
+        output = ImageOutput(MediaSourceRef("data", "data:image/png;base64,YWJjZA=="))
+        target = tmp_path / "oversized.png"
+        with pytest.raises(ValueError, match="volumineux"):
+            save_output_media(output, target)
+        assert not target.exists()
+
     def test_unsupported_media_kind_raises_error(self, tmp_path: Path) -> None:
         mock_out = MagicMock(spec=ImageOutput)
         mock_out.media = MagicMock(kind="asset", value="opaque-id")
@@ -114,6 +129,18 @@ class TestMediaSaver:
 
 class TestCliGenerateCommands:
     """End-to-end tests for pyllmkit generate subcommands."""
+
+    def test_unexpected_generation_exception_does_not_echo_credentials(self) -> None:
+        with patch(
+            "pyllmkit.adapters.cli.commands.generate.create_cli_inference_service"
+        ) as service_factory:
+            service_factory.return_value.invoke.side_effect = RuntimeError(
+                "unexpected failure with sk-proj-VERYPRIVATE123456789"
+            )
+            result = runner.invoke(app, ["generate", "image", "Une montagne"])
+        assert result.exit_code == 2
+        assert "VERYPRIVATE" not in result.stdout
+        assert "Détails masqués" in result.stdout
 
     def test_generate_image_command_with_out(self, tmp_path: Path) -> None:
         out_file = tmp_path / "generated_cat.png"
