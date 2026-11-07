@@ -645,3 +645,35 @@ def test_model_spec_candidate_progressive_resolution() -> None:
 
 
 
+
+
+def test_missing_catalog_values_remain_unknown(tmp_path, monkeypatch) -> None:
+    """Absent prices/limits must not become plausible but invented values."""
+    import json
+
+    from pyllmkit.adapters.cli import model_specs
+    from pyllmkit.adapters.cli.formatting.panels import build_model_inspect_panel
+
+    catalog = tmp_path / "unknown.json"
+    catalog.write_text(json.dumps({
+        "unknown-price-v030": {"name": "Unknown Prices"},
+        "verified-free-v030": {
+            "name": "Free", "context_window": 0, "max_output_tokens": 0,
+            "pricing": {"input_cost": 0, "output_cost": 0},
+        },
+    }), encoding="utf-8")
+    specs = model_specs.load_catalog_specs(custom_path=catalog, include_local_override=False)
+    unknown = specs["unknown-price-v030"]
+    assert unknown.context_window is None
+    assert unknown.max_output_tokens is None
+    assert unknown.pricing.input_cost is None
+    assert unknown.pricing.output_cost is None
+    monkeypatch.setitem(model_specs.MODEL_SPECS, "unknown-price-v030", unknown)
+    assert model_specs.compute_run_cost("unknown-price-v030", 100, 100) == (None, "-")
+    panel = build_model_inspect_panel(unknown)
+    assert "Inconnu" in str(panel.renderable)
+    assert "N/A" in str(panel.renderable)
+    free = specs["verified-free-v030"]
+    monkeypatch.setitem(model_specs.MODEL_SPECS, "verified-free-v030", free)
+    assert model_specs.compute_run_cost("verified-free-v030", 100, 100)[0] == 0.0
+    assert model_specs.compute_run_cost("gpt-4o", 100, None) == (None, "-")
