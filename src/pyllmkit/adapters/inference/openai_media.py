@@ -23,6 +23,7 @@ from pyllmkit.adapters.inference.media_http import (
     data_uri,
     extract_prompt,
     fail_output,
+    fetch_provider_media_bytes,
     http_bytes,
     http_json,
     image_dimensions,
@@ -120,7 +121,7 @@ class OpenAIMediaAdapter:
         if isinstance(b64, str) and b64:
             raw = base64.b64decode(b64)
         elif isinstance(item.get("url"), str):
-            raw = http_bytes(item["url"], timeout=opts.request_timeout_seconds, diagnostics=self.diagnostics)
+            raw = fetch_provider_media_bytes(item["url"], timeout=opts.request_timeout_seconds, diagnostics=self.diagnostics)
         else:
             raise fail_output(self.diagnostics, "OpenAI : image vide (ni b64_json ni url)")
 
