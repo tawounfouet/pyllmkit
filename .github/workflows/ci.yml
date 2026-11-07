@@ -39,7 +39,7 @@ jobs:
           python -m pytest -q tests/acceptance/test_p7_l72_secure_adapter_registry.py --cov=pyllmkit.adapters.inference.security --cov=pyllmkit.adapters.inference.registry --cov=pyllmkit.adapters.inference.routing --cov=pyllmkit.adapters.inference.errors --cov=pyllmkit.protocols.credentials --cov-branch --cov-report=term-missing --cov-fail-under=95
       - name: P7 L7.3 Ollama mapping and transport branch coverage
         run: |
-          python -m pytest -q tests/acceptance/test_p7_l73_ollama_adapter.py --cov=pyllmkit.adapters.inference.ollama --cov=pyllmkit.adapters.inference.ollama_mapping --cov-branch --cov-report=term-missing --cov-fail-under=95
+          python -m pytest -q tests/acceptance/test_p7_l73_ollama_adapter.py tests/acceptance/test_multimodal_inference_mapping.py --cov=pyllmkit.adapters.inference.ollama --cov=pyllmkit.adapters.inference.ollama_mapping --cov-branch --cov-report=term-missing --cov-fail-under=95
       - name: P7 L7.4 OpenAI Responses adapter and mapping coverage
         run: |
           python -m pytest -q tests/acceptance/test_p7_l74_openai_responses.py --cov=pyllmkit.adapters.inference.openai_responses --cov=pyllmkit.adapters.inference.openai_responses_mapping --cov-branch --cov-report=term-missing --cov-fail-under=95
