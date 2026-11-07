@@ -179,10 +179,10 @@ def create_reference_catalog() -> InMemoryCatalog:
     # those entries with explicit --provider.
     observed_providers: dict[str, set[str]] = {}
     for row in discovered:
-        mid = row.get("id")
+        observed_id = row.get("id")
         provider = row.get("provider")
-        if mid and provider:
-            observed_providers.setdefault(mid, set()).add(provider)
+        if observed_id and provider:
+            observed_providers.setdefault(observed_id, set()).add(provider)
     ambiguous = {
         mid for mid, providers in observed_providers.items() if len(providers) > 1
     }
