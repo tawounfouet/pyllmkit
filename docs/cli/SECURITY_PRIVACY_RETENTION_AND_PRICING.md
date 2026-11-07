@@ -102,3 +102,18 @@ before using cost estimates for budgeting or reconciliation.
 
 Versioning note: these fixes do not change `pyproject.toml`, publish a
 package, create a release tag or authorize paid provider calls.
+
+
+## Supplemental v0.3.0 CLI protections (PR #102)
+
+- `runs export` requires an additional invocation-scoped `--allow-content-export`
+  before displaying or writing opted-in ChatML/JSONL content. This is distinct
+  from `run --record-content` and `stream --record-content` consent.
+- `runs purge-content --yes [--run-id ID]` logically removes previously stored
+  prompts, system instructions, responses and message bodies from SQLite while
+  preserving non-content run metadata. This is not secure deletion of SQLite
+  free pages, WAL files, backups, prior exports or terminal logs.
+- Missing model context limits and pricing rates are shown as unknown/N/A,
+  never replaced with implied limits or zero USD. Exact zero is retained only
+  when present explicitly in a catalog entry. Missing usage inputs prevent
+  a total cost estimate.
