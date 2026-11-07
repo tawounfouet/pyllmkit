@@ -119,7 +119,7 @@ def inspect_model(
         console.print(
             f"[bold]Tâches :[/bold] {', '.join(route.capabilities.tasks)} ; "
             f"observation : {route.availability} ; statut : {effective_lifecycle(route).value}"
-        ))
+        )
 
 
 @models_app.command(name="lifecycle")
