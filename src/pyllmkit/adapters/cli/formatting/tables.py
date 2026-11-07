@@ -153,9 +153,9 @@ def build_models_table(models: Sequence[Model], show_pricing: bool = False) -> T
         if show_pricing:
             spec = get_model_spec(m.id.value)
             if spec:
-                ctx_str = _format_tokens(spec.context_window)
-                in_cost = f"${spec.pricing.input_cost:.2f}"
-                out_cost = f"${spec.pricing.output_cost:.2f}"
+                ctx_str = _format_tokens(spec.context_window) if spec.context_window is not None else "N/A"
+                in_cost = f"${spec.pricing.input_cost:.2f}" if spec.pricing.input_cost is not None else "N/A"
+                out_cost = f"${spec.pricing.output_cost:.2f}" if spec.pricing.output_cost is not None else "N/A"
                 cr = f"${spec.pricing.cache_read:.2f}" if spec.pricing.cache_read is not None else "-"
                 cw = f"${spec.pricing.cache_write:.2f}" if spec.pricing.cache_write is not None else "-"
                 table.add_row(m.id.value, fam, ctx_str, in_cost, out_cost, cr, cw)
