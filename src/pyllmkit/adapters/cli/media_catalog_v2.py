@@ -178,7 +178,7 @@ def _descriptor(raw: object) -> MediaModelDescriptor:
     except ValueError:
         raise ValueError("invalid_media_lifecycle") from None
     availability = raw.get("availability")
-    if availability not in _ALLOWED_AVAILABILITY:
+    if type(availability) is not str or availability not in _ALLOWED_AVAILABILITY:
         raise ValueError("invalid_model_availability")
     source_url = raw.get("source_url")
     if type(source_url) is not str or not source_url.startswith("https://") or len(source_url) > 2048:
@@ -252,6 +252,42 @@ def load_media_catalog(path: Path | None = None) -> MediaCatalog:
         raise ValueError("media_catalog_too_large")
     with target.open(encoding="utf-8") as stream:
         return parse_media_catalog(json.load(stream))
+
+
+def merge_media_catalog(base: MediaCatalog, extension: MediaCatalog) -> MediaCatalog:
+    """Non-destructive extension: a checked, existing route cannot be overwritten.
+
+    Discovery observations never enter this function. Both sides must be
+    schema-qualified documents with explicit billing and provenance.
+    """
+    if base.schema_version != SCHEMA_VERSION or extension.schema_version != SCHEMA_VERSION:
+        raise ValueError("unsupported_media_catalog_schema")
+    identities = {(m.api_provider, m.public_model_id.lower()): m for m in base.models}
+    names = {
+        (m.api_provider, name.lower())
+        for m in base.models for name in (m.public_model_id, *m.aliases)
+    }
+    added: list[MediaModelDescriptor] = []
+    for model in extension.models:
+        key = (model.api_provider, model.public_model_id.lower())
+        existing = identities.get(key)
+        if existing is not None:
+            if existing != model:
+                raise ValueError("verified_route_overwrite_forbidden")
+            continue
+        for name in (model.public_model_id, *model.aliases):
+            alias = (model.api_provider, name.lower())
+            if alias in names:
+                raise ValueError("ambiguous_provider_alias")
+            names.add(alias)
+        identities[key] = model
+        added.append(model)
+    return MediaCatalog(
+        SCHEMA_VERSION,
+        f"{base.revision}+{extension.revision}",
+        max(base.updated_at, extension.updated_at),
+        tuple(sorted((*base.models, *added), key=lambda m: (m.api_provider, m.public_model_id))),
+    )
 
 
 def effective_lifecycle(model: MediaModelDescriptor, *, on_date: date | None = None) -> MediaLifecycle:
