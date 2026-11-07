@@ -158,7 +158,10 @@ def test_cli_runs_inspect_json_and_export(tmp_path: Path, monkeypatch: pytest.Mo
     # Run one inference with system prompt
     res_run = runner.invoke(
         app,
-        ["run", "Quelle heure est-il ?", "--system", "Tu es une horloge suisse."],
+        [
+            "run", "Quelle heure est-il ?", "--system", "Tu es une horloge suisse.",
+            "--record-content",
+        ],
     )
     assert res_run.exit_code == 0
 
@@ -191,7 +194,7 @@ def test_cli_runs_inspect_json_and_export(tmp_path: Path, monkeypatch: pytest.Mo
 
 
 def test_cli_finish_reason_normalization(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """Verify that a completed run with UNKNOWN finish reason is normalized to stop in panel and database."""
+    """Verify UNKNOWN remains UNKNOWN in both the panel and the SQLite history."""
     from unittest.mock import MagicMock
 
     from pyllmkit.domain.inference import (
@@ -230,12 +233,10 @@ def test_cli_finish_reason_normalization(tmp_path: Path, monkeypatch: pytest.Mon
 
     res = runner.invoke(app, ["run", "Test normalisation"])
     assert res.exit_code == 0
-    assert "Finish Reason : stop" in res.output
+    assert "Finish Reason : unknown" in res.output
 
     store = SqliteRunStore(db_file)
     runs = store.list_runs()
     assert len(runs) == 1
-    assert runs[0].finish_reason == "stop"
-
-
+    assert runs[0].finish_reason == "unknown"
 
