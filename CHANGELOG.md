@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.3.0] - 2026-11-07
+
+### Version Git demandée par le mainteneur unique
+
+- Version Python et CLI harmonisée à `0.3.0` ; tag Git demandé : `v0.3.0`.
+- Socle indépendant des providers : modèles, artefacts, capacités, messages, requêtes/réponses d'inférence, outils descriptifs, sorties structurées, streaming et registry/discovery.
+- Six adaptateurs natifs textuels : OpenAI, Anthropic, Google Gemini, xAI, Mistral et Ollama, avec inférence sync/async et streaming selon les restrictions effectives.
+- CLI optionnel Typer/Rich : catalogue local, sélection, exécution mock par défaut, consentement `--live` invocation par invocation, historique SQLite metadata-only et vues FinOps.
+- Confidentialité : `--record-content` par invocation, `--allow-content-export` pour JSONL, `runs purge-content --yes` pour expurgation logique, rétention opt-in.
+- Tarification catalogue indicative, provenance locale affichée ; prix et limites absents conservés comme inconnus.
+- Contrat `text_only_v1` et ADR-059 approuvés par le propriétaire pour le périmètre *offline* ; exceptions techniques documentées dans le dossier de jalon.
+- Qualification déterministe : 2 825 tests pytest et 752 scénarios de conformité par version Python 3.11, 3.12 et 3.13 sur le socle validé, avec build wheel/sdist et vérifications depuis installation propre. Le SHA versionné doit être qualifié à nouveau avant création du tag.
+
+### Compatibilité et restrictions
+
+- Le passage de `0.1.0a2` à `0.3.0` matérialise un jalon de développement avant 1.0, pas une promesse de stabilité ABI définitive.
+- Les scripts CLI comptant auparavant sur `defaults.live=True` doivent utiliser `--live` explicitement ; l'export sensible nécessite maintenant `--allow-content-export`.
+- Les champs de prix/limites de catalogue peuvent être `None`, et les comptes de tokens partiels restent partiels.
+- La qualification provider-live, DNS/peer-IP/TLS, SSRF/rebinding et budgets de coûts distants **n'est pas établie** ; le streaming synchrone réseau qui ne peut pas garantir son hard deadline reste fail-closed.
+- Les 131 entrées du catalogue (15 catégories) ne sont pas 15 providers natifs exécutables.
+- Les correctifs ne constituent ni audit de sécurité réseau réel ni certification de production.
+- **Ce jalon autorise le tag Git demandé seulement**. Aucun déclenchement GitHub Release, TestPyPI, PyPI ou canari fournisseur n'est impliqué.
+
+Voir [autorisation et périmètre du tag v0.3.0](docs/milestones/0.3.0/18_V030_TAG_SCOPE_AND_AUTHORIZATION_2026-11-07.md), [décision du mainteneur](docs/milestones/0.3.0/17_OWNER_SELF_ACCEPTANCE_AND_SCOPED_GATES_2026-11-07.md) et [compatibilité et migration](docs/milestones/0.3.0/16_COMPATIBILITY_AND_MIGRATION_PROPOSAL_2026-11-07.md).
+
+
 ## [Unreleased] - M6 Registry & Discovery technically qualified (no release)
 
 - **GO technique avec réserves M6** pour Registry & Discovery hors réseau, PRs #59..#66 fusionnées, huit PV de gate G0..G7 archivés. Main code `6c58b052`, CI #42123870931 SUCCESS : 1189 tests, couverture branches 96,61 %, Python 3.11/3.12/3.13, Ruff, mypy et wheel/sdist avec exemples 23..28.
