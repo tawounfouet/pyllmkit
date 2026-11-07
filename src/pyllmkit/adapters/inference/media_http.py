@@ -327,8 +327,33 @@ def http_bytes(
     if payload is not None:
         data = json.dumps(payload).encode("utf-8")
         all_headers.setdefault("Content-Type", "application/json")
+    # Never let a credential-bearing request follow redirects or reach arbitrary origins.
+    credentialed = any(
+        name.lower() in {"authorization", "x-goog-api-key", "api-key"}
+        for name in all_headers
+    )
+    opener = None
+    if credentialed:
+        try:
+            parsed = urlsplit(url)
+            allowed = {"api.openai.com", "api.x.ai", "generativelanguage.googleapis.com"}
+            if (
+                parsed.scheme != "https"
+                or parsed.hostname not in allowed
+                or parsed.port not in (None, 443)
+                or parsed.username is not None
+                or parsed.password is not None
+                or parsed.fragment
+            ):
+                raise InvocationPortError("unsafe_provider_destination")
+        except ValueError:
+            raise InvocationPortError("unsafe_provider_destination") from None
+        opener = urllib.request.build_opener(
+            urllib.request.ProxyHandler({}),
+            _DenyMediaRedirect(),
+        )
     request = urllib.request.Request(url, data=data, headers=all_headers, method=method)
-    return _open(request, timeout, diagnostics, secret)
+    return _open(request, timeout, diagnostics, secret, opener=opener)
 
 
 def http_json(
