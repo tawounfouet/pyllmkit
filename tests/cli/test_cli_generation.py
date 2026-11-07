@@ -178,7 +178,7 @@ class TestCliGenerateCommands:
         assert "Vidéo générée avec succès" in result.stdout
         assert "5.0 s" in result.stdout
         assert "1280x720" in result.stdout
-        assert "$0.7500" in result.stdout
+        assert "$0.7500" not in result.stdout  # retired Veo has no operational price
         assert "Fichier sauvegardé avec succès" in result.stdout
         assert out_file.exists()
 
