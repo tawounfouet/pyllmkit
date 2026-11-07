@@ -80,7 +80,7 @@ class _NoRedirectHandler(urllib.request.HTTPRedirectHandler):
 
 def _open_discovery_request(
     request: urllib.request.Request, timeout: float,
-):
+) -> Any:
     """Use fixed endpoints, no environment proxies, no redirects."""
     opener = urllib.request.build_opener(
         urllib.request.ProxyHandler({}),
