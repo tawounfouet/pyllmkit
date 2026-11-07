@@ -92,3 +92,20 @@ def test_offline_legacy_mock_remains_available(tmp_path: object) -> None:
     result = CliRunner().invoke(app, ["generate", "image", "A cat", "-m", "dall-e-3"])
     assert result.exit_code == 0
     assert "Image générée" in result.stdout
+
+
+def test_lifecycle_listing_never_needs_network() -> None:
+    with patch("socket.getaddrinfo", side_effect=AssertionError("unexpected DNS")):
+        result = CliRunner().invoke(app, ["models", "lifecycle"])
+    assert result.exit_code == 0
+    assert "dall-e-3" in result.stdout
+    assert "2027-01-06" in result.stdout
+    assert "gemini-3.1-flash-image" in result.stdout
+
+
+def test_legacy_pricing_not_exposed_as_current_rate() -> None:
+    from pyllmkit.adapters.cli.model_specs import compute_run_cost, format_pricing_provenance
+
+    assert compute_run_cost("dall-e-3", None, None, output_media_units=2) == (None, "-")
+    assert compute_run_cost("veo-2", None, None, output_media_seconds=6.0) == (None, "-")
+    assert "retiré" in format_pricing_provenance("veo-2").lower()
