@@ -250,39 +250,50 @@ class _DenyMediaRedirect(urllib.request.HTTPRedirectHandler):
 
 
 class _PinnedHTTPSConnection(http.client.HTTPSConnection):
-    """Connect to a vetted IP while authenticating TLS against the URL hostname."""
+    """Connect to a vetted IP, verify the original HTTPS hostname via TLS."""
 
-    def __init__(self, host: str, *, pinned_ip: str, **kwargs: Any) -> None:
-        super().__init__(host, **kwargs)
+    def __init__(
+        self,
+        host: str,
+        *,
+        pinned_ip: str,
+        context: ssl.SSLContext,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(host, context=context, **kwargs)
         self._pinned_ip = pinned_ip
+        self._verified_context = context
 
     def connect(self) -> None:
-        if self._tunnel_host is not None:
-            raise InvocationPortError("unsafe_provider_destination")
-        self.sock = self._create_connection(
-            (self._pinned_ip, self.port), self.timeout, self.source_address,
+        # No proxy tunnels: ProxyHandler({}) is mandatory at the opener boundary.
+        self.sock = socket.create_connection(
+            (self._pinned_ip, self.port), timeout=self.timeout,
         )
-        self.sock = self._context.wrap_socket(self.sock, server_hostname=self.host)
+        self.sock = self._verified_context.wrap_socket(
+            self.sock, server_hostname=self.host,
+        )
 
 
 class _PinnedHTTPSHandler(urllib.request.HTTPSHandler):
-    """No second DNS lookup after peer-policy validation."""
+    """Keep the verified DNS peer fixed, even if DNS later changes."""
 
     def __init__(self, pinned_ip: str) -> None:
-        super().__init__(context=ssl.create_default_context())
+        self._verified_context = ssl.create_default_context()
+        super().__init__(context=self._verified_context)
         self._ip = pinned_ip
 
     def https_open(self, request: urllib.request.Request) -> Any:
         def factory(host: str, **kwargs: Any) -> _PinnedHTTPSConnection:
             return _PinnedHTTPSConnection(host, pinned_ip=self._ip, **kwargs)
 
-        return self.do_open(factory, request)
+        return self.do_open(factory, request, context=self._verified_context)
+
 
 
 def _public_endpoint_ip(host: str) -> str:
     try:
         addresses = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
-        candidates = [item[4][0] for item in addresses]
+        candidates = [str(item[4][0]) for item in addresses]
         if not candidates or any(not ip_address(value).is_global for value in candidates):
             raise InvocationPortError("unsafe_provider_destination")
     except (OSError, ValueError):
