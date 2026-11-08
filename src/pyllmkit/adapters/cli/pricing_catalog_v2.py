@@ -163,7 +163,7 @@ def _validate_history(prices: tuple[PriceVersion, ...]) -> None:
         scoped.setdefault(key, []).append(price)
     for versions in scoped.values():
         versions.sort(key=lambda item: item.valid_from)
-        for previous, following in zip(versions, versions[1:]):
+        for previous, following in zip(versions, versions[1:], strict=True):
             if previous.valid_to is None or previous.valid_to > following.valid_from:
                 raise FinOpsError("overlapping_price_intervals")
 
