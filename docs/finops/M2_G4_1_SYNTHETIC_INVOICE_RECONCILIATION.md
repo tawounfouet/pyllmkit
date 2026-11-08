@@ -1,7 +1,7 @@
 # M2-G4.1 - Rapprochement de facture synthetique, hors reseau
 
 - Date : 2026-11-08
-- Statut : implementation G4.1 et tests dans la PR #115 ; qualification CI a confirmer.
+- Statut : G4.1 comparaison synthetique offline qualifiee par CI sur la PR #115. Les preuves exact-SHA sont tenues dans la description de la PR.
 - **Aucune facture fournisseur reelle n'est verifiee**. Ce gate couvre uniquement la comparaison arithmetique d'une fixture de facture locale, explicitement synthetique.
 - Aucun appel API, aucune identification fournisseur, aucun acces secret, aucun mouvement sur le ledger G3 et aucune permission live.
 
