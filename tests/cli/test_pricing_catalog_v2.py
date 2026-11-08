@@ -261,6 +261,7 @@ def test_merge_can_append_successor_without_replacing_history() -> None:
     assert merged.prices[0] == old.prices[0]
     assert merged.prices[1] == new.prices[0]
     assert len(merge_price_catalog(merged, new).prices) == 2
+    assert parse_price_catalog(price_catalog_to_dict(merged)) == merged
 
 
 def test_merge_rejects_mutation_of_existing_revision() -> None:
