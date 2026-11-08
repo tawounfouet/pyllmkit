@@ -34,7 +34,7 @@ Un devis complet n'est **pas** une borne maximale. Une politique de budget n'est
 - Nouveau namespace `pyllmkit.domain.finops` pur et sans dépendance obligatoire.
 - Contrats immuables pour `Money`, `MeteredQuantity`, `PriceRate`, `PriceVersion`, `PriceCatalog`, `CostEstimate`, `BudgetSnapshot`, `BudgetDecision`, `InvoiceCharge` et `CostReconciliation`.
 - Fonctions pures `estimate_cost`, `assess_budget` et `reconcile_cost`.
-- Tests négatifs : prix absents, révision ambiguë, dates, montant non fini, quantités manquantes, dimensions non tarifées, currency/biller mismatch, variance et budget insuffisant.
+- Tests négatifs : prix absents, révision ambiguë, dates, montant non fini, quantités manquantes, dimensions non tarifées, currency/biller mismatch, variance, identifiant de requête fournisseur absent ou incompatible, budget insuffisant et faux booléen de plafond.
 - Jeu de tarifs **entièrement synthétique dans les tests** (ex. 0,08 USD/s et 0,12 USD/image) : **aucun tarif fournisseur revendiqué ni catalogue opérationnel créé**.
 
 ## 4. Dettes bloquantes après G0
