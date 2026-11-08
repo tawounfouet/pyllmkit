@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import sqlite3
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
@@ -309,3 +310,236 @@ def test_cli_missing_tariff_does_not_write_any_reservation(tmp_path: Path) -> No
 
 def test_finops_cli_is_exposed_as_real_command() -> None:
     assert finops_app is not None
+
+
+
+def test_dispatch_intent_persists_across_crash_like_reload_and_blocks_release(
+    tmp_path: Path,
+) -> None:
+    database = tmp_path / "durable.db"
+    store = SQLiteBudgetReservationStore(database)
+    store.create_budget("sandbox", Money(Decimal("1"), "USD"))
+    rid = store.reserve(_request()).reservation.reservation_id
+    at = datetime(2026, 11, 8, 17, tzinfo=UTC)
+    intent = store.record_dispatch_intent(rid, "attempt-001", at=at)
+    assert intent.reservation.status is ReservationState.DISPATCH_INTENT_RECORDED
+    assert intent.reservation.dispatch_attempt_key == "attempt-001"
+    assert intent.reservation.dispatch_intent_at == at
+    assert intent.ledger.reserved.amount == Decimal("0.051")
+    assert reservation_to_dict(intent)["atomic_budget_reserved"] is True
+    assert reservation_to_dict(intent)["live_authorized"] is False
+    del store
+    restarted = SQLiteBudgetReservationStore(database)
+    assert restarted.get_reservation(rid).reservation.status is ReservationState.DISPATCH_INTENT_RECORDED
+    assert restarted.get_budget("sandbox").reserved.amount == Decimal("0.051")
+    with pytest.raises(FinOpsError, match="invalid_reservation_transition"):
+        restarted.release_undispatched(rid)
+    assert restarted.record_dispatch_intent(rid, "attempt-001", at=at).replayed
+    with pytest.raises(FinOpsError, match="dispatch_intent_conflict"):
+        restarted.record_dispatch_intent(rid, "attempt-002", at=at)
+
+
+def test_dispatch_intent_then_dispute_retains_hold_and_correlation(tmp_path: Path) -> None:
+    store = _store(tmp_path)
+    store.create_budget("sandbox", Money(Decimal("1"), "USD"))
+    rid = store.reserve(_request()).reservation.reservation_id
+    store.record_dispatch_intent(rid, "demo-001", at=datetime(2026, 11, 8, 17, tzinfo=UTC))
+    result = store.dispute(rid)
+    assert result.reservation.status is ReservationState.DISPUTED
+    assert result.reservation.dispatch_attempt_key == "demo-001"
+    assert result.ledger.reserved.amount == Decimal("0.051")
+    assert store.dispute(rid).replayed
+    with pytest.raises(FinOpsError, match="invalid_reservation_transition"):
+        store.release_undispatched(rid)
+    with pytest.raises(FinOpsError, match="invalid_reservation_transition"):
+        store.record_dispatch_intent(rid, "demo-001", at=datetime(2026, 11, 8, 17, tzinfo=UTC))
+
+
+def test_simulated_settlement_from_intent_preserves_marker(tmp_path: Path) -> None:
+    store = _store(tmp_path)
+    store.create_budget("sandbox", Money(Decimal("1"), "USD"))
+    rid = store.reserve(_request()).reservation.reservation_id
+    store.record_dispatch_intent(rid, "demo-001", at=datetime(2026, 11, 8, 17, tzinfo=UTC))
+    settled = store.settle_simulated(rid, Decimal("0.04"))
+    assert settled.reservation.status is ReservationState.SETTLED_SIMULATED
+    assert settled.reservation.dispatch_attempt_key == "demo-001"
+    assert settled.ledger.spent.amount == Decimal("0.04")
+    assert settled.ledger.reserved.amount == 0
+    with pytest.raises(FinOpsError, match="invalid_reservation_transition"):
+        store.release_undispatched(rid)
+
+
+def test_same_dispatch_attempt_key_cannot_be_reused_across_reservations(
+    tmp_path: Path,
+) -> None:
+    store = _store(tmp_path)
+    store.create_budget("sandbox", Money(Decimal("1"), "USD"))
+    a = store.reserve(_request("first")).reservation.reservation_id
+    b = store.reserve(_request("second")).reservation.reservation_id
+    at = datetime(2026, 11, 8, 17, tzinfo=UTC)
+    store.record_dispatch_intent(a, "shared-attempt", at=at)
+    with pytest.raises(FinOpsError, match="dispatch_attempt_key_reused"):
+        store.record_dispatch_intent(b, "shared-attempt", at=at)
+    assert store.get_reservation(b).reservation.status is ReservationState.PENDING
+    assert store.get_budget("sandbox").reserved.amount == Decimal("0.102")
+
+
+@pytest.mark.parametrize("attempt", ["", "a key", "a*bad", "x" * 193])
+def test_invalid_attempt_key_is_rejected_without_change(tmp_path: Path, attempt: str) -> None:
+    store = _store(tmp_path)
+    store.create_budget("sandbox", Money(Decimal("1"), "USD"))
+    rid = store.reserve(_request()).reservation.reservation_id
+    with pytest.raises(FinOpsError, match="invalid_dispatch_attempt_key"):
+        store.record_dispatch_intent(rid, attempt, at=datetime(2026, 11, 8, 17, tzinfo=UTC))
+    assert store.get_reservation(rid).reservation.status is ReservationState.PENDING
+
+
+def test_dispatch_intent_rejects_non_timezone_aware_and_backdated_times(
+    tmp_path: Path,
+) -> None:
+    store = _store(tmp_path)
+    store.create_budget("sandbox", Money(Decimal("1"), "USD"))
+    rid = store.reserve(_request()).reservation.reservation_id
+    with pytest.raises(FinOpsError, match="invalid_dispatch_intent_time"):
+        store.record_dispatch_intent(rid, "attempt", at=datetime(2026, 11, 8, 17))
+    with pytest.raises(FinOpsError, match="dispatch_intent_before_reservation"):
+        store.record_dispatch_intent(rid, "attempt", at=datetime(2026, 11, 7, tzinfo=UTC))
+    assert store.get_reservation(rid).reservation.status is ReservationState.PENDING
+
+
+def test_two_contending_dispatch_attempts_have_only_one_winner(tmp_path: Path) -> None:
+    database = tmp_path / "race.db"
+    store = SQLiteBudgetReservationStore(database)
+    store.create_budget("sandbox", Money(Decimal("1"), "USD"))
+    rid = store.reserve(_request()).reservation.reservation_id
+    barrier = threading.Barrier(2)
+    at = datetime(2026, 11, 8, 17, tzinfo=UTC)
+
+    def attempt(key: str) -> str:
+        local = SQLiteBudgetReservationStore(database)
+        barrier.wait(timeout=10)
+        try:
+            local.record_dispatch_intent(rid, key, at=at)
+            return "intent_recorded"
+        except FinOpsError as exc:
+            return str(exc)
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        outcomes = list(pool.map(attempt, ("attempt-A", "attempt-B")))
+    assert sorted(outcomes) == ["dispatch_intent_conflict", "intent_recorded"]
+    assert store.get_budget("sandbox").reserved.amount == Decimal("0.051")
+
+
+def test_old_g3_database_schema_is_extended_without_overwriting_reservations(
+    tmp_path: Path,
+) -> None:
+    db = tmp_path / "legacy-g3.db"
+    with sqlite3.connect(db) as conn:
+        conn.executescript(
+            "CREATE TABLE finops_budgets (budget_id TEXT PRIMARY KEY, "
+            "currency TEXT NOT NULL, limit_amount TEXT NOT NULL, "
+            "spent_amount TEXT NOT NULL, reserved_amount TEXT NOT NULL);"
+            "CREATE TABLE finops_reservations (reservation_id TEXT PRIMARY KEY, "
+            "budget_id TEXT NOT NULL, idempotency_key TEXT NOT NULL, "
+            "fingerprint TEXT NOT NULL, amount TEXT NOT NULL, "
+            "currency TEXT NOT NULL, created_at TEXT NOT NULL, "
+            "purpose TEXT NOT NULL, status TEXT NOT NULL, settled_amount TEXT, "
+            "UNIQUE (budget_id, idempotency_key), "
+            "FOREIGN KEY (budget_id) REFERENCES finops_budgets(budget_id));"
+        )
+        conn.execute(
+            "INSERT INTO finops_budgets VALUES ('sandbox', 'USD', '10.000', '0', '0.051')"
+        )
+        conn.execute(
+            "INSERT INTO finops_reservations VALUES "
+            "(?, 'sandbox', 'existing', ?, '0.051', 'USD', ?, "
+            "'offline_sandbox', 'pending', NULL)",
+            ("resv_legacy", "f" * 64, datetime(2026, 11, 8, 16, tzinfo=UTC).isoformat()),
+        )
+    store = SQLiteBudgetReservationStore(db)
+    assert store.get_reservation("resv_legacy").reservation.status is ReservationState.PENDING
+    assert store.get_budget("sandbox").reserved.amount == Decimal("0.051")
+    intent = store.record_dispatch_intent(
+        "resv_legacy", "attempt-old", at=datetime(2026, 11, 8, 17, tzinfo=UTC),
+    )
+    assert intent.reservation.status is ReservationState.DISPATCH_INTENT_RECORDED
+    assert intent.ledger.reserved.amount == Decimal("0.051")
+
+
+def test_cli_simulated_dispatch_intent_never_emits_remote_authorization(
+    tmp_path: Path,
+) -> None:
+    runner = CliRunner()
+    database = tmp_path / "demo.db"
+    req = tmp_path / "request.json"
+    tariff = tmp_path / "synthetic.json"
+    req.write_text(json.dumps(_scenario()), encoding="utf-8")
+    tariff.write_text(json.dumps(_prices()), encoding="utf-8")
+    common = ["--database", str(database)]
+    created = runner.invoke(app, [
+        "finops", "budget", "create", *common, "--budget-id", "sandbox",
+        "--limit", "1", "--currency", "USD",
+    ])
+    assert created.exit_code == 0, created.output
+    reservation_args = [
+        "finops", "reserve", *common, "--budget-id", "sandbox",
+        "--idempotency-key", "demo-key", "--request", str(req),
+        "--pricing-catalog", str(tariff),
+    ]
+    reserve = runner.invoke(app, reservation_args)
+    assert reserve.exit_code == 0, reserve.output
+    rid = json.loads(reserve.output)["reservation_id"]
+    intent_args = [
+        "finops", "reservation", "simulate-dispatch-intent", *common,
+        "--reservation-id", rid, "--attempt-key", "attempt-demo",
+    ]
+    result = runner.invoke(app, intent_args)
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "dispatch_intent_recorded"
+    assert payload["dispatch_attempt_key"] == "attempt-demo"
+    assert payload["reserved"]["value"] == "0.051"
+    assert payload["live_authorized"] is False
+    assert payload["spend_bound_verified"] is False
+    assert json.loads(runner.invoke(app, intent_args).output)["replayed"] is True
+    replay = runner.invoke(app, reservation_args)
+    assert replay.exit_code == 3
+    assert json.loads(replay.output)["status"] == "dispatch_intent_recorded"
+    release = runner.invoke(app, [
+        "finops", "reservation", "release", *common,
+        "--reservation-id", rid, "--confirm-no-dispatch",
+    ])
+    assert release.exit_code == 3
+    assert json.loads(release.output)["reason"] == "invalid_reservation_transition"
+    after = runner.invoke(app, [
+        "finops", "budget", "inspect", *common, "--budget-id", "sandbox",
+    ])
+    assert json.loads(after.output)["reserved"] == "0.051"
+
+
+def test_cli_replay_of_released_reservation_is_not_success(tmp_path: Path) -> None:
+    runner = CliRunner()
+    db = tmp_path / "sandbox.db"
+    path = tmp_path / "quote.json"
+    price = tmp_path / "price.json"
+    path.write_text(json.dumps(_scenario()), encoding="utf-8")
+    price.write_text(json.dumps(_prices()), encoding="utf-8")
+    common = ["--database", str(db)]
+    assert runner.invoke(app, ["finops", "budget", "create", *common,
+                               "--budget-id", "sandbox", "--limit", "1"]).exit_code == 0
+    args = [
+        "finops", "reserve", *common, "--budget-id", "sandbox",
+        "--idempotency-key", "r", "--request", str(path),
+        "--pricing-catalog", str(price),
+    ]
+    first = runner.invoke(app, args)
+    assert first.exit_code == 0, first.output
+    rid = json.loads(first.output)["reservation_id"]
+    assert runner.invoke(app, [
+        "finops", "reservation", "release", *common,
+        "--reservation-id", rid, "--confirm-no-dispatch",
+    ]).exit_code == 0
+    replay = runner.invoke(app, args)
+    assert replay.exit_code == 3
+    assert json.loads(replay.output)["status"] == "released_undispatched"
+    assert SQLiteBudgetReservationStore(db).get_budget("sandbox").reserved.amount == 0
