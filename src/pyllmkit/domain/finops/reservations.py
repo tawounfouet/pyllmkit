@@ -12,7 +12,7 @@ import re
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
-from enum import Enum
+from enum import StrEnum
 from typing import Protocol
 
 from pyllmkit.domain.finops import FinOpsError, Money
@@ -31,7 +31,7 @@ def _instant(value: datetime, label: str) -> None:
         raise FinOpsError(f"invalid_{label}")
 
 
-class ReservationState(str, Enum):
+class ReservationState(StrEnum):
     PENDING = "pending"
     DISPUTED = "disputed"
     SETTLED_SIMULATED = "settled_simulated"
