@@ -257,6 +257,8 @@ def assess_budget(
         budget.limit.amount - budget.spent.amount - budget.reserved.amount,
         budget.limit.currency,
     )
+    if type(enforceable_maximum) is not bool:
+        raise FinOpsError("invalid_enforceable_maximum")
     if not estimate.complete:
         return BudgetDecision(False, "unknown_cost", remaining)
     if estimate.amount is None or estimate.amount.currency != budget.limit.currency:
@@ -298,13 +300,19 @@ class CostReconciliation:
 def reconcile_cost(
     estimated: CostEstimate, billed: InvoiceCharge | None, *,
     tolerance: Decimal = Decimal("0"),
+    expected_provider_request_id: str | None = None,
 ) -> CostReconciliation:
-    """Compare a priced estimate with a *separately observed* supplier charge."""
+    """Compare billed and estimated amounts only with explicit request correlation."""
     _nonnegative(tolerance, "tolerance")
     if billed is None:
         return CostReconciliation("unmatched", None, "invoice_line_missing")
     if estimated.amount is None or not estimated.complete:
         return CostReconciliation("indeterminate", None, "estimate_missing")
+    if (
+        expected_provider_request_id is None
+        or billed.provider_request_id != expected_provider_request_id
+    ):
+        return CostReconciliation("indeterminate", None, "unverified_billing_correlation")
     if (
         billed.billing_provider != estimated.billing_provider
         or billed.amount.currency != estimated.amount.currency
