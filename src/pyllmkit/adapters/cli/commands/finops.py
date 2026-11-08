@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import sqlite3
 from datetime import UTC, datetime
 from decimal import Decimal, InvalidOperation
@@ -11,6 +12,7 @@ from typing import Annotated
 
 import typer
 
+from pyllmkit.adapters.cli.finops_invoice import load_synthetic_invoice_statement
 from pyllmkit.adapters.cli.finops_quote import (
     load_quote_request,
     quote_media_scenario,
@@ -19,6 +21,10 @@ from pyllmkit.adapters.cli.finops_reserve import SQLiteBudgetReservationStore
 from pyllmkit.adapters.cli.media_catalog_v2 import load_media_catalog
 from pyllmkit.adapters.cli.pricing_catalog_v2 import load_price_catalog
 from pyllmkit.domain.finops import FinOpsError, Money
+from pyllmkit.domain.finops.invoice_reconciliation import (
+    reconcile_synthetic_statement,
+    reconciliation_to_dict,
+)
 from pyllmkit.domain.finops.quoting import quote_to_dict
 from pyllmkit.domain.finops.reservations import (
     ReservationRequest,
@@ -64,6 +70,45 @@ def quote_command(
     if not quote.scenario_priced:
         raise typer.Exit(code=3)
 
+
+
+@finops_app.command(name="reconcile")
+def reconcile_command(
+    request: Annotated[Path, typer.Option("--request", help="Scénario G2 JSON v1.")],
+    statement: Annotated[
+        Path, typer.Option("--statement", help="Facture synthétique JSON v1 locale."),
+    ],
+    provider_request_id: Annotated[
+        str, typer.Option("--provider-request-id", help="Corrélation déclarée non vérifiée."),
+    ],
+    pricing_catalog: Annotated[
+        Path | None, typer.Option("--pricing-catalog"),
+    ] = None,
+    tolerance: Annotated[
+        str, typer.Option("--tolerance", help="Tolérance exacte, valeur décimale non négative."),
+    ] = "0",
+) -> None:
+    """Comparer les montants synthétiques de consommation à un devis, sans débit."""
+    try:
+        if re.fullmatch(r"(?:0|[1-9]\d*)(?:\.\d+)?", tolerance) is None or len(tolerance) > 80:
+            raise FinOpsError("invalid_reconciliation_tolerance")
+        quote = quote_media_scenario(
+            load_quote_request(request),
+            prices=load_price_catalog(pricing_catalog),
+            media=load_media_catalog(),
+        )
+        invoice = load_synthetic_invoice_statement(statement)
+        report = reconcile_synthetic_statement(
+            quote, invoice, expected_provider_request_id=provider_request_id,
+            tolerance=Decimal(tolerance),
+        )
+        typer.echo(json.dumps(reconciliation_to_dict(report), ensure_ascii=False))
+        if report.status != "matched_synthetic":
+            raise typer.Exit(code=3)
+    except typer.Exit:
+        raise
+    except (OSError, ValueError) as exc:
+        _report_error(exc)
 
 
 def _report_error(exc: Exception) -> None:
