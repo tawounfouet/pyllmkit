@@ -198,9 +198,10 @@ def _reject_constant(_: str) -> None:
 
 def parse_price_catalog_json(content: str | bytes) -> VersionedPriceCatalog:
     """Strict JSON decoder: duplicate keys, NaN and Infinity are rejected."""
-    if type(content) not in (str, bytes):
+    if not isinstance(content, (str, bytes)):
         raise FinOpsError("invalid_price_catalog_content")
-    if len(content if type(content) is bytes else content.encode("utf-8")) > MAX_CATALOG_BYTES:
+    size = len(content) if isinstance(content, bytes) else len(content.encode("utf-8"))
+    if size > MAX_CATALOG_BYTES:
         raise FinOpsError("price_catalog_too_large")
     try:
         payload = json.loads(
