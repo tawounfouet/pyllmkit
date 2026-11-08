@@ -287,8 +287,11 @@ def merge_price_catalog(
         ),
     ))
     _validate_history(combined)
+    merged_revision = f"{base.revision}.{extension.revision}"
+    if len(merged_revision) > 191:
+        raise FinOpsError("merged_catalog_revision_too_long")
     return VersionedPriceCatalog(
-        SCHEMA_VERSION, f"{base.revision}+{extension.revision}",
+        SCHEMA_VERSION, merged_revision,
         max(base.updated_at, extension.updated_at), combined,
     )
 
