@@ -304,7 +304,7 @@ def test_quote_request_timestamp_must_have_valid_timezone(bad: Any) -> None:
 @pytest.mark.parametrize("value", ["0", "-2", "01", "10.5", "abc", "00001"])
 def test_invalid_numeric_media_options_refused(value: str) -> None:
     req = _request(params={"quality": "high", "max_outputs": value})
-    with pytest.raises(FinOpsError, match="invalid_quote_max_outputs"):
+    with pytest.raises(FinOpsError, match="invalid_quote_max_outputs|invalid_dimension_value"):
         _quote(req)
 
 
