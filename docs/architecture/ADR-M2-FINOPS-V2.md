@@ -70,7 +70,7 @@ Le calcul monétaire est effectué en `Decimal` sans arrondi intermédiaire. Les
 7. Lors d'un succès, d'un timeout, d'une annulation ou d'un échec, préserver la réservation jusqu'à détermination du coût facturable. Une annulation locale ne prouve pas l'arrêt du travail distant.
 8. Collecter le `Usage` fournisseur et calculer un coût post-exécution, sans le présenter comme facturé.
 9. Importer via un `BillingEvidencePort` les lignes de facture/usage payant identifiables (provider_request_id, ID facture, période, devise, dimensions, taxes/crédits).
-10. Rapprocher les estimations, usages, charges et remboursements. Exporter la variance, les écarts de devises, les lignes sans correspondance et les coûts partiels. Ne jamais affecter arbitrairement une charge commune à un run.
+10. Rapprocher les estimations, usages, charges et remboursements. Exiger une correspondance explicite du `provider_request_id` avant de conclure `matched` ; le même montant seul ne suffit pas. Exporter la variance, les écarts de devises, les lignes sans correspondance et les coûts partiels. Ne jamais affecter arbitrairement une charge commune à un run.
 
 L'autorisation opérationnelle exige également la qualification de sécurité provider-live P7-L7.8 #81. Aucun appel génératif payant ne doit être ajouté aux tests CI ordinaires.
 
