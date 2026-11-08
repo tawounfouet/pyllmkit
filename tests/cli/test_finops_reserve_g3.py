@@ -22,7 +22,6 @@ from pyllmkit.adapters.cli.media_catalog_v2 import load_media_catalog
 from pyllmkit.adapters.cli.pricing_catalog_v2 import parse_price_catalog
 from pyllmkit.domain.finops import FinOpsError, Money
 from pyllmkit.domain.finops.reservations import (
-    BudgetReservationPort,
     ReservationRequest,
     ReservationState,
     quote_fingerprint,
@@ -86,7 +85,6 @@ def _request(key: str = "req-1", *, budget: str = "sandbox") -> ReservationReque
 
 def test_port_contract_and_transactional_reservation(tmp_path: Path) -> None:
     store = _store(tmp_path)
-    assert isinstance(store, BudgetReservationPort.__mro__[0]) is False if False else True
     budget = store.create_budget("sandbox", Money(Decimal("1.000"), "USD"))
     assert budget.remaining.amount == Decimal("1.000")
     record = store.reserve(_request())
