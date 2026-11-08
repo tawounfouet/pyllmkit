@@ -1,4 +1,4 @@
-"""Read-only FinOps CLI commands (M2-G2), no paid provider calls."""
+"""Offline FinOps quote and sandbox budget CLI. No paid provider calls."""
 
 from __future__ import annotations
 
@@ -20,10 +20,14 @@ from pyllmkit.adapters.cli.media_catalog_v2 import load_media_catalog
 from pyllmkit.adapters.cli.pricing_catalog_v2 import load_price_catalog
 from pyllmkit.domain.finops import FinOpsError, Money
 from pyllmkit.domain.finops.quoting import quote_to_dict
-from pyllmkit.domain.finops.reservations import ReservationRequest, reservation_to_dict
+from pyllmkit.domain.finops.reservations import (
+    ReservationRequest,
+    ReservationState,
+    reservation_to_dict,
+)
 
 finops_app = typer.Typer(
-    help="Devis pré-génération hors réseau. Aucun appel payant ni réservation budgétaire.",
+    help="Devis et réservations SQLite hors réseau, jamais une autorisation payante.",
     no_args_is_help=True,
     add_completion=False,
 )
@@ -147,6 +151,8 @@ def reserve_command(
             ReservationRequest(budget_id, idempotency_key, quote, datetime.now(UTC)),
         )
         typer.echo(json.dumps(reservation_to_dict(record), ensure_ascii=False))
+        if record.reservation.status is not ReservationState.PENDING:
+            raise typer.Exit(code=3)
     except typer.Exit:
         raise
     except (OSError, ValueError, sqlite3.Error) as exc:
@@ -162,6 +168,25 @@ def reservation_inspect(
     try:
         typer.echo(json.dumps(reservation_to_dict(
             _store(database).get_reservation(reservation_id)
+        ), ensure_ascii=False))
+    except (OSError, ValueError, sqlite3.Error) as exc:
+        _report_error(exc)
+
+
+@reservation_app.command(name="simulate-dispatch-intent")
+def reservation_simulate_dispatch_intent(
+    database: Annotated[Path, typer.Option("--database")],
+    reservation_id: Annotated[str, typer.Option("--reservation-id")],
+    attempt_key: Annotated[str, typer.Option(
+        "--attempt-key", help="Identifiant unique du scénario de dispatch simulé.",
+    )],
+) -> None:
+    """Marquer un point de non-retour local. Ne déclenche AUCUN appel réseau."""
+    try:
+        typer.echo(json.dumps(reservation_to_dict(
+            _store(database).record_dispatch_intent(
+                reservation_id, attempt_key, at=datetime.now(UTC),
+            )
         ), ensure_ascii=False))
     except (OSError, ValueError, sqlite3.Error) as exc:
         _report_error(exc)
