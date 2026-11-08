@@ -208,10 +208,12 @@ def test_budget_snapshot_rejects_overcommitted_amount() -> None:
 def test_reconciliation_tracks_signed_variance() -> None:
     estimate = estimate_cost(_rate_card(), _quantities(), at=NOW)
     billed = InvoiceCharge("inv-1", "google", Money(Decimal("0.75"), "USD"), "req-1")
-    delta = reconcile_cost(estimate, billed)
+    delta = reconcile_cost(estimate, billed, expected_provider_request_id="req-1")
     assert delta.status == "variance"
     assert delta.variance == Decimal("0.03")
-    assert reconcile_cost(estimate, billed, tolerance=Decimal("0.05")).status == "matched"
+    assert reconcile_cost(
+        estimate, billed, tolerance=Decimal("0.05"), expected_provider_request_id="req-1",
+    ).status == "matched"
 
 
 def test_invoice_is_separate_from_cost_estimate() -> None:
@@ -219,6 +221,21 @@ def test_invoice_is_separate_from_cost_estimate() -> None:
     assert reconcile_cost(estimate, None).status == "unmatched"
     billed = InvoiceCharge("inv-2", "aggregator", Money(Decimal("0.72"), "USD"))
     assert reconcile_cost(estimate, billed).status == "indeterminate"
+
+
+def test_uncorrelated_invoice_never_matches_by_amount_only() -> None:
+    estimate = estimate_cost(_rate_card(), _quantities(), at=NOW)
+    billed = InvoiceCharge("inv-4", "google", Money(Decimal("0.72"), "USD"), "req-4")
+    assert reconcile_cost(estimate, billed).reason == "unverified_billing_correlation"
+    assert reconcile_cost(
+        estimate, billed, expected_provider_request_id="req-other",
+    ).status == "indeterminate"
+
+
+def test_invalid_budget_enforcement_flag_is_rejected() -> None:
+    estimate = estimate_cost(_rate_card(), _quantities(), at=NOW)
+    with pytest.raises(FinOpsError, match="invalid_enforceable_maximum"):
+        assess_budget(estimate, _budget(), enforceable_maximum="yes", at=NOW)  # type: ignore[arg-type]
 
 
 def test_unknown_estimate_does_not_reconcile_with_invoice() -> None:
