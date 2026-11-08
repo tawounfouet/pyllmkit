@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "model_id": "gpt-image-2",
+  "api_provider": "openai",
+  "task": "text_to_image",
+  "at": "2026-11-08T15:59:00+01:00",
+  "parameters": {
+    "quality": "high"
+  },
+  "components": [
+    {
+      "meter": "image",
+      "maximum": "2",
+      "dimensions": {
+        "quality": "high"
+      }
+    },
+    {
+      "meter": "input_token",
+      "maximum": "1000",
+      "dimensions": {}
+    }
+  ]
+}
