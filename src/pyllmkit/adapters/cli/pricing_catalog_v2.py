@@ -166,10 +166,6 @@ def _validate_history(prices: tuple[PriceVersion, ...]) -> None:
         for previous, following in zip(versions, versions[1:]):
             if previous.valid_to is None or previous.valid_to > following.valid_from:
                 raise FinOpsError("overlapping_price_intervals")
-            if previous.currency != following.currency:
-                # A currency change is allowed across successive effective intervals.
-                # Cross-currency cost aggregation is explicitly out of scope.
-                continue
 
 
 def parse_price_catalog(payload: object) -> VersionedPriceCatalog:
@@ -218,7 +214,7 @@ def parse_price_catalog_json(content: str | bytes) -> VersionedPriceCatalog:
 def load_price_catalog(path: Path | None = None) -> VersionedPriceCatalog:
     """Read a bounded local file. No automatic local overrides, network or secrets."""
     target = CATALOG_PATH if path is None else path
-    if type(target) is not Path:
+    if not isinstance(target, Path):
         raise FinOpsError("invalid_price_catalog_path")
     if target.stat().st_size > MAX_CATALOG_BYTES:
         raise FinOpsError("price_catalog_too_large")
@@ -240,9 +236,9 @@ def price_catalog_to_dict(catalog: VersionedPriceCatalog) -> dict[str, object]:
             "billing_provider": price.billing_provider,
             "deployment_channel": price.deployment_channel,
             "currency": price.currency,
-            "valid_from": price.valid_from.isoformat(timespec="seconds"),
+            "valid_from": price.valid_from.isoformat(),
             "valid_to": (
-                price.valid_to.isoformat(timespec="seconds")
+                price.valid_to.isoformat()
                 if price.valid_to is not None else None
             ),
             "source_url": price.source_url,
@@ -303,6 +299,8 @@ def resolve_media_price(
     """Resolve by an exact M1 route, never a fuzzy model ID or inferred biller."""
     if type(api_provider) is not str or not api_provider.strip():
         raise FinOpsError("api_provider_required")
+    if type(at) is not datetime or at.tzinfo is None or at.utcoffset() is None:
+        raise FinOpsError("invalid_pricing_time")
     route = media.find(identifier, provider=api_provider)
     if route is None:
         raise FinOpsError("unknown_media_route")
