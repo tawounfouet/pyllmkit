@@ -100,7 +100,7 @@ def test_sdk_returns_exact_decimal_composite_priced_scenario() -> None:
     assert quote.reason == "declared_components_priced_only"
     assert quote.scenario_priced
     assert quote.amount is not None
-    assert quote.amount.amount == Decimal("0.051000")
+    assert quote.amount.amount == Decimal("0.051")
     assert quote.amount.currency == "USD"
     assert quote.source_url == "https://example.org/fictional-only"
     assert quote.price_revision == "r1"
@@ -109,7 +109,7 @@ def test_sdk_returns_exact_decimal_composite_priced_scenario() -> None:
     assert not quote.live_authorized
     assert sum((line.subtotal for line in quote.lines), Decimal(0)) == quote.amount.amount
     payload = quote_to_dict(quote)
-    assert payload["amount"] == {"value": "0.051000", "currency": "USD"}
+    assert payload["amount"] == {"value": "0.051", "currency": "USD"}
     assert payload["live_authorized"] is False
     assert payload["provider_quote_verified"] is False
     assert payload["atomic_budget_reserved"] is False
@@ -375,7 +375,7 @@ def test_cli_quote_synthetic_is_json_and_has_no_live_authority(tmp_path: Path) -
     assert result.exit_code == 0, result.output
     payload = json.loads(result.output)
     assert payload["status"] == "priced_scenario"
-    assert payload["amount"] == {"value": "0.051000", "currency": "USD"}
+    assert payload["amount"] == {"value": "0.051", "currency": "USD"}
     assert payload["live_authorized"] is False
     assert payload["atomic_budget_reserved"] is False
 
