@@ -33,6 +33,7 @@ def _instant(value: datetime, label: str) -> None:
 
 class ReservationState(StrEnum):
     PENDING = "pending"
+    DISPATCH_INTENT_RECORDED = "dispatch_intent_recorded"
     DISPUTED = "disputed"
     SETTLED_SIMULATED = "settled_simulated"
     RELEASED_UNDISPATCHED = "released_undispatched"
@@ -115,6 +116,8 @@ class BudgetReservation:
     created_at: datetime
     purpose: str
     settled_amount: Money | None = None
+    dispatch_attempt_key: str | None = None
+    dispatch_intent_at: datetime | None = None
 
     def __post_init__(self) -> None:
         for label in ("reservation_id", "budget_id", "idempotency_key", "purpose"):
@@ -128,6 +131,18 @@ class BudgetReservation:
             raise FinOpsError("invalid_reservation_state")
         if self.settled_amount is not None and self.settled_amount.currency != self.amount.currency:
             raise FinOpsError("settlement_currency_mismatch")
+        if (self.dispatch_attempt_key is None) != (self.dispatch_intent_at is None):
+            raise FinOpsError("incomplete_dispatch_intent")
+        if self.dispatch_attempt_key is not None:
+            _identifier(self.dispatch_attempt_key, "dispatch_attempt_key")
+            assert self.dispatch_intent_at is not None
+            _instant(self.dispatch_intent_at, "dispatch_intent_at")
+            if self.dispatch_intent_at < self.created_at:
+                raise FinOpsError("dispatch_intent_before_reservation")
+        if self.status is ReservationState.DISPATCH_INTENT_RECORDED and self.dispatch_attempt_key is None:
+            raise FinOpsError("missing_dispatch_intent")
+        if self.status is ReservationState.PENDING and self.dispatch_attempt_key is not None:
+            raise FinOpsError("pending_with_dispatch_intent")
 
 
 @dataclass(frozen=True, slots=True)
@@ -147,6 +162,10 @@ class BudgetReservationPort(Protocol):
     def reserve(self, request: ReservationRequest) -> ReservationResult: ...
 
     def get_reservation(self, reservation_id: str) -> ReservationResult: ...
+
+    def record_dispatch_intent(
+        self, reservation_id: str, attempt_key: str, *, at: datetime,
+    ) -> ReservationResult: ...
 
     def dispute(self, reservation_id: str) -> ReservationResult: ...
 
@@ -170,6 +189,10 @@ def reservation_to_dict(result: ReservationResult) -> dict[str, object]:
         "quote_fingerprint": record.quote_fingerprint,
         "purpose": record.purpose,
         "created_at": record.created_at.isoformat(),
+        "dispatch_attempt_key": record.dispatch_attempt_key,
+        "dispatch_intent_at": (
+            record.dispatch_intent_at.isoformat() if record.dispatch_intent_at else None
+        ),
         "amount": {"value": str(record.amount.amount), "currency": record.amount.currency},
         "settled_amount": (
             {"value": str(record.settled_amount.amount), "currency": record.settled_amount.currency}
@@ -179,7 +202,10 @@ def reservation_to_dict(result: ReservationResult) -> dict[str, object]:
         "spent": {"value": str(budget.spent.amount), "currency": budget.spent.currency},
         "reserved": {"value": str(budget.reserved.amount), "currency": budget.reserved.currency},
         "remaining": {"value": str(budget.remaining.amount), "currency": budget.remaining.currency},
-        "atomic_budget_reserved": record.status in (ReservationState.PENDING, ReservationState.DISPUTED),
+        "atomic_budget_reserved": record.status in (
+            ReservationState.PENDING, ReservationState.DISPATCH_INTENT_RECORDED,
+            ReservationState.DISPUTED,
+        ),
         "offline_sandbox_only": True,
         "spend_bound_verified": False,
         "provider_quote_verified": False,
