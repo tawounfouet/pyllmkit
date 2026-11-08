@@ -133,6 +133,8 @@ def parse_quote_request_json(content: str | bytes) -> QuoteScenario:
         payload = json.loads(
             content, object_pairs_hook=_unique_pairs, parse_constant=_reject_constant,
         )
+    except FinOpsError:
+        raise
     except (ValueError, UnicodeDecodeError, RecursionError) as exc:
         raise FinOpsError("invalid_quote_json") from exc
     return parse_quote_request(payload)
