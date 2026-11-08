@@ -83,15 +83,16 @@ L'etat `disputed` **conserve** la somme reservee et interdit la liberation manue
 | Etat | Sens | Montant reserve |
 |---|---|---|
 | `pending` | Reservation locale active | Integral |
+| `dispatch_intent_recorded` | Point de non-retour simulé avant envoi | Integral |
 | `disputed` | Issue incertaine, ne pas liberer | Integral |
 | `released_undispatched` | Non dispatch prouve dans le cadre offline | Zero |
 | `settled_simulated` | Debit synthetique applique au ledger | Zero, debit synthetique conserve en `spent` |
 
 - `release` sur un `pending` exige `--confirm-no-dispatch`; une simple annulation fournisseur ne suffirait jamais.
-- `disputed` ne peut pas etre libere via la commande normale.
+- `dispatch_intent_recorded` et `disputed` ne peuvent pas etre liberes via la commande normale.
 - `settle-simulated` refuse tout montant superieur au reserve initial ; cela ne prejuge pas d'une facture reelle.
 - Les operations terminales rejouees sont idempotentes et les changements d'etat incompatibles sont rejetes.
-- Aucun TTL ne libere automatiquement une reservation. Au redemarrage, les `pending` et `disputed` demeurent charges sur le budget.
+- Aucun TTL ne libere automatiquement une reservation. Au redemarrage, les `pending`, `dispatch_intent_recorded` et `disputed` demeurent charges sur le budget.
 - Retries ou fallbacks payants ne sont pas branches et ne peuvent donc pas contourner le ledger.
 
 ## 4. Idempotence et concurrence
@@ -129,3 +130,40 @@ Avant tout raccordement a `generate --live`, il faut **encore** :
 Tests G3 : transactions atomiques, concurrence, reouverture de base, replay idem, conflit d'empreinte, devise, solde, etats `disputed`, `release`, `settle-simulated`, CLI sans acces reseau.
 
 **Verdict cible : GO G3 sandbox offline sous CI, NO-GO G3 live / NO-GO M2 production.**
+
+
+## 6. G3.5 - Barrière transactionnelle simulée avant envoi
+
+Une réservation `pending` peut recevoir une **intention d'envoi fictive** dans une transaction SQLite :
+
+```bash
+pyllmkit finops reservation simulate-dispatch-intent \
+  --database .pyllmkit/finops-sandbox.db \
+  --reservation-id resv_... \
+  --attempt-key generation-001
+```
+
+Cette commande **n'envoie rien** au fournisseur, n'accède à aucun secret et ne crée **aucune autorisation live**. Elle permet uniquement de tester un futur point de non-retour.
+
+- `pending -> dispatch_intent_recorded` : une ligne est insérée dans la nouvelle table `finops_dispatch_intents` et le statut change **dans la même transaction**. Le montant reste réservé.
+- `dispatch_intent_recorded -> disputed` : montant conservé, pas de libération automatique.
+- `dispatch_intent_recorded -> settled_simulated` : débit uniquement fictif, sans facture.
+- `dispatch_intent_recorded -> released_undispatched` : **interdit**, même avec `--confirm-no-dispatch`.
+- Même `attempt_key` sur la même réservation : replay idempotent, sans nouveau dispatch ; clé différente : `dispatch_intent_conflict`.
+- `attempt_key` déjà employée par une autre réservation du même budget : `dispatch_attempt_key_reused`.
+- Rejouer `finops reserve` après une intention ou dans un état terminal renvoie l'état existant en JSON et le **code de sortie 3**, pas un succès apparent.
+- Migration sans destruction : une base G3 précédente conserve ses réservations et son solde ; seule la nouvelle table est créée.
+
+### Fenêtre de crash testée
+
+```text
+Réservation transactionnelle (commit SQLite)
+ -> Intention simulée transactionnelle (commit SQLite)
+ -> Arrêt du processus et réouverture de la base
+ -> Même réservation, même intention, même solde immobilisé
+ -> Aucun nouvel envoi fournisseur
+```
+
+La conservation après redémarrage et la concurrence d'intentions sont couvertes par les tests. Le système n'introduit ni expiration auto-libératrice ni retry/fallback automatique.
+
+**Limite essentielle :** ce mécanisme ne prouve pas qu'une opération distante est exécutée « exactement une fois ». Pour un système live, il faudra disposer des garanties d'idempotence du fournisseur, de corrélation, de facturation observée (G4), du contrôle de plafonds réel et du veto avant accès aux secrets.
