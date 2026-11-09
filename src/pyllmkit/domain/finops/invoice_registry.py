@@ -37,6 +37,11 @@ def _revision(value: int, name: str) -> None:
         raise FinOpsError(f"invalid_{name}")
 
 
+def _canonical_amount(amount: Decimal) -> str:
+    text = format(amount, "f")
+    return text.rstrip("0").rstrip(".") if "." in text else text
+
+
 def canonical_statement(statement: SyntheticInvoiceStatement) -> str:
     """Stable representation of the semantic synthetic content, not the raw JSON."""
     if type(statement) is not SyntheticInvoiceStatement:
@@ -55,7 +60,7 @@ def canonical_statement(statement: SyntheticInvoiceStatement) -> str:
                 "line_id": line.line_id,
                 "provider_request_id": line.provider_request_id,
                 "kind": line.kind.value,
-                "amount": format(line.amount.amount, "f"),
+                "amount": _canonical_amount(line.amount.amount),
             }
             for line in sorted(statement.lines, key=lambda item: item.line_id)
         ],
