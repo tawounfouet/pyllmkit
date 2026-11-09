@@ -22,7 +22,6 @@ from pyllmkit.domain.finops.invoice_reconciliation import SyntheticInvoiceStatem
 from pyllmkit.domain.finops.invoice_registry import (
     GENESIS_HASH,
     InvoiceImportRequest,
-    InvoiceRegistryPort,
     audit_report_to_dict,
     canonical_statement,
     imported_invoice_to_dict,
