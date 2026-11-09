@@ -13,6 +13,7 @@ from typing import Annotated
 import typer
 
 from pyllmkit.adapters.cli.finops_invoice import load_synthetic_invoice_statement
+from pyllmkit.adapters.cli.finops_invoice_registry import SQLiteSyntheticInvoiceRegistry
 from pyllmkit.adapters.cli.finops_quote import (
     load_quote_request,
     quote_media_scenario,
@@ -24,6 +25,13 @@ from pyllmkit.domain.finops import FinOpsError, Money
 from pyllmkit.domain.finops.invoice_reconciliation import (
     reconcile_synthetic_statement,
     reconciliation_to_dict,
+)
+from pyllmkit.domain.finops.invoice_registry import (
+    ImportedInvoice,
+    InvoiceImportRequest,
+    InvoiceImportResult,
+    audit_report_to_dict,
+    imported_invoice_to_dict,
 )
 from pyllmkit.domain.finops.quoting import quote_to_dict
 from pyllmkit.domain.finops.reservations import (
@@ -111,6 +119,129 @@ def reconcile_command(
         _report_error(exc)
 
 
+def _invoice_registry(database: Path) -> SQLiteSyntheticInvoiceRegistry:
+    return SQLiteSyntheticInvoiceRegistry(database)
+
+
+@invoice_app.command(name="import-synthetic")
+def invoice_import_synthetic(
+    database: Annotated[Path, typer.Option("--database", help="Base SQLite locale explicite.")],
+    statement: Annotated[Path, typer.Option("--statement", help="Fixture synthétique JSON v1.")],
+    scope_id: Annotated[str, typer.Option("--scope-id", help="Espace logique d'import.")],
+    revision: Annotated[int, typer.Option("--revision", help="Révision positive (1 pour l'origine).")],
+    import_key: Annotated[str, typer.Option("--import-key", help="Idempotence persistante.")],
+    supersedes: Annotated[
+        int | None, typer.Option("--supersedes", help="Révision précédente, si correction."),
+    ] = None,
+) -> None:
+    """Importer une révision de facture synthétique et son événement d'audit atomiquement."""
+    try:
+        record = _invoice_registry(database).import_synthetic(InvoiceImportRequest(
+            scope_id, import_key, revision, supersedes,
+            load_synthetic_invoice_statement(statement), datetime.now(UTC),
+        ))
+        typer.echo(json.dumps(imported_invoice_to_dict(record), ensure_ascii=False))
+    except (OSError, ValueError, sqlite3.Error) as exc:
+        _report_error(exc)
+
+
+@invoice_app.command(name="inspect")
+def invoice_inspect(
+    database: Annotated[Path, typer.Option("--database")],
+    scope_id: Annotated[str, typer.Option("--scope-id")],
+    statement_id: Annotated[str, typer.Option("--statement-id")],
+    revision: Annotated[int | None, typer.Option("--revision")] = None,
+) -> None:
+    """Consulter une révision persistée (la dernière par défaut), après audit local."""
+    try:
+        invoice = _invoice_registry(database).inspect(scope_id, statement_id, revision)
+        typer.echo(json.dumps(imported_invoice_to_dict(
+            __import_result(invoice),
+        ), ensure_ascii=False))
+    except (OSError, ValueError, sqlite3.Error) as exc:
+        _report_error(exc)
+
+
+def __import_result(invoice: ImportedInvoice) -> InvoiceImportResult:
+    return InvoiceImportResult(invoice)
+
+
+@invoice_app.command(name="history")
+def invoice_history(
+    database: Annotated[Path, typer.Option("--database")],
+    scope_id: Annotated[str, typer.Option("--scope-id")],
+    statement_id: Annotated[str, typer.Option("--statement-id")],
+) -> None:
+    """Lister les révisions immuables et le hash de chaque événement."""
+    try:
+        versions = _invoice_registry(database).history(scope_id, statement_id)
+        typer.echo(json.dumps({
+            "scope_id": scope_id, "statement_id": statement_id,
+            "versions": [
+                imported_invoice_to_dict(InvoiceImportResult(item)) for item in versions
+            ],
+            "source_kind": "synthetic_fixture",
+            "provider_invoice_verified": False, "ledger_mutated": False,
+            "live_authorized": False,
+        }, ensure_ascii=False))
+    except (OSError, ValueError, sqlite3.Error) as exc:
+        _report_error(exc)
+
+
+@invoice_app.command(name="audit")
+def invoice_audit(
+    database: Annotated[Path, typer.Option("--database")],
+    scope_id: Annotated[str, typer.Option("--scope-id")],
+) -> None:
+    """Vérifier les empreintes, snapshots et liens de hash de l'espace local."""
+    try:
+        report = _invoice_registry(database).audit(scope_id)
+        typer.echo(json.dumps(audit_report_to_dict(report), ensure_ascii=False))
+    except (OSError, ValueError, sqlite3.Error) as exc:
+        _report_error(exc)
+
+
+@invoice_app.command(name="reconcile-imported")
+def invoice_reconcile_imported(
+    database: Annotated[Path, typer.Option("--database")],
+    scope_id: Annotated[str, typer.Option("--scope-id")],
+    statement_id: Annotated[str, typer.Option("--statement-id")],
+    request: Annotated[Path, typer.Option("--request")],
+    provider_request_id: Annotated[str, typer.Option("--provider-request-id")],
+    revision: Annotated[int | None, typer.Option("--revision")] = None,
+    pricing_catalog: Annotated[Path | None, typer.Option("--pricing-catalog")] = None,
+    tolerance: Annotated[str, typer.Option("--tolerance")] = "0",
+) -> None:
+    """Comparer un snapshot local G4.2 à G2, sans modifier le registre ni le ledger."""
+    try:
+        if re.fullmatch(r"(?:0|[1-9]\d*)(?:\.\d+)?", tolerance) is None or len(tolerance) > 80:
+            raise FinOpsError("invalid_reconciliation_tolerance")
+        statement = _invoice_registry(database).inspect(scope_id, statement_id, revision)
+        quote = quote_media_scenario(
+            load_quote_request(request),
+            prices=load_price_catalog(pricing_catalog),
+            media=load_media_catalog(),
+        )
+        report = reconcile_synthetic_statement(
+            quote, statement.statement,
+            expected_provider_request_id=provider_request_id,
+            tolerance=Decimal(tolerance),
+        )
+        output = reconciliation_to_dict(report)
+        output["scope_id"] = scope_id
+        output["imported_revision"] = statement.revision
+        output["invoice_fingerprint"] = statement.fingerprint
+        output["invoice_audit_hash"] = statement.audit_hash
+        typer.echo(json.dumps(output, ensure_ascii=False))
+        if report.status != "matched_synthetic":
+            raise typer.Exit(code=3)
+    except typer.Exit:
+        raise
+    except (OSError, ValueError, sqlite3.Error) as exc:
+        _report_error(exc)
+
+
+
 def _report_error(exc: Exception) -> None:
     typer.echo(json.dumps({
         "status": "error", "reason": str(exc), "live_authorized": False,
@@ -128,6 +259,9 @@ def _money(value: str, currency: str) -> Money:
 def _store(database: Path) -> SQLiteBudgetReservationStore:
     return SQLiteBudgetReservationStore(database)
 
+
+invoice_app = typer.Typer(help="Registre de factures synthétiques SQLite, audit local hors réseau.")
+finops_app.add_typer(invoice_app, name="invoice")
 
 budget_app = typer.Typer(help="Budget de démonstration SQLite, strictement hors réseau.")
 reservation_app = typer.Typer(help="Transitions des réservations locales simulées.")
