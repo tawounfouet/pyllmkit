@@ -27,7 +27,6 @@ from pyllmkit.domain.finops.invoice_reconciliation import (
     reconciliation_to_dict,
 )
 from pyllmkit.domain.finops.invoice_registry import (
-    ImportedInvoice,
     InvoiceImportRequest,
     InvoiceImportResult,
     audit_report_to_dict,
@@ -136,10 +135,11 @@ def invoice_import_synthetic(
 ) -> None:
     """Importer une révision de facture synthétique et son événement d'audit atomiquement."""
     try:
-        record = _invoice_registry(database).import_synthetic(InvoiceImportRequest(
+        request = InvoiceImportRequest(
             scope_id, import_key, revision, supersedes,
             load_synthetic_invoice_statement(statement), datetime.now(UTC),
-        ))
+        )
+        record = _invoice_registry(database).import_synthetic(request)
         typer.echo(json.dumps(imported_invoice_to_dict(record), ensure_ascii=False))
     except (OSError, ValueError, sqlite3.Error) as exc:
         _report_error(exc)
@@ -155,15 +155,11 @@ def invoice_inspect(
     """Consulter une révision persistée (la dernière par défaut), après audit local."""
     try:
         invoice = _invoice_registry(database).inspect(scope_id, statement_id, revision)
-        typer.echo(json.dumps(imported_invoice_to_dict(
-            __import_result(invoice),
-        ), ensure_ascii=False))
+        typer.echo(json.dumps(
+            imported_invoice_to_dict(InvoiceImportResult(invoice)), ensure_ascii=False,
+        ))
     except (OSError, ValueError, sqlite3.Error) as exc:
         _report_error(exc)
-
-
-def __import_result(invoice: ImportedInvoice) -> InvoiceImportResult:
-    return InvoiceImportResult(invoice)
 
 
 @invoice_app.command(name="history")
