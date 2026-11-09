@@ -1,7 +1,7 @@
 # M2-G4.2 - Registre de factures synthétiques versionné et auditable
 
 - Date : 2026-11-09
-- Statut : implémentation candidate sur PR #115, qualification CI à vérifier sur SHA exact.
+- Statut : G4.2 hors réseau qualifié par CI sur la PR #115. Le SHA exact et les preuves sont consignés dans la description de cette PR.
 - Périmètre : **fixtures synthétiques seulement, hors réseau**. Aucune facture fournisseur authentifiée, aucun mouvement sur le budget G3, aucun envoi payant.
 
 ## 1. Contrats et stockage
