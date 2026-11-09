@@ -45,6 +45,10 @@ finops_app = typer.Typer(
     add_completion=False,
 )
 
+invoice_app = typer.Typer(help="Registre de factures synthétiques SQLite, audit local hors réseau.")
+finops_app.add_typer(invoice_app, name="invoice")
+
+
 
 @finops_app.command(name="quote")
 def quote_command(
@@ -255,9 +259,6 @@ def _money(value: str, currency: str) -> Money:
 def _store(database: Path) -> SQLiteBudgetReservationStore:
     return SQLiteBudgetReservationStore(database)
 
-
-invoice_app = typer.Typer(help="Registre de factures synthétiques SQLite, audit local hors réseau.")
-finops_app.add_typer(invoice_app, name="invoice")
 
 budget_app = typer.Typer(help="Budget de démonstration SQLite, strictement hors réseau.")
 reservation_app = typer.Typer(help="Transitions des réservations locales simulées.")
