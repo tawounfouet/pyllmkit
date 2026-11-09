@@ -32,7 +32,7 @@ class SQLiteSyntheticInvoiceRegistry:
     """Local, transactional invoice revision registry, never a trusted biller."""
 
     def __init__(self, database: Path) -> None:
-        if type(database) is not Path or str(database) == ":memory:":
+        if not isinstance(database, Path) or str(database) == ":memory:":
             raise FinOpsError("invalid_invoice_registry_database")
         self._database = database
         self._initialize()
