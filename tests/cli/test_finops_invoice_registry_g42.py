@@ -195,12 +195,15 @@ def test_invoice_correction_cannot_change_billing_route(
     store = _store(tmp_path)
     store.import_synthetic(_request())
     corrected = _corrected_statement()
-    wrong = replace(corrected, **{field: "EUR" if field == "currency" else "other"})
     if field == "currency":
-        wrong = replace(wrong, lines=tuple(
-            replace(item, amount=Money(item.amount.amount, "EUR"))
-            for item in wrong.lines
-        ))
+        wrong = replace(
+            corrected, currency="EUR", lines=tuple(
+                replace(item, amount=Money(item.amount.amount, "EUR"))
+                for item in corrected.lines
+            ),
+        )
+    else:
+        wrong = replace(corrected, **{field: "other"})
     with pytest.raises(FinOpsError, match="invoice_revision_route_changed"):
         store.import_synthetic(_request(
             key="different-route", revision=2, supersedes=1, statement=wrong,
