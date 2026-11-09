@@ -1,0 +1,36 @@
+{
+  "schema_version": 2,
+  "revision": "synthetic-example-001",
+  "updated_at": "2026-11-08",
+  "prices": [
+    {
+      "price_id": "synthetic-image-v1",
+      "revision": "r1",
+      "model_id": "gpt-image-2",
+      "api_provider": "openai",
+      "billing_provider": "openai",
+      "deployment_channel": "direct",
+      "currency": "USD",
+      "valid_from": "2026-11-01T00:00:00+00:00",
+      "valid_to": null,
+      "source_url": "https://example.org/synthetic-pricing-only",
+      "verified_at": "2026-11-08",
+      "rates": [
+        {
+          "meter": "image",
+          "amount": "0.025",
+          "per": "1",
+          "dimensions": {
+            "quality": "high"
+          }
+        },
+        {
+          "meter": "input_token",
+          "amount": "1",
+          "per": "1000000",
+          "dimensions": {}
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "source_kind": "synthetic_fixture",
+  "statement_id": "demo-synthetic-2026-11",
+  "model_id": "gpt-image-2",
+  "api_provider": "openai",
+  "billing_provider": "openai",
+  "deployment_channel": "direct",
+  "currency": "USD",
+  "lines": [
+    {
+      "line_id": "demo-usage-001",
+      "provider_request_id": "fake-provider-call-001",
+      "kind": "usage",
+      "amount": "0.051"
+    },
+    {
+      "line_id": "demo-tax-001",
+      "provider_request_id": "fake-provider-call-001",
+      "kind": "tax",
+      "amount": "0.010"
+    },
+    {
+      "line_id": "demo-credit-001",
+      "provider_request_id": "fake-provider-call-001",
+      "kind": "credit",
+      "amount": "0.005"
+    }
+  ]
+}
