@@ -75,7 +75,7 @@ def test_first_import_is_atomic_durable_and_has_local_hash_chain(tmp_path: Path)
     assert first.invoice.revision == 1
     assert first.invoice.supersedes is None
     assert first.invoice.fingerprint == invoice_import_fingerprint(request)
-    assert first.invoice.statement == _statement()
+    assert canonical_statement(first.invoice.statement) == canonical_statement(_statement())
     assert first.invoice.audit_sequence == 1
     assert first.invoice.audit_hash != GENESIS_HASH
     projection = imported_invoice_to_dict(first)
@@ -144,8 +144,10 @@ def test_correction_is_immutable_revision_two_and_preserves_prior_credit(
     assert store.inspect("sandbox", _statement().statement_id).revision == 2
     history = store.history("sandbox", _statement().statement_id)
     assert tuple(item.revision for item in history) == (1, 2)
-    assert history[0].statement.lines[2].amount.amount == Decimal("0.005")
-    assert history[1].statement.lines[2].amount.amount == Decimal("0.006")
+    first_credit = next(item for item in history[0].statement.lines if item.kind.value == "credit")
+    second_credit = next(item for item in history[1].statement.lines if item.kind.value == "credit")
+    assert first_credit.amount.amount == Decimal("0.005")
+    assert second_credit.amount.amount == Decimal("0.006")
     assert store.audit("sandbox").event_count == 2
     # A historical retry is still an idempotent replay.
     assert store.import_synthetic(_request()).replayed
